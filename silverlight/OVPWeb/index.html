@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Akamai Silverlight OpenVideoPlayer Configuration Tool</title>
+
+	<style type="text/css">
+		    html, body {
+	    height: 100%;
+	    overflow: auto;
+    }
+    body {
+	   padding: 0;
+	   margin: 0;
+	   font-family: Verdana; 
+	   color: #0395d3;
+	  font-size: 12px; 
+    }
+
+h2 {font-family:verdana,arial;font-size: 12pt;}
+select.bordered {border: #59B5FF 1px solid; font-family:Arial, Helvetica, sans-serif;font-size:9pt;font-weight:normal;margin:2px;}
+textarea.bordered[disabled] {border: #59B5FF 1px solid; font-family:courier, courier-new;font-size:9pt;font-weight:normal;margin:2px;}
+textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold;}
+	.style1 {
+		text-align: right;
+	}
+	.style2 {
+		text-align: center;
+	}
+	.style3 {
+		text-align: left;
+	}
+	.style4 {
+		color: #59B5FF;
+	}
+	.newStyle1 {
+		color: #999999;
+	}
+	</style>
+
+	<script type="text/javascript" src="Silverlight.js"></script>
+
+	<script type="text/javascript">
+
+		function OnChange() {
+			document.getElementById('sourceDesc').innerHTML = document.getElementById('sourceType').value;
+			document.getElementById('stretchDesc').innerHTML = document.getElementById('stretchMode').value;
+
+			var playerXAP = 'OVP.xap';
+			
+			var autoplay = document.getElementById('autoplay').value;
+			var ismuted = document.getElementById('muted').value;
+			var isdebug = document.getElementById('showStats').value;
+			var mystretchmode = document.getElementById('stretchMode').options[document.getElementById('stretchMode').selectedIndex].text;
+			
+			var source = document.getElementById('source').value;
+			var st = document.getElementById('sourceType');
+			var sourceType = st.options[st.selectedIndex].text.toLowerCase();
+
+			var h = document.getElementById('pHeight').value;
+			var w = document.getElementById('pWidth').value;
+			var linkUrl = document.getElementById('linkText').value;
+			var embedUrl = document.getElementById('embedText').value;
+			var ploverlay = document.getElementById('plOverlay').value;
+			
+			//TODO - not yet fully supported by SL control
+			//var playlist = document.getElementById('showPlaylist').value;
+			//var chapters = document.getElementById('showChapters').value;
+			
+			var initparams = 'showstats=' + isdebug + ', autoplay=' + autoplay + ', muted=' + ismuted 
+				+ ', playlistoverlay=' + ploverlay 
+			//	+ ', showplaylist=' + playlist 
+			//	+ ', showchapters=' + chapters
+				+ ', linkurl=' + linkUrl + ', embedurl=' + embedUrl + ', stretchmode=' + mystretchmode + ', ' + sourceType + '=' + escape(source) + '\' />';
+
+			var tag = '<object data="data:application/x-silverlight-2," type="application/x-silverlight-2"'
+			+ ' width="' + w + '" height="' + h
+			 + '" id="slp" >';
+			tag += '<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">';
+			tag += '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/></a>';
+			tag += '<param name="source" value="ClientBin/' + playerXAP + '"/>';
+			if(document.getElementById('showErrors').value=="true") tag += '<param name="onerror" value="onSilverlightError" />';
+			tag += '<param name="minRuntimeVersion" value="2.0.30923.0" />';
+			tag += '<param name="MaxFrameRate" value="30" />';
+			tag += '<param name="initparams" value=\'' + initparams + '\' />';
+			tag += '</object>';
+			tag += '<iframe style="visibility:hidden;height:0;width:0;border:0px"></iframe>';
+
+			document.getElementById('htmlEmbed').value = tag;
+			return tag;
+		}
+		
+		function previewPlayer(){
+			var tag = OnChange();
+			var h = document.getElementById('pHeight').value;
+			var w = document.getElementById('pWidth').value;
+			var ww = (w.indexOf("%")>-1) ? 700 : w;
+			var wh = (h.indexOf("%")>-1) ? 500 : h;
+
+			window.open('player.html?tag=' + tag  ,'OpenVideoPlayer Preview','width=' + ww + ',height='+ wh + ',directories=no,location=yes,menubar=no,scrollbars=no,status=yes,toolbar=no,resizable=yes');
+		}
+
+		function BodyLoad() {
+			OnChange();
+		}
+	</script>
+
+</head>
+<body style="background: #323232;" onload="BodyLoad();">
+	<div id="Config" align="left" style="position: relative; left: 0px; top: 0px; height: 846px;">
+	
+					<h2 style="margin-left: 25px;">Silverlight OpenVideoPlayer Configuration Tool</h2>
+						<table width="640px" border="0" style="border: none; margin-left: 50px; margin-top: 10px; text-align: left;" cellpadding="1px" align="left">
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 23px;" class="style3" valign="middle">
+					AutoPlay:&nbsp;&nbsp;
+				</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 23px;" valign="middle">
+					<select id="autoplay" class="bordered" style="width: 120px" onchange="OnChange();">
+						<option value="true" selected>True</option>
+						<option value="false">False</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 23px;" class="style3" colspan="2">
+					<span id="sourceDesc6" class="newStyle1">True to start playing when the page 
+					loads</span></td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 21px;" class="style3">
+					Muted:&nbsp;
+				</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 21px;">
+					<select id="muted" class="bordered" style="width: 120px" onchange="OnChange();" name="mute">
+						<option value="true">True</option>
+						<option value="false" selected="selected">False</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 21px;" class="style3" colspan="2">
+					<span id="sourceDesc5" class="newStyle1">True to mute the player on page load</span></td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style3">
+					StretchMode:&nbsp; </td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 15px;">
+					<select id="stretchMode" class="bordered" style="width: 120px" onchange="OnChange();" name="scaling">
+						<option value="Native mode does no scaling, may result in clipped edges">Native</option>
+						<option value="Fit mode will scale the video to fit, keeping the aspect ratio" selected="selected">Fit</option>
+						<option value="Stretch mode scale the video to fit the player, ignoring aspect ratio">Stretch</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style3" colspan="2">
+					<span id="stretchDesc" class="newStyle1">...</span></td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 17px;" class="style3">
+					PlaylistOverlay:</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 17px;">
+					<select id="plOverlay" class="bordered" style="width: 120px" onchange="OnChange();">
+						<option value="true" selected>True</option>
+						<option value="false" >False</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 17px;" class="style3" colspan="2">
+					<span id="sourceDesc3" class="newStyle1">True to overlay the playlist on 
+					player, false to show side by side</span></td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 21px;" class="style3">
+					ShowStats:</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 21px;">
+					<select id="showStats" class="bordered" style="width: 120px" onchange="OnChange();" name="stats">
+						<option value="true" selected="selected">True</option>
+						<option value="false">False</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 21px;" class="style3" colspan="2">
+					<span id="sourceDesc2" class="newStyle1">True to initially show the statistics 
+					panel</span></td>
+			</tr>
+			<!--<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 11px;" class="style3">
+					ShowPlaylist:</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 11px;">
+					<select id="showPlaylist" class="bordered" style="width: 120px" onchange="OnChange();">
+						<option value="true">True</option>
+						<option value="false" selected>False</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 11px;" class="style3" colspan="2">
+					<span id="sourceDesc1" class="newStyle1">True to initially show the playlist</span></td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 17px;" class="style3">
+					ShowChapters:</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 17px;">
+					<select id="showChapters" class="bordered" style="width: 120px" onchange="OnChange();">
+						<option value="true">True</option>
+						<option value="false" selected>False</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 17px;" class="style3" colspan="2">
+					<span id="sourceDesc0" class="newStyle1">True to initially show the chapter 
+					selection box</span></td>
+			</tr>-->
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 22px;" class="style3">
+					ShowErrors:</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 22px;">
+					<select id="showErrors" class="bordered" style="width: 120px" onchange="OnChange();" name="D1">
+						<option value="true" selected="selected">True</option>
+						<option value="false">False</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 22px;" class="style3" colspan="2">
+					<span id="sourceDesc8" class="newStyle1">True to show 
+					silverlight / player errors in browser for debugging</span></td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 33px;" class="style3">
+					Player Size:</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 33px;">
+					<input id="pWidth" style="width: 48px" type="text" onchange="OnChange();" name="width" value="648" /> 
+					X
+					<input id="pHeight" style="width: 48px" type="text" onchange="OnChange();" name="height" value="500" /></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 33px;" class="style3" colspan="2">
+					<span id="sourceDesc7" class="newStyle1">The initial size of 
+					the player object, including frame and controls</span></td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 35px;" class="style3">
+					Link URL:</td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 35px;" class="style3" colspan="3">
+					&nbsp;
+					<input id="linkText" style="width: 438px" type="text" onchange="OnChange();" />&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 35px;" class="style3">
+					Embed URL:</td>
+				<td valign="middle"  style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 35px;" class="style3" colspan="3">
+					&nbsp;
+					<input id="embedText" style="width: 438px" type="text" onchange="OnChange();" /></td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; " class="style3">
+					</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; " class="style2">
+					</td>
+				<td colspan=2 style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3;   vertical-align: bottom; " class="style3">
+					</td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 26px;" class="style3">
+					Player Source:
+					</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 26px;" class="style2">
+					<select id="sourceType" onchange="OnChange();" class="bordered" style="width: 120px" name="sourceType">
+						<option value="Link to a MediaRSS Feed" selected="selected">FeedSource</option>
+						<option value="Link to a reference file, such as asx or wax">RefSource</option>
+						<option value="Link to a Microsoft xml playlist from Expression Encoder">PlayListSource</option>
+						<option value="Direct http or mms link to a media source">MediaSource</option>
+						<option value="Directly embed playlist text">PlayList</option>
+					</select></td>
+				<td colspan=2 style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3;   vertical-align: bottom; height: 26px;" class="style3">
+					<span id="sourceDesc" class="newStyle1">...</span></td>
+			</tr>
+			<tr>
+				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; text-align: center;" valign="top">
+					<textarea id="source" cols="69" rows ="4" name="source" onchange="OnChange();">http://rss.streamos.com/streamos/rss/genfeed.php?feedid=426&groupname=products</textarea></td>
+			</tr>
+			<tr>
+				<td colspan="2" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; text-align: center;" valign="top">
+					&nbsp;</td>
+				<td colspan="2" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; text-align: center;" valign="top">
+					&nbsp;</td>
+			</tr>
+			<tr>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 27px;" valign="middle" class="style3" colspan="2">
+					HTML Embed Code:  </td>
+					<td style="width: 22%; height: 27px;">&nbsp;</td>
+					<td style="width: 36%; height: 27px;" class="style1">
+					[<a href="#" onclick="previewPlayer();" ><span class="style4">Preview Player</span></a>]<span class="style4">&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp; </td>
+			</tr>
+			<tr>
+				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; " valign="top" class="style2">
+					&nbsp;<textarea id="htmlEmbed" cols="69" rows ="14" name="S1" readonly="readonly"></textarea></td>
+			</tr>
+			</table>
+	</div>
+</body>
+</html>
