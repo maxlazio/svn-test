@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -173,7 +174,8 @@ namespace org.OpenVideoPlayer.Player {
 
 		private StartupEventArgs startupArgs;
 
-		private bool adaptiveInit = false;
+		private bool adaptiveInit;
+		private ConstructorInfo adaptiveConstructor;
 
 		#endregion
 
@@ -829,17 +831,24 @@ namespace org.OpenVideoPlayer.Player {
 				DownloadProgressControlVisibility = Visibility.Collapsed;
 
 				// Bring adaptive heuristics in..
-				// NOTE: ADAPTIVE IS DISABLED IN THE PUBLIC BUILD
-				//TODO - working on a dynamic load system, so manual changes aren't needed to enable Adaptive.  -NB
-				//if (AdaptiveStreamSourceFactory == null && !adaptiveInit) {
-				//    adaptiveInit = true;
+				// NOTE: ADAPTIVE IS DISABLED IN THE PUBLIC BUILD, THE DLL MUST BE PROVIDED BY AKAMAI/MICROSOFT
+				if (adaptiveConstructor == null) {
+					if (!adaptiveInit) {
+						adaptiveInit = true;
+						LoadAdaptiveAssembly();
+						return; //get out of here so WC can work..
+					}
+				} else {
+					altMediaStreamSource = adaptiveConstructor.Invoke(new object[] {mainMediaElement, new Uri(Playlist[currentlyPlayingItem].Url)}) as MediaStreamSource;
+				}
 
-				//    LoadAdaptiveAssembly();
-				//    //altMediaStreamSource =
-				//    //new Microsoft.Expression.Encoder.AdaptiveStreaming.AdaptiveStreamingSource(mainMediaElement, new Uri(Playlist[currentlyPlayingItem].Url));
-				//    //AdaptiveStreamSourceFactory.GetMediaStreamSource(mainMediaElement, new Uri(Playlist[currentlyPlayingItem].Url));
-				//    mainMediaElement.SetSource(altMediaStreamSource);
-				//}
+				if (altMediaStreamSource == null) {
+					//TODO - do we crash, or just skip this content?  How do we inform user?
+					throw new Exception("Unable to load adaptive DLL");
+				}
+
+				mainMediaElement.SetSource(altMediaStreamSource);
+
 			} else {
 				//Assign the source directly from the playlist url
 				mainMediaElement.Source = new Uri(Playlist[currentlyPlayingItem].Url);
@@ -860,7 +869,41 @@ namespace org.OpenVideoPlayer.Player {
 		}
 
 		private void LoadAdaptiveAssembly() {
-			//TODO
+			WebClient wc = new WebClient();
+			wc.OpenReadCompleted += OnAssemblyDownloaded;
+			wc.OpenReadAsync(new Uri(HtmlPage.Document.DocumentUri, "ClientBin/AdaptiveStreaming.dll"));
+		}
+
+		void OnAssemblyDownloaded(object sender, OpenReadCompletedEventArgs e) {
+			//TODO - do we crash, or just skip this content?  How do we inform user?
+			if (e.Cancelled) {
+				throw new Exception("Assembly load cancelled");
+			}
+			if (e.Error != null) {
+				throw e.Error;
+			}
+			if (e.Result == null) {
+				throw new Exception("Invalid result from Assembly request");
+			}
+
+			AssemblyPart assemblyPart = new AssemblyPart();
+			Assembly asm = assemblyPart.Load(e.Result);
+			if (asm == null) {
+				throw new Exception("Invalid adaptive dll");
+			}
+
+			Type adapType = asm.GetType("Microsoft.Expression.Encoder.AdaptiveStreaming.AdaptiveStreamingSource");
+			if (adapType == null || !adapType.IsSubclassOf(typeof(MediaStreamSource))) {
+				throw new Exception("Invalid adaptive type");
+			}
+
+			adaptiveConstructor = adapType.GetConstructor(new[] { typeof(MediaElement), typeof(Uri) });
+			if (adaptiveConstructor == null) {
+				throw new Exception("Invalid adaptive constructor");
+			}
+
+			//go back where we left off..
+			SeekToPlaylistItem(currentlyPlayingItem);
 		}
 
 		/// <summary>
@@ -933,21 +976,19 @@ namespace org.OpenVideoPlayer.Player {
 		private void UpdateDebugPanel() {
 
 			//throttle this to once a second - keep overhead down
-			if (//isPlaying && 
-				DateTime.Now - lastDebugUpdate > TimeSpan.FromSeconds(1)) {
+			if (DateTime.Now - lastDebugUpdate > TimeSpan.FromSeconds(1)) {
 				lastDebugUpdate = DateTime.Now;
 
 				//check adaptive rate, right now just put in our rendered fps
 				StringBuilder sb = new StringBuilder();
 				string state = (mainMediaElement == null) ? "" : " (" + mainMediaElement.CurrentState + ")";
-				sb.AppendFormat("OpenVideoPlayer v{0}{1} ", version, state);
-
+				sb.AppendFormat("OpenVideoPlayer v{0}{1}", version, state);
 
 				if (mainMediaElement != null) {
-					if (isPlaying) sb.AppendFormat("\n{0}/{1} FPS (Render/Drop), Resolution: {2}x{3} ", mainMediaElement.RenderedFramesPerSecond, mainMediaElement.DroppedFramesPerSecond, mainMediaElement.NaturalVideoWidth, mainMediaElement.NaturalVideoHeight);
+					if (isPlaying) sb.AppendFormat("\n{0}/{1} FPS (Render/Drop), Resolution: {2}x{3}", mainMediaElement.RenderedFramesPerSecond, mainMediaElement.DroppedFramesPerSecond, mainMediaElement.NaturalVideoWidth, mainMediaElement.NaturalVideoHeight);
 
 					if (mainMediaElement.DownloadProgress > 0 && mainMediaElement.DownloadProgress < 1) {
-						sb.AppendFormat("\nDownload progress: {0}% ", (int) (100*mainMediaElement.DownloadProgress));
+						sb.AppendFormat("\nDownload progress: {0}%", (int) (100*mainMediaElement.DownloadProgress));
 					}
 				}
 
@@ -961,19 +1002,19 @@ namespace org.OpenVideoPlayer.Player {
 						ulong[] brs = (ulong[])methodBitrates.Invoke(altMediaStreamSource, BindingFlags.Default, null, new object[] { MediaStreamType.Video }, null);
 						string brst = "";
 						foreach (ulong br in brs) brst += br / 1024 + ",";
-						sb.AppendFormat("\nBitrates: {0} kbps ", brst.Substring(0, brst.Length - 1));
+						sb.AppendFormat("\nBitrates: {0} kbps", brst.Substring(0, brst.Length - 1));
 					}
 
 					if (propCurrentBitrate == null) propCurrentBitrate = source.GetProperty("CurrentBitrate");
 					if (propCurrentBitrate != null) {
 						Double bps = (Double)propCurrentBitrate.GetValue(altMediaStreamSource, BindingFlags.Default, null, null, null);
-						sb.AppendFormat("\nCurrent Bitrate: {0} kbps ", (int)(bps / 1024));
+						sb.AppendFormat("\nCurrent Bitrate: {0} kbps", (int)(bps / 1024));
 					}
 
 					if (propCurrentBandwidth == null) propCurrentBandwidth = source.GetProperty("CurrentBandwidth");
 					if (propCurrentBandwidth != null) {
 						Double bps = (Double)propCurrentBandwidth.GetValue(altMediaStreamSource, BindingFlags.Default, null, null, null);
-						sb.AppendFormat("\nAvailable bandwidth:  {0} kbps ", (int)(bps / 1024));
+						sb.AppendFormat("\nAvailable bandwidth:  {0} kbps", (int)(bps / 1024));
 					}
 
 					if (methodBufferSize == null) methodBufferSize = source.GetMethod("BufferSize");
@@ -982,7 +1023,7 @@ namespace org.OpenVideoPlayer.Player {
 						if (methodBufferTime == null) methodBufferTime = source.GetMethod("BufferTime");
 						if (methodBufferTime != null) {
 							TimeSpan ts = (TimeSpan)methodBufferTime.Invoke(altMediaStreamSource, BindingFlags.Default, null, new object[] { MediaStreamType.Video }, null);
-							sb.AppendFormat("\nCurrent Buffer:  {0} KB, {1} sec ", bs / 1024 / 8, Math.Round(ts.TotalSeconds, 1));
+							sb.AppendFormat("\nCurrent Buffer:  {0} KB, {1} sec", bs / 1024 / 8, Math.Round(ts.TotalSeconds, 1));
 						}
 					}
 				}

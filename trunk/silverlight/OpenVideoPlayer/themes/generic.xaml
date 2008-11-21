@@ -365,11 +365,11 @@
                                     <Grid Height="auto" Width="Auto" Margin="2,2,2,100" Opacity=".75" Visibility="{TemplateBinding DebugVisibility}" >
                                         <!-- Debug Info Box-->
                                         <Border x:Name="debugBox" Opacity=".5" Background="Black" Canvas.Left="4" Canvas.Top="-2" CornerRadius="10,10,10,10" HorizontalAlignment="Right" VerticalAlignment="Top">
-                                            <TextBlock x:Name="debugBitRateBox" Grid.Row="0" Grid.RowSpan="1" Margin="20,15,30,10" HorizontalAlignment="Right" VerticalAlignment="Top" Height="Auto" FontSize="16" Foreground="White" TextAlignment="Right"  FontFamily="Courier New" FontWeight="Bold" Text="{TemplateBinding BitRateText}" />
+                                            <TextBlock x:Name="debugBitRateBox" Grid.Row="0" Grid.RowSpan="1" Margin="20,15,30,10" HorizontalAlignment="Right" VerticalAlignment="Top" Height="Auto" FontSize="12" Foreground="White" TextAlignment="Right"  FontFamily="Courier New" FontWeight="Bold" Text="{TemplateBinding BitRateText}" />
                                         </Border>
 
                                         <!-- Current DEBUG Log Box -->
-                                        <TextBlock x:Name="debugLogBox" Grid.Row="0" Grid.RowSpan="1" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="Auto" FontSize="14" Foreground="White" TextAlignment="Left" FontFamily="Courier New" FontWeight="Bold" Text="{TemplateBinding DebugLogText}" />
+                                        <TextBlock x:Name="debugLogBox" Grid.Row="0" Grid.RowSpan="1" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="Auto" FontSize="10" Foreground="White" TextAlignment="Left" FontFamily="Courier New" FontWeight="Bold" Text="{TemplateBinding DebugLogText}" />
                                     </Grid>
 
 
