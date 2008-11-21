@@ -11,7 +11,7 @@
     <RootNamespace>OVPWeb</RootNamespace>
     <AssemblyName>OVPWeb</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <SilverlightApplicationList>{9A28153F-C605-49C1-90B7-1B04E7D5064E}|..\OVPImplementation\OVPImplementation.csproj|Bin|False</SilverlightApplicationList>
+    <SilverlightApplicationList>{9A28153F-C605-49C1-90B7-1B04E7D5064E}|..\OVPImplementation\OVPImplementation.csproj|ClientBin|False</SilverlightApplicationList>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,8 +68,10 @@
     <Content Include="Bin\System.Web.Silverlight.dll" />
     <Content Include="Bin\zh-Hans\System.Web.Silverlight.resources.dll" />
     <Content Include="Bin\zh-Hant\System.Web.Silverlight.resources.dll" />
+    <Content Include="ClientBin\OVP.xap" />
     <Content Include="index.html" />
-    <Content Include="player.html" />
+    <Content Include="example.html" />
+    <Content Include="preview.html" />
     <Content Include="Silverlight.js" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -105,9 +107,6 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>del /q "$(ProjectDir)\Bin\OVPWeb.*"
-cd "$(ProjectDir)"
-del /q ..\OVP-Silverlight.zip
-pkzipc -add ..\OVP-Silverlight.zip *.* -rec -sil -path -excl=*.csproj* -excl=obj -excl=Other -excl=Properties</PostBuildEvent>
+    <PostBuildEvent>del /q "$(ProjectDir)\Bin\OVPWeb.*"</PostBuildEvent>
   </PropertyGroup>
 </Project>

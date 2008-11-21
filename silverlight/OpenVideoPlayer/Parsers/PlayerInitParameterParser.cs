@@ -127,6 +127,7 @@ namespace org.OpenVideoPlayer.Parsers
 			}
         }
 
+		//TODO - integrate with conn. class
 		void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e) {
 			OpenVideoPlayerControl player = e.UserState as OpenVideoPlayerControl; 
 			if (e.Cancelled) {

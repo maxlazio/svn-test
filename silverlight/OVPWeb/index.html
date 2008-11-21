@@ -58,31 +58,35 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 
 			var h = document.getElementById('pHeight').value;
 			var w = document.getElementById('pWidth').value;
+			
 			var linkUrl = document.getElementById('linkText').value;
+			if (linkUrl.length > 0) linkUrl = ', linkurl=' + linkUrl;
 			var embedUrl = document.getElementById('embedText').value;
+			if (embedUrl.length > 0) embedUrl = ', embedurl=' + embedUrl;
+			
 			var ploverlay = document.getElementById('plOverlay').value;
 			
 			//TODO - not yet fully supported by SL control
 			//var playlist = document.getElementById('showPlaylist').value;
 			//var chapters = document.getElementById('showChapters').value;
 			
-			var initparams = 'showstats=' + isdebug + ', autoplay=' + autoplay + ', muted=' + ismuted 
-				+ ', playlistoverlay=' + ploverlay 
+			var initparams = 'showstats=' + isdebug + ', autoplay=' + autoplay + ', muted=' + ismuted
+				+ ', playlistoverlay=' + ploverlay
 			//	+ ', showplaylist=' + playlist 
 			//	+ ', showchapters=' + chapters
-				+ ', linkurl=' + linkUrl + ', embedurl=' + embedUrl + ', stretchmode=' + mystretchmode + ', ' + sourceType + '=' + escape(source) + '\' />';
+				+ linkUrl + embedUrl + ', stretchmode=' + mystretchmode + ', ' + sourceType + '=' + escape(source);
 
 			var tag = '<object data="data:application/x-silverlight-2," type="application/x-silverlight-2"'
 			+ ' width="' + w + '" height="' + h
 			 + '" id="slp" >';
-			tag += '<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">';
-			tag += '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/></a>';
-			tag += '<param name="source" value="Bin/' + playerXAP + '"/>';
-			if(document.getElementById('showErrors').value=="true") tag += '<param name="onerror" value="onSilverlightError" />';
+			tag += '\n<param name="source" value="ClientBin/' + playerXAP + '"/>';
 			tag += '<param name="minRuntimeVersion" value="2.0.30923.0" />';
+			if (document.getElementById('showErrors').value == "true") tag += '<param name="onerror" value="onSilverlightError" />';
 			tag += '<param name="MaxFrameRate" value="30" />';
-			tag += '<param name="initparams" value=\'' + initparams + '\' />';
-			tag += '</object>';
+			tag += '\n<param name="initparams" value=\'' + initparams + '\' />';
+			tag += '\n<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">';
+			tag += '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/></a>';
+			tag += '\n</object>';
 			tag += '<iframe style="visibility:hidden;height:0;width:0;border:0px"></iframe>';
 
 			document.getElementById('htmlEmbed').value = tag;
@@ -96,7 +100,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			var ww = (w.indexOf("%")>-1) ? 700 : w;
 			var wh = (h.indexOf("%")>-1) ? 500 : h;
 
-			window.open('player.html?tag=' + tag  ,'OpenVideoPlayer Preview','width=' + ww + ',height='+ wh + ',directories=no,location=yes,menubar=no,scrollbars=no,status=yes,toolbar=no,resizable=yes');
+			window.open('preview.html?tag=' + tag  ,'OpenVideoPlayer Preview','width=' + ww + ',height='+ wh + ',directories=no,location=yes,menubar=no,scrollbars=no,status=yes,toolbar=no,resizable=yes');
 		}
 
 		function BodyLoad() {
@@ -116,7 +120,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 				</td>
 				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 23px;" valign="middle">
 					<select id="autoplay" class="bordered" style="width: 120px" onchange="OnChange();">
-						<option value="true" selected>True</option>
+						<option value="true" selected="selected">True</option>
 						<option value="false">False</option>
 					</select></td>
 				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 23px;" class="style3" colspan="2">
@@ -152,7 +156,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					PlaylistOverlay:</td>
 				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 17px;">
 					<select id="plOverlay" class="bordered" style="width: 120px" onchange="OnChange();">
-						<option value="true" selected>True</option>
+						<option value="true" selected="selected">True</option>
 						<option value="false" >False</option>
 					</select></td>
 				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 17px;" class="style3" colspan="2">
@@ -274,7 +278,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			</tr>
 			<tr>
 				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; " valign="top" class="style2">
-					&nbsp;<textarea id="htmlEmbed" cols="69" rows ="14" name="S1" readonly="readonly"></textarea></td>
+					&nbsp;<textarea id="htmlEmbed" cols="69" rows ="16" name="S1" readonly="readonly"></textarea></td>
 			</tr>
 			</table>
 	</div>

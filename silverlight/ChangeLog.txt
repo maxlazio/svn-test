@@ -1,0 +1,57 @@
+Version 2.0.24 
+2008-11-19	Nick Brookins <nbrookin at akamai d0t com>
+
+
+// Code changes (from v1.8)
+	- Based on final Silverlight v2.0 runtime
+	
+	- Support for MediaRSS, Reference files, and direct media content
+	- Add support for a single source, as well as a playlist
+	- Fixes for Seek bar / duration to support live content
+	
+	- Completed configuration tool
+    - Error box if content can't be played
+    - More stats incl. bitrates avail. and in use (video only), measured bandwidth, resolution, and buffer values
+    - New options menu with scaling and debug statistics toggle
+    - Allow runtime changes to scaling mode, matched terminology to flash ver.
+   
+    - Hide controls in full screen mode, show if mouse is near bottom
+    - Double-click on surface causes fullscreen toggle
+    - Single click on surface toggles pause
+    - allow click anywhere on volume bar for value change  (instead of having to precisely grab the indicator)
+    - allow sliding the volume / seek bar with mouse 
+    
+    - Playlist Side by Side as well as overlay
+    - Support for link/embed
+
+
+// UI / Template changes
+    
+    - Tooltip for Seek bar, shows the time you are hovering over
+    - Tooltip for Volume bar with current value
+    - Tweaks to other tooltips, making them conditional (play/pause, mute/unmute, FullScreen/Restore)
+    - gray mute button on click
+    - 'Paused box' in middle of media surface
+    - Translucent background for stats box
+    
+    - increase text size on time indicators on each side of seek bar
+    - modded buttons to look more like flash version
+    - Blacked out background of frame, behind player
+   
+   
+// Known issues list
+	- sometimes clicks aren't registered in the options menu 
+	   * This'll be fixed later when it is made into a custom menu control
+	- Issues with ShowPlaylist and ShowChapters options because feeds load async
+	   * Dropped them from the config tool for now, will add later
+	- Need better/more consistent error handling, anything not caught currently wipes out the player with a big error.  
+	   * Good enough for now, but I'd like to catch these internally and give a silverlight error overlay on the player, reserving the big ugly errors for actual problems with silverlight.  
+	- Unit tests are very behind, and will need to be caught up with soon
+
+
+// Planned for future release
+	- 'video size' option, as opposed to just player size
+	- Colors and themes
+	- Overlay mode for player controls - currently always below player, but will hide on fullscreen
+	- Debug logs - proving difficult in silverlight, there is no debug/trace listener.  
+	   * Will have to roll own debugging system / attach to tracer in adaptive code.
