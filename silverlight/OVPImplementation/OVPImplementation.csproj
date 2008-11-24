@@ -62,7 +62,7 @@
     <Compile Include="Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -83,9 +83,6 @@
   <ItemGroup>
     <Content Include="AppManifest.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -102,7 +99,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>copy "$(ProjectDir)\Default.html" "$(TargetDir)"</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)\..\PreBuild.cmd" "$(ProjectDir)" "$(ConfigurationName)" "$(ProjectName)"</PreBuildEvent>
     <PostBuildEvent>REM copy "$(TargetDir)\$(TargetName).xap" "$(ProjectDir).."</PostBuildEvent>
   </PropertyGroup>
 </Project>

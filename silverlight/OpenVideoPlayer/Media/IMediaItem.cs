@@ -91,27 +91,27 @@ namespace org.OpenVideoPlayer.Media
         /// </summary>
         /// <param name="keyword">The keyword to return</param>
         /// <returns>the metadata values stored on this keyword</returns>
-        string[] getMetaItem(string keyword);
+        string[] GetMetaItem(string keyword);
 
         /// <summary>
         /// Adds a value to the metadata stored at this keyword
         /// </summary>
         /// <param name="keyword">The keyword to store this value at</param>
         /// <param name="value">The value to store</param>
-        void addMeta(string keyword, string value);
+        void AddMeta(string keyword, string value);
 
         /// <summary>
         /// Replaces the metadata stored on this keyword with a single string value
         /// </summary>
         /// <param name="keyword">The keyword to replace the metadata for</param>
         /// <param name="value">The value to store</param>
-        void replaceMeta(string keyword, string value);
+        void ReplaceMeta(string keyword, string value);
 
         /// <summary>
         /// Replaces the metadata stored on this keyword with an array of metadata values
         /// </summary>
         /// <param name="keyword">The keyword to replace the metadata for</param>
         /// <param name="value">The value to store</param>
-        void replaceMeta(string keyword, List<string> value);
+        void ReplaceMeta(string keyword, List<string> value);
     }
 }

@@ -19,64 +19,64 @@ namespace MediaFrameworkTests.Media
         [TestMethod]
         public void CheckBitrate() {
             ContentObject fixture = new ContentObject();
-            fixture.bitrate = 1;
-            Assert.AreEqual(fixture.bitrate, 1);
+            fixture.Bitrate = 1;
+            Assert.AreEqual(fixture.Bitrate, 1);
         }
 
         [TestMethod]
         public void CheckDuration() {
             ContentObject fixture = new ContentObject();
-            fixture.duration = "100";
-            Assert.AreEqual(fixture.duration, "100");
+            fixture.Duration = "100";
+            Assert.AreEqual(fixture.Duration, "100");
         }
 
         [TestMethod]
         public void CheckFileSize() {
             ContentObject fixture = new ContentObject();
-            fixture.fileSize = 1024;
-            Assert.AreEqual(fixture.fileSize, 1024);
+            fixture.FileSize = 1024;
+            Assert.AreEqual(fixture.FileSize, 1024);
         }
 
         [TestMethod]
         public void CheckFrameRate() {
             ContentObject fixture = new ContentObject();
-            fixture.framerate = 1111;
-            Assert.AreEqual(fixture.framerate, 1111);
+            fixture.Framerate = 1111;
+            Assert.AreEqual(fixture.Framerate, 1111);
         }
 
         [TestMethod]
         public void CheckHeight() {
             ContentObject fixture = new ContentObject();
-            fixture.height = 120;
-            Assert.AreEqual(fixture.height, 120);
+            fixture.Height = 120;
+            Assert.AreEqual(fixture.Height, 120);
         }
 
         [TestMethod]
         public void CheckLang() {
             ContentObject fixture = new ContentObject();
-            fixture.lang = "english";
-            Assert.AreEqual(fixture.lang, "english");
+            fixture.Lang = "english";
+            Assert.AreEqual(fixture.Lang, "english");
         }
 
         [TestMethod]
         public void CheckType() {
             ContentObject fixture = new ContentObject();
-            fixture.type = "video";
-            Assert.AreEqual(fixture.type, "video");
+            fixture.Type = "video";
+            Assert.AreEqual(fixture.Type, "video");
         }
 
         [TestMethod]
         public void CheckUrl() {
             ContentObject fixture = new ContentObject();
-            fixture.url = "some url";
-            Assert.AreEqual(fixture.url, "some url");
+            fixture.Url = "some url";
+            Assert.AreEqual(fixture.Url, "some url");
         }
 
         [TestMethod]
         public void CheckWidth() {
             ContentObject fixture = new ContentObject();
-            fixture.width = 111;
-            Assert.AreEqual(fixture.width, 111);
+            fixture.Width = 111;
+            Assert.AreEqual(fixture.Width, 111);
         }
     }
 }

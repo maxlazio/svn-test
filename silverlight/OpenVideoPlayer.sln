@@ -14,7 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		ChangeLog.txt = ChangeLog.txt
 		Deployment.txt = Deployment.txt
 		Implementation.txt = Implementation.txt
+		License.txt = License.txt
+		prebuild.cmd = prebuild.cmd
 		ReadMe.txt = ReadMe.txt
+		version.txt = version.txt
 	EndProjectSection
 EndProject
 Global

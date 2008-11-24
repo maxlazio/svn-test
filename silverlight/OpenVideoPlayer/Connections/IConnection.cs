@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using org.OpenVideoPlayer.EventHandlers;
 using org.OpenVideoPlayer.Media;
@@ -13,25 +14,25 @@ namespace org.OpenVideoPlayer.Connections
         /// <summary>
         /// Resets the state of the connection to a disconnected, not-ready state
         /// </summary>
-        void clear();
+        void Clear();
 
         /// <summary>
         /// Connect to the specified url
         /// </summary>
         /// <param name="uri">The URI to connect to as a string</param>
-        void connect(string uri);
+        void Connect(string uri);
         /// <summary>
         /// Connect to the specified url
         /// </summary>
         /// <param name="uri">The uri object to use as a destination</param>
-        void connect(Uri uri);
+        void Connect(Uri uri);
 
         /// <summary>
         /// Directly calls the parsermanager and parsers for a given stream.
         /// </summary>
         /// <param name="uri">The uri that sourced this stream</param>
         /// <param name="streamToParse">The Stream to parse</param>
-        void parseStream(Uri uri, Stream streamToParse);
+        void ParseStream(Uri uri, Stream streamToParse);
 
         /// <summary>
         /// Property containing the uri this instance is currently connected to
@@ -51,7 +52,7 @@ namespace org.OpenVideoPlayer.Connections
         /// <summary>
         /// Property containing the data parsed on the connection
         /// </summary>
-        System.Collections.Generic.List<IMediaItem> Playlist { get; }
+        List<IMediaItem> Playlist { get; }
 
         /// <summary>
         /// Register a Ready event handler

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>OpenVideoPlayer Silverlight Configuration Tool</title>
@@ -16,7 +16,9 @@
 	  font-size: 12px; 
     }
 
-h2 {font-family:verdana,arial;font-size: 12pt;}
+h2 {font-family:verdana,arial;font-size: 12pt;
+			width: 428px;
+		}
 select.bordered {border: #59B5FF 1px solid; font-family:Arial, Helvetica, sans-serif;font-size:9pt;font-weight:normal;margin:2px;}
 textarea.bordered[disabled] {border: #59B5FF 1px solid; font-family:courier, courier-new;font-size:9pt;font-weight:normal;margin:2px;}
 textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold;}
@@ -35,6 +37,37 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 	.newStyle1 {
 		color: #999999;
 	}
+	.style5 {
+	font-size: x-small;
+}
+.style6 {
+	text-align: left;
+	font-size: x-small;
+}
+		.style7
+		{
+			width: 19%;
+			height: 27px;
+			font-weight: bold;
+		}
+		.style8
+		{
+			text-align: right;
+			height: 30px;
+			width: 493px;
+		}
+		.style9
+		{
+			width: 493px;
+			height: 27px;
+			font-weight: bold;
+		}
+		.style10
+		{
+			text-align: right;
+			width: 19%;
+			height: 30px;
+		}
 	</style>
 
 	<script type="text/javascript" src="Silverlight.js"></script>
@@ -79,7 +112,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			var tag = '<object data="data:application/x-silverlight-2," type="application/x-silverlight-2"'
 			+ ' width="' + w + '" height="' + h
 			 + '" id="slp" >';
-			tag += '\n<param name="source" value="ClientBin/' + playerXAP + '"/>';
+			tag += '\n<param name="source" value="' + playerXAP + '"/>';
 			tag += '<param name="minRuntimeVersion" value="2.0.30923.0" />';
 			if (document.getElementById('showErrors').value == "true") tag += '<param name="onerror" value="onSilverlightError" />';
 			tag += '<param name="MaxFrameRate" value="30" />';
@@ -100,20 +133,41 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			var ww = (w.indexOf("%")>-1) ? 700 : w;
 			var wh = (h.indexOf("%")>-1) ? 500 : h;
 
-			window.open('preview.html?tag=' + tag  ,'OpenVideoPlayer Preview','width=' + ww + ',height='+ wh + ',directories=no,location=yes,menubar=no,scrollbars=no,status=yes,toolbar=no,resizable=yes');
+			window.open('preview.html?tag=' + tag  ,'OpenVideoPlayer_Preview','width=' + ww + ',height='+ wh + ',directories=no,location=yes,menubar=no,scrollbars=no,status=yes,toolbar=no,resizable=yes');
 		}
+
+		var version = 'v2.0.26.12'; //auto version
 
 		function BodyLoad() {
 			OnChange();
+			if(version.length > 0) document.getElementById("ver").innerHTML = version;
 		}
 	</script>
 
 </head>
 <body style="background: #323232;" onload="BodyLoad();">
-	<div id="Config" align="left" style="position: relative; left: 0px; top: 0px; height: 846px;">
-	
-					<h2 style="margin-left: 25px;">OpenVideoPlayer Silverlight Configuration Tool</h2>
-						<table width="640px" border="0" style="border: none; margin-left: 50px; margin-top: 10px; text-align: left;" cellpadding="1px" align="left">
+	<div id="Config" align="left" style="position: relative; left: 0px; top: 0px; height: 99%;">
+
+					
+					<table border="0" style="border-style: none; border-color: inherit; border-width: medium; margin-left: 25px; margin-top: 10px; text-align: left; width: 574px;">
+						<tr>
+							<td style="font-family: verdana,arial; font-size: 12pt; border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: bottom;" class="style9">
+							OpenVideoPlayer Silverlight Configuration Tool - <span id="ver">v2.0.0</span></td>
+							<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: bottom; text-align: center;" class="style7">
+								
+								</td>
+						</tr>
+						<tr>
+							<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; " class="style8">
+<a class=style4 href="http://sourceforge.net/projects/openvideoplayer">Visit this project on SourceForge</a>&nbsp;&nbsp;
+					</td>
+							<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; " class="style10">
+
+								</td>
+						</tr>
+					</table>
+					
+		<table width="640px" border="0" style="border-style: none; border-color: inherit; border-width: medium; margin-left: 50px; margin-top: 10px; text-align: left; height: 426px;" cellpadding="1px" align="left">
 			<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 23px;" class="style3" valign="middle">
 					AutoPlay:&nbsp;&nbsp;
@@ -145,8 +199,10 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 15px;">
 					<select id="stretchMode" class="bordered" style="width: 120px" onchange="OnChange();" name="scaling">
 						<option value="Native mode does no scaling, may result in clipped edges">Native</option>
+						<option value="Native mode does no upscaling, but will scale down to ensure all video is shown">NativeOrSmaller</option>
 						<option value="Fit mode will scale the video to fit, keeping the aspect ratio" selected="selected">Fit</option>
-						<option value="Stretch mode scale the video to fit the player, ignoring aspect ratio">Stretch</option>
+						<option value="Fill mode scales the video to fill the screen, preserving aspect ratio">Fill</option>
+						<option value="Stretch mode scales the video to fill the screen, ignoring aspect ratio">Stretch</option>
 					</select></td>
 				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style3" colspan="2">
 					<span id="stretchDesc" class="newStyle1">...</span></td>
@@ -222,26 +278,28 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					the player object, including frame and controls</span></td>
 			</tr>
 			<tr>
-				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 35px;" class="style3">
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 31px;" class="style3">
 					Link URL:</td>
-				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 35px;" class="style3" colspan="3">
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 31px;" class="style3" colspan="3">
 					&nbsp;
 					<input id="linkText" style="width: 438px" type="text" onchange="OnChange();" />&nbsp;
 				</td>
 			</tr>
 			<tr>
-				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 35px;" class="style3">
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 32px;" class="style3">
 					Embed URL:</td>
-				<td valign="middle"  style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 35px;" class="style3" colspan="3">
+				<td valign="middle"  style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 32px;" class="style3" colspan="3">
 					&nbsp;
 					<input id="embedText" style="width: 438px" type="text" onchange="OnChange();" /></td>
 			</tr>
 			<tr>
-				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; " class="style3">
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style6">
+					&nbsp;</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style2">
+					<span class="style5">
 					</td>
-				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; " class="style2">
-					</td>
-				<td colspan=2 style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3;   vertical-align: bottom; " class="style3">
+				<td colspan=2 style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3;   vertical-align: bottom; height: 15px;" class="style3">
+					</span>
 					</td>
 			</tr>
 			<tr>
@@ -278,7 +336,12 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			</tr>
 			<tr>
 				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; " valign="top" class="style2">
-					&nbsp;<textarea id="htmlEmbed" cols="69" rows ="16" name="S1" readonly="readonly"></textarea></td>
+					&nbsp;<textarea id="htmlEmbed" cols="69" rows ="6" name="S1" readonly="readonly"></textarea></td>
+			</tr>
+			<tr>
+				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; " valign="top" class="style1">
+					This tag requires the following file:
+					<a class="style4" href="OVP.xap">OVP.xap</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
 			</tr>
 			</table>
 	</div>

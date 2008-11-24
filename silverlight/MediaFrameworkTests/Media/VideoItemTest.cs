@@ -77,15 +77,15 @@ namespace MediaFrameworkTests.Media
         [TestMethod]
         public void TestMetaValue() {
             VideoItem v = new VideoItem();
-            v.addMeta("somekey", "somevalue");
+            v.AddMeta("somekey", "somevalue");
             string[] expected = new string[] {"somevalue"};
-            Assert.AreEqual(v.getMetaItem("somekey")[0], expected[0]);
+            Assert.AreEqual(v.GetMetaItem("somekey")[0], expected[0]);
         }
 
         [TestMethod]
         public void TestFullMeta() {
             VideoItem v = new VideoItem();
-            v.addMeta("somekey", "somevalue");
+            v.AddMeta("somekey", "somevalue");
             Dictionary<string, string[]> rslt = v.getMeta();
             Dictionary<string, string[]> expected = new Dictionary<string, string[]>();
             string[] arr = {"somevalue"};

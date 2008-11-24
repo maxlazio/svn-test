@@ -24,7 +24,7 @@ namespace MediaFrameworkTests
         public void NewParser() {
             ParserManager pm = new ParserManager();
             DefaultConnection conn = new DefaultConnection(pm);
-            conn.clear();
+            conn.Clear();
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace MediaFrameworkTests
         public void can_connect_to_uri() {
             ParserManager pm = new ParserManager();
             DefaultConnection conn = new DefaultConnection(pm);
-            conn.connect(new Uri("file:///C:/source/c%23/MediaFrameworkTests/test_good_feed.xml"));
+            conn.Connect(new Uri("file:///C:/source/c%23/MediaFrameworkTests/test_good_feed.xml"));
             Assert.AreEqual("file:///C:/source/c%23/MediaFrameworkTests/test_good_feed.xml", conn.Uri.ToString());
         }
 
@@ -62,7 +62,7 @@ namespace MediaFrameworkTests
             ParserManager pm = new ParserManager();
             DefaultConnection conn = new DefaultConnection(pm);
             Assert.IsFalse(conn.IsConnected);
-            conn.connect(new Uri("file:///C:/source/c%23/MediaFrameworkTests/test_good_feed.xml"));
+            conn.Connect(new Uri("file:///C:/source/c%23/MediaFrameworkTests/test_good_feed.xml"));
             //Downloading from a file source will throw a null reference exception
             //so we expect a false to be returned here.
             Assert.IsFalse(conn.IsConnected);
