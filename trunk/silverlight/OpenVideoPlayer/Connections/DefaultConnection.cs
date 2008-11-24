@@ -83,8 +83,8 @@ namespace org.OpenVideoPlayer.Connections {
 		/// connects to the named uri passed in as a string.
 		/// </summary>
 		/// <param name="uri">string uri to connect to</param>
-		public void connect(string uri) {
-			this.connect(new Uri(uri));
+		public void Connect(string uri) {
+			this.Connect(new Uri(uri));
 		}
 
 		/// <summary>
@@ -93,7 +93,7 @@ namespace org.OpenVideoPlayer.Connections {
 		/// which was given to this object on construction.
 		/// </summary>
 		/// <param name="uri">The Uri to connect to</param>
-		public void connect(Uri uri) {
+		public void Connect(Uri uri) {
 			this.error = null;
 			System.Diagnostics.Debug.WriteLine("Loading Url");
 
@@ -102,13 +102,12 @@ namespace org.OpenVideoPlayer.Connections {
 
 			try {
 				WebClient client = new WebClient();
-				client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(connect_DownloadStringCompleted);
+				client.DownloadStringCompleted += connect_DownloadStringCompleted;
 				client.DownloadStringAsync(uri);
 				isConnected = true;
 			} catch (Exception ex) {
 				isConnected = false;
-				error = "Error encountered connecting to resource " + uri.ToString() +
-					". The message was: " + ex.Message;
+				error = "Error encountered connecting to resource " + uri + ". The message was: " + ex.Message;
 				System.Diagnostics.Debug.WriteLine("URL Error: " + ex.Message);
 				OnError(EventArgs.Empty);
 			}
@@ -121,7 +120,7 @@ namespace org.OpenVideoPlayer.Connections {
 		/// </summary>
 		/// <param name="uri">The uri that sourced this stream</param>
 		/// <param name="streamToParse">The Stream to parse</param>
-		public void parseStream(Uri uri, Stream streamToParse) {
+		public void ParseStream(Uri uri, Stream streamToParse) {
 			_currentURI = uri;
 			parseStreamNow(streamToParse);
 		}
@@ -150,19 +149,7 @@ namespace org.OpenVideoPlayer.Connections {
 				System.Diagnostics.Debug.WriteLine("Load complete. parsing");
 				Stream reader = new MemoryStream(Encoding.UTF8.GetBytes(e.Result));
 				parseStreamNow(reader);
-				/*
-				IPlaylistParser p = pManager.getPlaylistParser(reader, this._currentURI);
-				if (p != null) {
-					//reset the stream position to 0 in case the Playlist parser consumed any of it
-					reader.Position = 0;
-					p.load(reader);
-					this.playlist = p.getMediaItemList();
-					OnLoaded(EventArgs.Empty);
-				} else {
-					error = "Error: No valid parsers to handle this request.";
-					System.Diagnostics.Debug.WriteLine("No Valid Parsers found");
-					OnError(EventArgs.Empty);
-				}*/
+
 			} catch (Exception ex) {
 				error = "Error encountered Parsing the response. The message was: " + ex.Message;
 				System.Diagnostics.Debug.WriteLine("Error loading remote playlist");
@@ -173,7 +160,7 @@ namespace org.OpenVideoPlayer.Connections {
 		/// <summary>
 		/// Clears the current connection
 		/// </summary>
-		public void clear() {
+		public void Clear() {
 			isConnected = false;
 			playlist = null;
 			_currentURI = null;

@@ -48,7 +48,7 @@ namespace org.OpenVideoPlayer.Parsers
             {
                 //we only support a single channel url so return the last one added
                 if (this.thumbnails.Count > 0) {
-                    return this.thumbnails[this.thumbnails.Count - 1].url;
+                    return this.thumbnails[this.thumbnails.Count - 1].Url;
                 } else {
                     return null;
                 }
@@ -231,7 +231,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                thumbnail.url = reader.Value;
+                                                thumbnail.Url = reader.Value;
                                             }
                                             reader.MoveToNextAttribute();
 
@@ -240,7 +240,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                thumbnail.width = (int)reader.ReadContentAsInt();
+                                                thumbnail.Width = (int)reader.ReadContentAsInt();
                                             }
                                             reader.MoveToNextAttribute();
 
@@ -249,7 +249,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                thumbnail.height = (int)reader.ReadContentAsInt();
+                                                thumbnail.Height = (int)reader.ReadContentAsInt();
                                             }
                                             reader.MoveToNextAttribute();
 
@@ -275,7 +275,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.url = reader.Value;
+                                                content.Url = reader.Value;
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -283,7 +283,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.width = (int)reader.ReadContentAsInt();
+                                                content.Width = (int)reader.ReadContentAsInt();
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -291,7 +291,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.height = (int)reader.ReadContentAsInt();
+                                                content.Height = (int)reader.ReadContentAsInt();
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -299,7 +299,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.lang = reader.Value;
+                                                content.Lang = reader.Value;
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -307,7 +307,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.duration = reader.Value;
+                                                content.Duration = reader.Value;
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -315,7 +315,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.framerate = (int)reader.ReadContentAsInt();
+                                                content.Framerate = (int)reader.ReadContentAsInt();
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -323,7 +323,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.bitrate = (int)reader.ReadContentAsInt();
+                                                content.Bitrate = (int)reader.ReadContentAsInt();
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -331,7 +331,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.type = reader.Value;
+                                                content.Type = reader.Value;
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -339,7 +339,7 @@ namespace org.OpenVideoPlayer.Parsers
                                             reader.ReadAttributeValue();
                                             if (reader.Value != "")
                                             {
-                                                content.fileSize = (long)reader.ReadContentAsLong();
+                                                content.FileSize = (long)reader.ReadContentAsLong();
                                             }
                                             reader.MoveToNextAttribute();
                                             break;
@@ -378,22 +378,22 @@ namespace org.OpenVideoPlayer.Parsers
                                 vi.Author = reader.Value;
                                 break;
                             case "category":
-                                vi.addMeta("category", reader.Value);
+                                vi.AddMeta("category", reader.Value);
                                 break;
                             case "pubDate":
-                                vi.addMeta("pubDate", reader.Value);
+                                vi.AddMeta("pubDate", reader.Value);
                                 break;
                             case "media:title":
-                                vi.addMeta("media:title", reader.Value);
+                                vi.AddMeta("media:title", reader.Value);
                                 break;
                             case "media:description":
-                                vi.addMeta("media:description", reader.Value);
+                                vi.AddMeta("media:description", reader.Value);
                                 break;
                             case "media:keywords":
-                                vi.addMeta("media:keywords", reader.Value);
+                                vi.AddMeta("media:keywords", reader.Value);
                                 break;
                             case "media:copyright":
-                                vi.addMeta("media:copyright", reader.Value);
+                                vi.AddMeta("media:copyright", reader.Value);
                                 break;
                         }
                         break;

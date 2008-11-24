@@ -1,12 +1,10 @@
 The following files are created from a build:
 
-Bin\..               - Libraries and language resources provided with Silverlight Runtime
-ClientBin\OVP.xap    - This is the player binary file compiled from the OVP source
-index.html           - The configuration tool, which creates the object tag for you to embed in your html page
-preview.html		 - The page used by the config tool for creating a preview player window
-example.html         - An example page with player, can be modified by replacing the object tag with one from config tool
-Web.config			 - USed to allow debugging if running from Visual Studio.NET
-Silverlight.js       - A JavaScript file, used to assist in installing Silverlight on new systems
+OVP.xap			- This is the player binary file compiled from the OVP source
+index.html		- The configuration tool, which creates the object tag for you to embed in your html page
+preview.html		- The page used by the config tool for creating a preview player window
+example.html		- An example page with player, can be modified by replacing the object tag with one from config tool
+
 
 These files can be placed on any web server (apache, IIS, embedded, etc), there are no server side components or requirements.  The object tag from the config tool can be dropped into any HTML page (or aspx, php, etc..).  If the user doesn't have silverlight, the included js file will provide an easy install experience.  Note the player will not work if you directly launch the html from your disk, this is a security violation for silverlight.
 

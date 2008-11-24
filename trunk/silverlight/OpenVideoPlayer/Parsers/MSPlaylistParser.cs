@@ -45,7 +45,7 @@ namespace org.OpenVideoPlayer.Parsers
             {
                 //we only support a single channel thumbnail so return the last one added
                 if (this.thumbnails.Count > 0) {
-                    return this.thumbnails[this.thumbnails.Count - 1].url;
+                    return this.thumbnails[this.thumbnails.Count - 1].Url;
                 } else {
                     return null;
                 }

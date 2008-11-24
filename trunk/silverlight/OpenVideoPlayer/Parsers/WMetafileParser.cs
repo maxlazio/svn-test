@@ -174,7 +174,7 @@ namespace org.OpenVideoPlayer.Parsers
                                     break;
                                 case "param":
                                     if (readingEntry) {
-                                        vi.addMeta(reader.GetAttribute("NAME").ToString(), reader.GetAttribute("VALUE").ToString());
+                                        vi.AddMeta(reader.GetAttribute("NAME").ToString(), reader.GetAttribute("VALUE").ToString());
                                     }
                                     break;
                             }
@@ -202,7 +202,7 @@ namespace org.OpenVideoPlayer.Parsers
                                     break;
                                 default:
                                     if (readingEntry) {
-                                        vi.addMeta(elements.Peek(), reader.Value);
+                                        vi.AddMeta(elements.Peek(), reader.Value);
                                     } else {
                                         this.addMeta(elements.Peek(), reader.Value);
                                     }

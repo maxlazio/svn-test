@@ -122,4 +122,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>"$(ProjectDir)\..\PreBuild.cmd" "$(ProjectDir)" "$(ConfigurationName)" "$(ProjectName)"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

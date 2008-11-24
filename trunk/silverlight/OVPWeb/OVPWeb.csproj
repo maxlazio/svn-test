@@ -11,7 +11,7 @@
     <RootNamespace>OVPWeb</RootNamespace>
     <AssemblyName>OVPWeb</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <SilverlightApplicationList>{9A28153F-C605-49C1-90B7-1B04E7D5064E}|..\OVPImplementation\OVPImplementation.csproj|ClientBin|False</SilverlightApplicationList>
+    <SilverlightApplicationList>{9A28153F-C605-49C1-90B7-1B04E7D5064E}|..\OVPImplementation\OVPImplementation.csproj||False</SilverlightApplicationList>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,21 +58,10 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Bin\de\System.Web.Silverlight.resources.dll" />
-    <Content Include="Bin\es\System.Web.Silverlight.resources.dll" />
-    <Content Include="Bin\fr\System.Web.Silverlight.resources.dll" />
-    <Content Include="Bin\it\System.Web.Silverlight.resources.dll" />
-    <Content Include="Bin\ja\System.Web.Silverlight.resources.dll" />
-    <Content Include="Bin\ko\System.Web.Silverlight.resources.dll" />
-    <Content Include="Bin\OVP.xap" />
-    <Content Include="Bin\System.Web.Silverlight.dll" />
-    <Content Include="Bin\zh-Hans\System.Web.Silverlight.resources.dll" />
-    <Content Include="Bin\zh-Hant\System.Web.Silverlight.resources.dll" />
-    <Content Include="ClientBin\OVP.xap" />
     <Content Include="index.html" />
     <Content Include="example.html" />
+    <Content Include="OVP.xap" />
     <Content Include="preview.html" />
-    <Content Include="Silverlight.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -108,5 +97,6 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>del /q "$(ProjectDir)\Bin\OVPWeb.*"</PostBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)\..\PreBuild.cmd" "$(ProjectDir)" "$(ConfigurationName)" "$(ProjectName)"</PreBuildEvent>
   </PropertyGroup>
 </Project>

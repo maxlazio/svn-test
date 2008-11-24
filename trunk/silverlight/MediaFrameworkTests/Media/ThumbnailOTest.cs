@@ -20,46 +20,46 @@ namespace MediaFrameworkTests.Media
         [TestMethod]
         public void CheckUrl() {
             Thumbnail t = new Thumbnail();
-            t.url = "url";
-            Assert.AreEqual(t.url, "url");
+            t.Url = "url";
+            Assert.AreEqual(t.Url, "url");
         }
 
         [TestMethod]
         public void CheckWidth() {
             Thumbnail t = new Thumbnail();
-            t.width = 320;
-            Assert.AreEqual(t.width, 320);
+            t.Width = 320;
+            Assert.AreEqual(t.Width, 320);
         }
 
         [TestMethod]
         public void CheckHeight() {
             Thumbnail t = new Thumbnail();
-            t.height = 200;
-            Assert.AreEqual(t.height, 200);
+            t.Height = 200;
+            Assert.AreEqual(t.Height, 200);
         }
 
         [TestMethod]
         public void VanillaConstructor() {
             Thumbnail t = new Thumbnail();
-            Assert.AreEqual(t.height, 0);
-            Assert.AreEqual(t.width, 0);
-            Assert.IsNull(t.url);
+            Assert.AreEqual(t.Height, 0);
+            Assert.AreEqual(t.Width, 0);
+            Assert.IsNull(t.Url);
         }
 
         [TestMethod]
         public void UrlConstructor() {
             Thumbnail t = new Thumbnail("SOMEURL");
-            Assert.AreEqual(t.height, 0);
-            Assert.AreEqual(t.height, 0);
-            Assert.AreEqual(t.url, "SOMEURL");
+            Assert.AreEqual(t.Height, 0);
+            Assert.AreEqual(t.Height, 0);
+            Assert.AreEqual(t.Url, "SOMEURL");
         }
 
         [TestMethod]
         public void FullConstructor() {
             Thumbnail t = new Thumbnail("URL",100,200);
-            Assert.AreEqual(t.height, 200);
-            Assert.AreEqual(t.width, 100);
-            Assert.AreEqual(t.url, "URL");
+            Assert.AreEqual(t.Height, 200);
+            Assert.AreEqual(t.Width, 100);
+            Assert.AreEqual(t.Url, "URL");
         }
     }
 }
