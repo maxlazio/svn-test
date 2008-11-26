@@ -87,7 +87,6 @@ Akamai recommends breaking at the various UI and functional items into reusable 
 			import org.openvideoplayer.rss.*;
 			
 			// Define private variables
-			private var _nc:AkamaiConnection;
 			private var _ns:AkamaiNetStream;
 			private var _filename:String;
 			private var _sliderDragging:Boolean;
@@ -178,7 +177,7 @@ Akamai recommends breaking at the various UI and functional items into reusable 
 					startUsingNC();
 				} else {
 					// Create a new AkamaiConnection
-					_nc = new AkamaiConnection();
+					var _nc:AkamaiConnection = new AkamaiConnection();
 					
 					_nc.addEventListener(OvpEvent.ERROR, errorHandler);
 					_nc.addEventListener(OvpEvent.BANDWIDTH, bandwidthHandler);
@@ -206,7 +205,7 @@ Akamai recommends breaking at the various UI and functional items into reusable 
 			private function startUsingNC():void {
 				bPlayPause.enabled = true;
 				
-				_ns = new AkamaiNetStream(_nc.netConnection);
+				_ns = new AkamaiNetStream(_activeNC);
 
 				// Use fastStart if you are sure the connectivity of your clients is at least
 				// twice the bitrate of the video they will be viewing.
@@ -443,7 +442,7 @@ Akamai recommends breaking at the various UI and functional items into reusable 
    			}
    			// Updates the time display and slider
    			private function update(e:OvpEvent):void {
-   				timeDisplay.text = _isLive ? _ns.timeAsTimeCode : _ns.timeAsTimeCode + "|"+ _nc.streamLengthAsTimeCode(_streamLength);
+   				timeDisplay.text = _isLive ? _ns.timeAsTimeCode : _ns.timeAsTimeCode + "|"+ _activeNC.streamLengthAsTimeCode(_streamLength);
    				if (!_sliderDragging && !_waitForSeek && !_isLive) {
    					slider.value = _ns.time;
    				}
