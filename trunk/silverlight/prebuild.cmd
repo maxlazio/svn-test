@@ -14,7 +14,7 @@ type "%projectpath%properties\AssemblyInfo.cs" | find "//NOTE: Automatic Version
 if ERRORLEVEL 1 goto skipVer
   set rev=0
   for /f "skip=1" %%i in (%projectpath%..\Version.txt) do set ver=%%i
-  for /f "delims=Revision: " %%i in ('svn.exe info "%projectpath%\..\readme.txt" ^| find "Revision:"') do echo %%i&set rev=%%i
+  for /f "delims=Revision: " %%i in ('svn.exe info "%projectpath%\..\version.txt" ^| find "Revision:"') do echo %%i&set rev=%%i
   set ver=%ver%.%rev%
   echo Version: %ver%
   
