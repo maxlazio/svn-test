@@ -7,6 +7,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Media;
+using Microsoft.Windows.Controls.Theming;
 using org.OpenVideoPlayer.Connections;
 using org.OpenVideoPlayer.Media;
 using org.OpenVideoPlayer.Player;
@@ -80,6 +81,24 @@ namespace org.OpenVideoPlayer.Parsers {
 				}
 			}
 
+			if (e.InitParams.TryGetValue("theme", out initValue)) {
+				try {
+					//FrameworkElement layoutRoot = (FrameworkElement) GetTemplateChild("LayoutRoot");
+					if(!initValue.Contains(";component/")) {
+						initValue = "OpenVideoPlayer;component/themes/" + initValue + (initValue.Contains(".xaml")?"":".xaml");
+					}
+					Uri uri = new Uri(initValue, UriKind.Relative);//@"SLLib;component/themes/default.xaml"
+
+					ImplicitStyleManager.SetResourceDictionaryUri(player.MainBorder, uri);
+					ImplicitStyleManager.SetApplyMode(player.MainBorder, ImplicitStylesApplyMode.Auto);
+					ImplicitStyleManager.Apply(player.MainBorder);
+
+
+				} catch (Exception ex) {
+					Debug.WriteLine("Failed to load theme : " + initValue + ", " + ex);
+				}
+			}
+
 			if (e.InitParams.TryGetValue("autoplay", out initValue)) {
 				player.AutoPlay = (initValue == "1" || initValue.ToUpper() == "TRUE");
 			}
@@ -97,7 +116,11 @@ namespace org.OpenVideoPlayer.Parsers {
 			}
 
 			if (e.InitParams.TryGetValue("showstats", out initValue)) {
-				player.DebugVisibility = (initValue == "1" || initValue.ToUpper() == "TRUE") ? Visibility.Visible : Visibility.Collapsed;
+				player.StatVisibility = (initValue == "1" || initValue.ToUpper() == "TRUE") ? Visibility.Visible : Visibility.Collapsed;
+			}
+
+			if (e.InitParams.TryGetValue("showlogs", out initValue)) {
+				player.LogVisibility = (initValue == "1" || initValue.ToUpper() == "TRUE") ? Visibility.Visible : Visibility.Collapsed;
 			}
 
 			if (e.InitParams.TryGetValue("playlistoverlay", out initValue)) {
