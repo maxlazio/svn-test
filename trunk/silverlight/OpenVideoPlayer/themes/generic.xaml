@@ -174,7 +174,6 @@
         </Setter>
     </Style>
 
-
     <Style x:Key="VolumeSliderStyle" TargetType="Slider">
         <Setter Property="Template">
             <Setter.Value>
@@ -302,7 +301,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Border x:Name="mainBorder" Background="#FF000000" BorderBrush="#FF000000" BorderThickness="3,3,3,3" Grid.ColumnSpan="1">
-                                <Grid x:Name="mainGrid" Height="Auto" Margin="2,2,2,2" Width="Auto">
+                                <Grid x:Name="mainGrid" Height="Auto" Margin="0,0,0,0" Width="Auto">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*" MinHeight="250"/>
                                         <RowDefinition Height="32" />
@@ -318,76 +317,49 @@
                                     <!-- Closed Captioning Box-->
                                     <TextBlock x:Name="textBlockCaption" Grid.Row="0" Grid.RowSpan="1" Margin="2,2,2,2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="Auto" MaxWidth="320" FontSize="24" Foreground="Gray" TextAlignment="Center" TextWrapping="Wrap" Text="{TemplateBinding CaptionText}" />
 
-                                    <!-- Paused / Message Box -->
-                                    <Border x:Name="messageBox" Margin="1,1,1,1" MinHeight="100" MinWidth="200"  Visibility="Collapsed" BorderThickness="2" BorderBrush="#FFcccccc" CornerRadius="10,10,10,10"  Background="Black" Opacity="0.5" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Grid>
-                                        <TextBlock x:Name="messageBoxText" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="10,10,10,10" VerticalAlignment="Center" Height="Auto" Opacity="0.5" FontSize="18" Foreground="White" FontWeight="Bold" Text="{TemplateBinding MessageText}" />
-                                        <Path x:Name="playSymbol" HorizontalAlignment="Center" VerticalAlignment="Center" Width="20" Height="35" Canvas.Left="76.4692" Canvas.Top="436.162" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 84.51,452.297C 84.2037,452.297 83.9301,452.157 83.7501,451.937L 76.7759,444.963C 76.3669,444.554 76.3669,443.891 76.7759,443.482L 83.7695,436.488L 83.8665,436.402C 84.0389,436.253 84.2638,436.162 84.51,436.162C 85.0522,436.162 85.4918,436.602 85.4918,437.144L 85.4893,437.213L 85.4893,451.246L 85.4918,451.315L 85.4893,451.385L 85.4893,451.406L 85.4876,451.406C 85.4417,451.906 85.0216,452.297 84.51,452.297 Z " RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="HorizontalAlignment">
-                                            <Path.RenderTransform>
-                                                <TransformGroup>
-                                                    <ScaleTransform/>
-                                                    <SkewTransform/>
-                                                    <RotateTransform Angle="-180"/>
-                                                    <TranslateTransform/>
-                                                </TransformGroup>
-                                            </Path.RenderTransform>
-                                        </Path>
-                                            </Grid>
-                                    </Border>
+                                    <Grid Margin="4,6,10,6" Grid.RowSpan="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition MinWidth="300" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition MinWidth="300" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <!--Link/Embed Box-->
-                                    <Border x:Name="linkEmbedBox" Margin="1,1,1,10" Padding="12,4,12,4" Width="Auto" Height="Auto"  Visibility="Collapsed" BorderThickness="2" BorderBrush="#FFcccccc" CornerRadius="10,10,10,10"  Background="Black" Opacity="0.8" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="36" />
-                                                <RowDefinition Height="36" />
-                                                <RowDefinition Height="36" />
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="24"/>
-                                            </Grid.ColumnDefinitions>
+                                        <!-- Log Info Box-->
+                                        <Border x:Name="logBox" Visibility="{TemplateBinding LogVisibility}" Opacity=".5" Background="Black" 
+                                                CornerRadius="10,10,10,10" VerticalAlignment="Top">
+                                            <Grid>
+                                            <Visuals:LogViewer x:Name="logViewer" Width="Auto" Height="Auto" Margin="2,4,12,4" ></Visuals:LogViewer>
+                                                </Grid>
+                                            <!--<TextBlock x:Name="statViewer2" MinWidth="150" Margin="10,2,5,2" HorizontalAlignment="Right" VerticalAlignment="Top" Height="Auto" FontSize="12" Foreground="White" TextAlignment="Right"  FontFamily="Courier New" FontWeight="Bold" Text="{TemplateBinding BitRateText}" />
+                                        --></Border>
 
-                                            <TextBlock Text="Link:" Margin="2,0,10,0"  Foreground="White" VerticalAlignment="Center"></TextBlock>
-                                            <TextBox x:Name="linkText" Grid.Column="1" Text="" Width="350"  Height="22" IsReadOnly="True"></TextBox>
-                                            <Border Grid.Column="2" x:Name="closeLinkEmbed" Margin="4,2,2,0" BorderThickness="1" CornerRadius="1" BorderBrush="#FF444444" Height="16" Width="16" VerticalAlignment="Top" HorizontalAlignment="Right" >
-                                                <TextBlock Margin="0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Foreground="White" FontSize="11" Text="X"></TextBlock>
-                                            </Border>
-                                            <!--<Button ToolTipService.ToolTip="Copy Link URL to clipboard" x:Name="buttonLinkCopy" Style="{StaticResource BGBlendButton}" Height="24" Width="26" Margin="2,3,2,0" Grid.Column="1" Content="Copy" />-->
-                                            <TextBlock Grid.Row="1" Text="Embed:" Margin="2,0,10,0" Foreground="White" VerticalAlignment="Center"></TextBlock>
-                                            <TextBox x:Name="embedText" Grid.Row="1" Grid.Column="1" Text="" Height="22" Width="350" IsReadOnly="True"> </TextBox>
-                                            <TextBlock Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="*Use Ctrl-C to copy text" Foreground="White" VerticalAlignment="Center"></TextBlock>
-                                            <!--<Button ToolTipService.ToolTip="Copy Embed URL to clipboard" x:Name="buttonEmbedCopy" Style="{StaticResource BGBlendButton}" Height="24" Width="26" Margin="2,3,2,0"  Grid.Column="1" Grid.Row="1" Content="Copy" />-->
-                                        </Grid>
-                                    </Border>
-
-                                    <Grid Height="auto" Width="Auto" Margin="2,2,2,100" Opacity=".75" Visibility="{TemplateBinding DebugVisibility}" >
-                                        <!-- Debug Info Box-->
-                                        <Border x:Name="debugBox" Opacity=".5" Background="Black" Canvas.Left="4" Canvas.Top="-2" CornerRadius="10,10,10,10" HorizontalAlignment="Right" VerticalAlignment="Top">
-                                            <TextBlock x:Name="debugBitRateBox" Grid.Row="0" Grid.RowSpan="1" Margin="20,15,30,10" HorizontalAlignment="Right" VerticalAlignment="Top" Height="Auto" FontSize="12" Foreground="White" TextAlignment="Right"  FontFamily="Courier New" FontWeight="Bold" Text="{TemplateBinding BitRateText}" />
+                                        <!-- Stat Info Box  Width="312" MinWidth="150"MinWidth="250" Width="Auto" -->
+                                        <Border x:Name="statBox"  Grid.Column="2" Visibility="{TemplateBinding StatVisibility}" Opacity=".5" Background="Black" 
+                                                CornerRadius="10,10,10,10"  VerticalAlignment="Top">
+                                            <TextBlock x:Name="statViewer" Margin="10,5,8,5" HorizontalAlignment="Right" VerticalAlignment="Top" Height="Auto" 
+                                                       Width="Auto" FontSize="12" Foreground="White" TextAlignment="Right"  FontFamily="Courier New" 
+                                                       FontWeight="Bold" Text="{TemplateBinding BitRateText}" />
                                         </Border>
-
-                                        <!-- Current DEBUG Log Box -->
-                                        <TextBlock x:Name="debugLogBox" Grid.Row="0" Grid.RowSpan="1" Margin="2,2,2,2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="Auto" FontSize="10" Foreground="White" TextAlignment="Left" FontFamily="Courier New" FontWeight="Bold" Text="{TemplateBinding DebugLogText}" />
                                     </Grid>
 
-
-                                    <Grid ShowGridLines="False" x:Name="controlBox" Height="35" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="2" Background="#FF333333">
+                                    <!---Control Box-->
+                                    <Grid ShowGridLines="False" x:Name="controlBox" Height="38" HorizontalAlignment="Stretch" 
+                                          VerticalAlignment="Bottom" Grid.Row="2" Background="#FF333333">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="66"/>
-                                            <ColumnDefinition Width="56"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="56"/>
-                                            <ColumnDefinition Width="32"/>
-                                            <ColumnDefinition Width="80"/>
-                                            <ColumnDefinition Width="30"/>
-                                            <ColumnDefinition Width="30"/>
-                                            <ColumnDefinition Width="32"/>
+                                            <ColumnDefinition Width="58"/><!-- Play -->
+                                            <ColumnDefinition Width="56"/><!-- pos -->
+                                            <ColumnDefinition Width="*"/><!-- scrubber -->
+                                            <ColumnDefinition Width="56"/><!-- dur -->
+                                            <ColumnDefinition Width="32"/><!-- vol -->
+                                            <ColumnDefinition Width="80"/><!-- vol bar-->
+                                            <!--<ColumnDefinition Width="20"/>--><!-- quality -->
+                                            <ColumnDefinition Width="30"/><!-- link/embed -->
+                                            <ColumnDefinition Width="30"/><!-- FS-->
+                                            <ColumnDefinition Width="32"/><!-- menu-->
                                         </Grid.ColumnDefinitions>
 
                                         <!-- PLAY/PAUSE BUTTON -->
-                                        <Button Margin="6,3,2,2" Grid.Column="0" ToolTipService.ToolTip="Play/Pause" Style="{StaticResource BGBlendButton}" x:Name="buttonPlayPause" Width="54" Height="24" HorizontalAlignment="Left" d:LayoutOverrides="Height" >
+                                        <Button Margin="6,3,2,2" Grid.Column="0"  Style="{StaticResource BGBlendButton}" ToolTipService.ToolTip="Play/Pause" x:Name="buttonPlayPause" Width="46" Height="24" HorizontalAlignment="Left" d:LayoutOverrides="Height" >
                                             <Grid Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto">
                                                 <Grid Height="Auto" Width="10" HorizontalAlignment="Center" x:Name="pauseToggle" VerticalAlignment="Center" Visibility="Collapsed" Margin="2,3,3,1">
                                                     <Path HorizontalAlignment="Center" VerticalAlignment="Center" Width="9" Height="Auto" Canvas.Left="75.6572" Canvas.Top="451.1" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 78.4633,467.235L 76.2184,467.235C 75.9084,467.235 75.6572,466.983 75.6572,466.673L 75.6572,451.661C 75.6572,451.351 75.9084,451.1 76.2184,451.1L 78.4633,451.1C 78.7732,451.1 79.0245,451.351 79.0245,451.661L 79.0245,466.673C 79.0245,466.983 78.7732,467.235 78.4633,467.235 Z M 85.0075,467.235L 82.7626,467.235C 82.4527,467.235 82.2014,466.983 82.2014,466.673L 82.2014,451.661C 82.2014,451.351 82.4527,451.1 82.7626,451.1L 85.0075,451.1C 85.3175,451.1 85.5687,451.351 85.5687,451.661L 85.5687,466.673C 85.5687,466.983 85.3175,467.235 85.0075,467.235 Z " RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="HorizontalAlignment" />
@@ -407,7 +379,7 @@
                                             </Grid>
                                         </Button>
 
-                                        <TextBlock x:Name="textBlockPosition" Grid.Column="1" Text="{TemplateBinding PlaybackPositionText}" Height="12" Width="50" HorizontalAlignment="Right" Margin="2,-1,0,0" FontSize="10" Foreground="#FFFFFFFF"  />
+                                        <TextBlock x:Name="textBlockPosition" Grid.Column="1" Text="{TemplateBinding PlaybackPositionText}" Height="12" Width="50" HorizontalAlignment="Left" Margin="2,-1,0,0" FontSize="10" Foreground="#FFFFFFFF"  />
                                         <TextBlock x:Name="textBlockDuration" Grid.Column="3" Text="{TemplateBinding PlaybackDurationText}" Height="12" Width="50" HorizontalAlignment="Left" Margin="2,-1,0,0" FontSize="10" Foreground="#FFFFFFFF" />
 
                                         <!-- PROGRESS/BUFFERING/SCRUBBING BARS-->
@@ -421,7 +393,7 @@
                                         </Grid>
 
                                         <!-- Volume/Mute -->
-                                        <Button x:Name="buttonMute" ToolTipService.ToolTip="Mute" Grid.Column="4" Style="{StaticResource BGBlendButton}" Width="26" Margin="0,3,0,0" VerticalAlignment="Center" BorderBrush="#FF000000" Foreground="{x:Null}" HorizontalAlignment="Right" Background="#FF0092FF" Height="24">
+                                        <Button x:Name="buttonMute" ToolTipService.ToolTip="Mute" Grid.Column="4" Style="{StaticResource BGBlendButton}" Width="26" Margin="0,3,0,0" VerticalAlignment="Center" BorderBrush="#FF000000" HorizontalAlignment="Right" Height="24">
                                             <Grid Width="Auto" Height="Auto" Margin="1,1,1,1">
                                                 <Path Stretch="Fill" Fill="#FFFFFFFF" Margin="1.387,3.25,1.613,2.75" Data="F1 M 432.308,460.197C 432.308,463.495 430.997,466.487 428.867,468.68L 427.472,467.285C 429.245,465.449 430.336,462.95 430.336,460.197C 430.336,457.371 429.187,454.813 427.331,452.965L 428.726,451.57C 430.939,453.775 432.308,456.826 432.308,460.197 Z M 426.905,460.197C 426.905,458.318 426.141,456.618 424.905,455.39L 425.997,454.299C 427.511,455.806 428.449,457.892 428.449,460.197C 428.449,462.429 427.569,464.456 426.138,465.951L 425.046,464.859C 426.198,463.644 426.905,462.003 426.905,460.197 Z M 418.223,468.285L 413.256,463.317L 410.665,463.317C 410.051,463.317 409.553,462.819 409.553,462.205L 409.553,458.058C 409.553,457.443 410.051,456.945 410.665,456.945L 413.256,456.945L 418.223,451.978C 418.373,451.828 418.555,451.73 418.747,451.683L 419.06,451.635C 420.552,451.635 421.782,454.884 421.959,459.08C 422.346,459.302 422.606,459.719 422.606,460.197C 422.606,460.677 422.343,461.096 421.953,461.317C 421.753,465.441 420.534,468.615 419.06,468.615L 418.95,468.609C 418.686,468.595 418.425,468.487 418.223,468.285 Z "/>
                                             </Grid>
@@ -459,102 +431,7 @@
 
                               
 
-                                    <!--Options Menu -->
-                                    <Border Height="Auto" HorizontalAlignment="Right" Opacity="1" VerticalAlignment="Bottom" Width="Auto" Grid.Row="0" Margin="0,3,3,-35" CornerRadius="3,3,3,3" BorderThickness="1,1,1,1" BorderBrush="#FF333333">
-                                        <ListBox x:Name="optionsMenu" Foreground="#FFFFFFFF" Visibility="Collapsed" Background="#FF333333" HorizontalAlignment="Center" Margin="0,0,0,0" Width="Auto" >
-                                            <ListBoxItem  >
-                                                <Grid x:Name="menuDebug" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
-                                                    <Path Margin="4,2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="5" Height="9" Canvas.Left="76.4692" Canvas.Top="436.162" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 84.51,452.297C 84.2037,452.297 83.9301,452.157 83.7501,451.937L 76.7759,444.963C 76.3669,444.554 76.3669,443.891 76.7759,443.482L 83.7695,436.488L 83.8665,436.402C 84.0389,436.253 84.2638,436.162 84.51,436.162C 85.0522,436.162 85.4918,436.602 85.4918,437.144L 85.4893,437.213L 85.4893,451.246L 85.4918,451.315L 85.4893,451.385L 85.4893,451.406L 85.4876,451.406C 85.4417,451.906 85.0216,452.297 84.51,452.297 Z " RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="HorizontalAlignment"></Path>
-                                                    <TextBlock Margin="28,2,0,0" Height="Auto" Width="Auto" FontSize="10" Text="Debug"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>
-
-                                            <ListBoxItem >
-                                                <Grid x:Name="menuScaling" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
-                                                    <Path Margin="4,2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="5" Height="9" Canvas.Left="76.4692" Canvas.Top="436.162" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 84.51,452.297C 84.2037,452.297 83.9301,452.157 83.7501,451.937L 76.7759,444.963C 76.3669,444.554 76.3669,443.891 76.7759,443.482L 83.7695,436.488L 83.8665,436.402C 84.0389,436.253 84.2638,436.162 84.51,436.162C 85.0522,436.162 85.4918,436.602 85.4918,437.144L 85.4893,437.213L 85.4893,451.246L 85.4918,451.315L 85.4893,451.385L 85.4893,451.406L 85.4876,451.406C 85.4417,451.906 85.0216,452.297 84.51,452.297 Z " RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="HorizontalAlignment"></Path>
-                                                    <TextBlock Margin="28,2,0,0" Height="Auto" Width="Auto" FontSize="10" Text="Scaling"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>
-
-                                            <ListBoxItem  Margin="0" Padding="0" >
-                                                <Grid x:Name="buttonChapter" Height="24" HorizontalAlignment="Stretch" Width="100" Margin="0" >
-                                                    <Border Margin="2"  CornerRadius="1.75" BorderThickness="1" HorizontalAlignment="Left" Width="22" BorderBrush="#FF757575">
-                                                        <Border.Background>
-                                                            <LinearGradientBrush EndPoint="0.4,2" StartPoint="0.0,0">
-                                                                <GradientStop Color="#FF52585c" Offset="0"/>
-                                                                <GradientStop Color="#FF000000" Offset=".35"/>
-                                                            </LinearGradientBrush>
-                                                        </Border.Background>
-                                                        <Path Margin="3,2,0,3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="Auto" Canvas.Left="334.343" Canvas.Top="452.277" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 335.2,459.309L 344.245,459.309C 344.718,459.309 345.102,459.693 345.102,460.166L 345.102,467.116C 345.102,467.589 344.718,467.973 344.245,467.973L 335.2,467.973C 334.727,467.973 334.343,467.589 334.343,467.116L 334.343,460.166C 334.343,459.693 334.727,459.309 335.2,459.309 Z M 337.354,457.104L 346.399,457.104C 346.872,457.104 347.255,457.488 347.255,457.961L 347.255,464.911C 347.255,465.384 346.872,465.768 346.399,465.768L 345.982,465.768L 345.982,458.624C 345.982,458.435 345.829,458.281 345.639,458.281L 336.497,458.281L 336.497,457.961C 336.497,457.488 336.881,457.104 337.354,457.104 Z M 339.659,454.678L 348.704,454.678C 349.177,454.678 349.561,455.062 349.561,455.535L 349.561,462.485C 349.561,462.958 349.177,463.342 348.704,463.342L 348.288,463.342L 348.288,456.198C 348.288,456.009 348.134,455.855 347.945,455.855L 338.802,455.855L 338.802,455.535C 338.802,455.062 339.186,454.678 339.659,454.678 Z M 342.061,452.277L 351.105,452.277C 351.578,452.277 351.962,452.661 351.962,453.134L 351.962,460.084C 351.962,460.557 351.578,460.941 351.105,460.941L 350.689,460.941L 350.689,453.797C 350.689,453.608 350.535,453.454 350.346,453.454L 341.204,453.454L 341.204,453.134C 341.204,452.661 341.587,452.277 342.061,452.277 Z "/>
-                                                    </Border>
-                                                    <TextBlock Margin="30,4,0,0" Height="Auto" Width="Auto" FontSize="10" Text="Chapters"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>
-
-                                            <ListBoxItem Margin="0" Padding="0" >
-                                                <Grid x:Name="buttonPlaylistItems" Height="24" HorizontalAlignment="Stretch" Width="100" Margin="0" >
-                                                    <Border Margin="2"  CornerRadius="1.75" BorderThickness="1" HorizontalAlignment="Left" Width="22" BorderBrush="#FF757575">
-                                                        <Border.Background>
-                                                            <LinearGradientBrush EndPoint="0.4,2" StartPoint="0.0,0">
-                                                                <GradientStop Color="#FF52585c" Offset="0"/>
-                                                                <GradientStop Color="#FF000000" Offset=".35"/>
-                                                            </LinearGradientBrush>
-                                                        </Border.Background>
-                                                        <Grid Width="14" Height="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,2,0,0">
-                                                            <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" Width="5" Height="5" Fill="#FFFFFFFF"  Margin="0,0,0,0" />
-                                                            <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" Width="5" Height="5" Fill="#FFFFFFFF" Margin="7,0,0,0" />
-                                                            <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" Width="5" Height="5" Fill="#FFFFFFFF"  Margin="0,7,0,0" />
-                                                            <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" Width="5" Height="5" Fill="#FFFFFFFF" Margin="7,7,0,0" />
-                                                        </Grid>
-                                                    </Border>
-                                                    <TextBlock Margin="30,4,0,0" Height="Auto" Width="Auto" FontSize="10" Text="Playlist"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>
-                                        </ListBox>
-                                    </Border>
-
-                                    <!--Debug Sub Menu -->
-                                    <Border x:Name="subMenuDebugBox" Height="Auto" HorizontalAlignment="Right" Visibility="Collapsed" VerticalAlignment="Bottom" Width="Auto" Margin="0,0,109,39" CornerRadius="3,3,3,3" BorderThickness="1,1,1,1" BorderBrush="#FF333333">
-                                        <ListBox x:Name="subMenuDebug" Foreground="#FFFFFFFF" Background="#FF333333" HorizontalAlignment="Center" Margin="0,0,0,0" Width="Auto" >
-                                            <ListBoxItem >
-                                                <Grid x:Name="menuStats" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
-                                                    <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Statistics"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>
-                                            <!--<ListBoxItem>
-                                                <Grid  x:Name="menuLogs" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
-                                                    <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Logs"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>-->
-                                        </ListBox>
-                                    </Border>
-
-                                    <!--Scaling Sub Menu -->
-                                    <Border x:Name="subMenuScalingBox" Visibility="Collapsed" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="Auto" Margin="0,0,109,14" CornerRadius="3,3,3,3" BorderThickness="1,1,1,1" BorderBrush="#FF333333">
-                                        <ListBox x:Name="subMenuScaling" Foreground="#FFFFFFFF" Background="#FF333333" HorizontalAlignment="Center" Margin="0,0,0,0" Width="Auto" >
-                                            <ListBoxItem>
-                                                <Grid  x:Name="menuFit" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
-                                                    <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Fit"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>
-                                            <ListBoxItem>
-                                                <Grid  x:Name="menuStretch" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
-                                                    <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Stretch"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>
-                                            <ListBoxItem >
-                                                <Grid x:Name="menuNative" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
-                                                    <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Native"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>
-                                            <!--<ListBoxItem >
-                                                <Grid x:Name="menuNativeSmaller" Height="24"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
-                                                    <TextBlock Margin="4,2,0,0" Height="Auto" Width="Auto" FontSize="10" Text=" "></TextBlock>
-                                                    <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Native or Smaller"></TextBlock>
-                                                </Grid>
-                                            </ListBoxItem>-->
-                                        </ListBox>
-                                    </Border>
+                                   
 
                                     <!-- CHAPTERS PANEL -->
                                     <Border x:Name="borderChapters" Grid.Row="0" Width="460"  Height="Auto" Opacity=".8" HorizontalAlignment="Center" VerticalAlignment="Bottom" CornerRadius="3,3,3,3" BorderThickness="1,1,1,1" BorderBrush="#FF333333">
@@ -580,7 +457,7 @@
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                             </ListBox>
-                                            <Border  x:Name="closeChapters" Margin="0,2,2,0" BorderThickness="1" CornerRadius="1" BorderBrush="#FF777777" Height="16" Width="16" VerticalAlignment="Top" HorizontalAlignment="Right" >
+                                            <Border  x:Name="closeChapters" Margin="0,2,2,0" BorderThickness="0" CornerRadius="1" BorderBrush="#FF777777" Height="16" Width="16" VerticalAlignment="Top" HorizontalAlignment="Right" >
                                                 <TextBlock Margin="0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Foreground="White" FontSize="11" Text="X"></TextBlock>
                                             </Border>
                                         </Grid>
@@ -589,7 +466,7 @@
                             </Border>
 
                             <!-- PLAYLIST ITEMS PANEL-->
-                            <Border Height="Auto" HorizontalAlignment="Right" x:Name="borderItems" Opacity=".8" VerticalAlignment="Stretch" Width="Auto" Grid.Row="0" Margin="2,6,3,-27" CornerRadius="3,3,3,3" BorderThickness="3" BorderBrush="#FF333333">
+                            <Border Height="Auto" HorizontalAlignment="Right" x:Name="borderItems" Opacity=".8" VerticalAlignment="Stretch" Width="Auto" Grid.Row="0" Margin="2,6,3,-20" CornerRadius="3,3,3,3" BorderThickness="3" BorderBrush="#FF333333">
                                 <Grid Background="#FF000000" >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="20" />
@@ -597,7 +474,7 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Margin="4,2,0,0" Height="Auto" Width="Auto" HorizontalAlignment="Center" Foreground="White" FontSize="11" Text="Playlist"></TextBlock>
-                                    <Border  x:Name="closePlaylist" Margin="0,0,2,0" BorderThickness="1" CornerRadius="1" BorderBrush="#FF777777" Height="16" Width="16" HorizontalAlignment="Right" >
+                                    <Border  x:Name="closePlaylist" Margin="0,0,2,0" BorderThickness="0" CornerRadius="1" BorderBrush="#FF777777" Height="16" Width="16" HorizontalAlignment="Right" >
                                         <TextBlock Margin="0" Height="Auto" HorizontalAlignment="Center" Width="Auto" Foreground="White" FontSize="11" Text="X"></TextBlock>
                                     </Border>
 
@@ -626,6 +503,150 @@
                                     </ListBox>
 
                                 </Grid>
+                            </Border>
+                            
+                            <!-- Paused / Message Box -->
+                            <Border x:Name="messageBox" Margin="1,1,1,1" MinHeight="100" MinWidth="200"  Visibility="Collapsed" BorderThickness="2" BorderBrush="#FFcccccc" CornerRadius="10,10,10,10"  Background="Black" Opacity="0.5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Grid>
+                                    <TextBlock x:Name="messageBoxText" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="10,10,10,10" VerticalAlignment="Center" Height="Auto" Opacity="0.5" FontSize="18" Foreground="White" FontWeight="Bold" Text="{TemplateBinding MessageText}" />
+                                    <Path x:Name="playSymbol" HorizontalAlignment="Center" VerticalAlignment="Center" Width="20" Height="35" Canvas.Left="76.4692" Canvas.Top="436.162" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 84.51,452.297C 84.2037,452.297 83.9301,452.157 83.7501,451.937L 76.7759,444.963C 76.3669,444.554 76.3669,443.891 76.7759,443.482L 83.7695,436.488L 83.8665,436.402C 84.0389,436.253 84.2638,436.162 84.51,436.162C 85.0522,436.162 85.4918,436.602 85.4918,437.144L 85.4893,437.213L 85.4893,451.246L 85.4918,451.315L 85.4893,451.385L 85.4893,451.406L 85.4876,451.406C 85.4417,451.906 85.0216,452.297 84.51,452.297 Z " RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="HorizontalAlignment">
+                                        <Path.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <SkewTransform/>
+                                                <RotateTransform Angle="-180"/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Grid>
+                            </Border>
+
+                            <!--Link/Embed Box-->
+                            <Border x:Name="linkEmbedBox" Margin="1,1,1,10" Padding="12,4,12,4" Width="Auto" Height="Auto"  Visibility="Collapsed" BorderThickness="2" BorderBrush="#FFcccccc" CornerRadius="10,10,10,10"  Background="Black" Opacity="0.8" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="36" />
+                                        <RowDefinition Height="36" />
+                                        <RowDefinition Height="36" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="24"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="Link:" Margin="2,0,10,0"  Foreground="White" VerticalAlignment="Center"></TextBlock>
+                                    <TextBox x:Name="linkText" Grid.Column="1" Text="" Width="350"  Height="22" IsReadOnly="True"></TextBox>
+                                    <Border Grid.Column="2" x:Name="closeLinkEmbed" Margin="4,2,2,0" BorderThickness="1" CornerRadius="1" BorderBrush="#FF444444" Height="16" Width="16" VerticalAlignment="Top" HorizontalAlignment="Right" >
+                                        <TextBlock Margin="0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Foreground="White" FontSize="11" Text="X"></TextBlock>
+                                    </Border>
+                                    <TextBlock Grid.Row="1" Text="Embed:" Margin="2,0,10,0" Foreground="White" VerticalAlignment="Center"></TextBlock>
+                                    <TextBox x:Name="embedText" Grid.Row="1" Grid.Column="1" Text="" Height="22" Width="350" IsReadOnly="True"></TextBox>
+                                    <TextBlock Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="*Use Ctrl-C to copy text" Foreground="White" VerticalAlignment="Center"></TextBlock>
+                                </Grid>
+                            </Border>
+
+                            <!--Options Menu -->
+                            <Border Height="Auto" HorizontalAlignment="Right" Opacity="1" VerticalAlignment="Bottom" Width="Auto" Grid.Row="0" Margin="0,3,3,35" CornerRadius="3,3,3,3" BorderThickness="1,1,1,1" BorderBrush="#FF333333">
+                                <ListBox x:Name="optionsMenu" Foreground="#FFFFFFFF" Visibility="Collapsed" Background="#FF333333" HorizontalAlignment="Center" Margin="0,0,0,0" Width="Auto" >
+                                    <ListBoxItem  >
+                                        <Grid x:Name="menuDebug" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                            <Path Margin="4,2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="5" Height="9" Canvas.Left="76.4692" Canvas.Top="436.162" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 84.51,452.297C 84.2037,452.297 83.9301,452.157 83.7501,451.937L 76.7759,444.963C 76.3669,444.554 76.3669,443.891 76.7759,443.482L 83.7695,436.488L 83.8665,436.402C 84.0389,436.253 84.2638,436.162 84.51,436.162C 85.0522,436.162 85.4918,436.602 85.4918,437.144L 85.4893,437.213L 85.4893,451.246L 85.4918,451.315L 85.4893,451.385L 85.4893,451.406L 85.4876,451.406C 85.4417,451.906 85.0216,452.297 84.51,452.297 Z " RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="HorizontalAlignment"></Path>
+                                            <TextBlock Margin="28,2,0,0" Height="Auto" Width="Auto" FontSize="10" Text="Debug"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+
+                                    <ListBoxItem >
+                                        <Grid x:Name="menuScaling" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                            <Path Margin="4,2" HorizontalAlignment="Left" VerticalAlignment="Center" Width="5" Height="9" Canvas.Left="76.4692" Canvas.Top="436.162" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 84.51,452.297C 84.2037,452.297 83.9301,452.157 83.7501,451.937L 76.7759,444.963C 76.3669,444.554 76.3669,443.891 76.7759,443.482L 83.7695,436.488L 83.8665,436.402C 84.0389,436.253 84.2638,436.162 84.51,436.162C 85.0522,436.162 85.4918,436.602 85.4918,437.144L 85.4893,437.213L 85.4893,451.246L 85.4918,451.315L 85.4893,451.385L 85.4893,451.406L 85.4876,451.406C 85.4417,451.906 85.0216,452.297 84.51,452.297 Z " RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="HorizontalAlignment"></Path>
+                                            <TextBlock Margin="28,2,0,0" Height="Auto" Width="Auto" FontSize="10" Text="Scaling"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+
+                                    <ListBoxItem  Margin="0" Padding="0" >
+                                        <Grid x:Name="buttonChapter" Height="24" HorizontalAlignment="Stretch" Width="100" Margin="0" >
+                                            <Border Margin="2"  CornerRadius="1.75" BorderThickness="1" HorizontalAlignment="Left" Width="22" BorderBrush="#FF757575">
+                                                <Border.Background>
+                                                    <LinearGradientBrush EndPoint="0.4,2" StartPoint="0.0,0">
+                                                        <GradientStop Color="#FF52585c" Offset="0"/>
+                                                        <GradientStop Color="#FF000000" Offset=".35"/>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                                <Path Margin="3,2,0,3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="Auto" Canvas.Left="334.343" Canvas.Top="452.277" Stretch="Fill" Fill="#FFFFFFFF" Data="F1 M 335.2,459.309L 344.245,459.309C 344.718,459.309 345.102,459.693 345.102,460.166L 345.102,467.116C 345.102,467.589 344.718,467.973 344.245,467.973L 335.2,467.973C 334.727,467.973 334.343,467.589 334.343,467.116L 334.343,460.166C 334.343,459.693 334.727,459.309 335.2,459.309 Z M 337.354,457.104L 346.399,457.104C 346.872,457.104 347.255,457.488 347.255,457.961L 347.255,464.911C 347.255,465.384 346.872,465.768 346.399,465.768L 345.982,465.768L 345.982,458.624C 345.982,458.435 345.829,458.281 345.639,458.281L 336.497,458.281L 336.497,457.961C 336.497,457.488 336.881,457.104 337.354,457.104 Z M 339.659,454.678L 348.704,454.678C 349.177,454.678 349.561,455.062 349.561,455.535L 349.561,462.485C 349.561,462.958 349.177,463.342 348.704,463.342L 348.288,463.342L 348.288,456.198C 348.288,456.009 348.134,455.855 347.945,455.855L 338.802,455.855L 338.802,455.535C 338.802,455.062 339.186,454.678 339.659,454.678 Z M 342.061,452.277L 351.105,452.277C 351.578,452.277 351.962,452.661 351.962,453.134L 351.962,460.084C 351.962,460.557 351.578,460.941 351.105,460.941L 350.689,460.941L 350.689,453.797C 350.689,453.608 350.535,453.454 350.346,453.454L 341.204,453.454L 341.204,453.134C 341.204,452.661 341.587,452.277 342.061,452.277 Z "/>
+                                            </Border>
+                                            <TextBlock Margin="30,4,0,0" Height="Auto" Width="Auto" FontSize="10" Text="Chapters"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+
+                                    <ListBoxItem Margin="0" Padding="0" >
+                                        <Grid x:Name="buttonPlaylistItems" Height="24" HorizontalAlignment="Stretch" Width="100" Margin="0" >
+                                            <Border Margin="2"  CornerRadius="1.75" BorderThickness="1" HorizontalAlignment="Left" Width="22" BorderBrush="#FF757575">
+                                                <Border.Background>
+                                                    <LinearGradientBrush EndPoint="0.4,2" StartPoint="0.0,0">
+                                                        <GradientStop Color="#FF52585c" Offset="0"/>
+                                                        <GradientStop Color="#FF000000" Offset=".35"/>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                                <Grid Width="14" Height="14" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,2,0,0">
+                                                    <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" Width="5" Height="5" Fill="#FFFFFFFF"  Margin="0,0,0,0" />
+                                                    <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" Width="5" Height="5" Fill="#FFFFFFFF" Margin="7,0,0,0" />
+                                                    <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" Width="5" Height="5" Fill="#FFFFFFFF"  Margin="0,7,0,0" />
+                                                    <Rectangle VerticalAlignment="Top" HorizontalAlignment="Left" Width="5" Height="5" Fill="#FFFFFFFF" Margin="7,7,0,0" />
+                                                </Grid>
+                                            </Border>
+                                            <TextBlock Margin="30,4,0,0" Height="Auto" Width="Auto" FontSize="10" Text="Playlist"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+                                </ListBox>
+                            </Border>
+
+                            <!--Debug Sub Menu -->
+                            <Border x:Name="subMenuDebugBox" Height="Auto" HorizontalAlignment="Right" Visibility="Collapsed" VerticalAlignment="Bottom" Width="Auto" Margin="0,0,109,109" CornerRadius="3,3,3,3" BorderThickness="1,1,1,1" BorderBrush="#FF333333">
+                                <ListBox x:Name="subMenuDebug" Foreground="#FFFFFFFF" Background="#FF333333" HorizontalAlignment="Center" Margin="0,0,0,0" Width="Auto" >
+                                    <ListBoxItem >
+                                        <Grid x:Name="menuStats" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                            <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Statistics"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <Grid  x:Name="menuLogs" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                            <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Logs"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+                                </ListBox>
+                            </Border>
+
+                            <!--Scaling Sub Menu -->
+                            <Border x:Name="subMenuScalingBox" Visibility="Collapsed" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="Auto" Margin="0,0,109,84" CornerRadius="3,3,3,3" BorderThickness="1,1,1,1" BorderBrush="#FF333333">
+                                <ListBox x:Name="subMenuScaling" Foreground="#FFFFFFFF" Background="#FF333333" HorizontalAlignment="Center" Margin="0,0,0,0" Width="Auto" >
+                                    <ListBoxItem>
+                                        <Grid  x:Name="menuFit" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                            <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Fit"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <Grid  x:Name="menuFill" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                            <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Fill"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <Grid  x:Name="menuStretch" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                            <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Stretch"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+                                    <ListBoxItem >
+                                        <Grid x:Name="menuNative" Height="20"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                            <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Native"></TextBlock>
+                                        </Grid>
+                                    </ListBoxItem>
+                                    <!--<ListBoxItem >
+                                                <Grid x:Name="menuNativeSmaller" Height="24"  Width="100" HorizontalAlignment="Stretch"  Margin="0" >
+                                                    <TextBlock Margin="4,2,0,0" Height="Auto" Width="Auto" FontSize="10" Text=" "></TextBlock>
+                                                    <TextBlock Margin="20,2,4,0" Height="Auto" Width="Auto" FontSize="10" Text="Native or Smaller"></TextBlock>
+                                                </Grid>
+                                            </ListBoxItem>-->
+                                </ListBox>
                             </Border>
 
                             <!--Custom Tooltip-->

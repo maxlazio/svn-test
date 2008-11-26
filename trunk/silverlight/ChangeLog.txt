@@ -1,8 +1,20 @@
+Version 2.0.30
+2008-11-26	Nick Brookins <nbrookin at akamai d0t com>
+
+- Fixed url encoding issue so percentages work for height/width on Mac.
+- Fixed bug (typo) that was causing crash when loading adaptive dll
+- various styling improvements
+- some improvements to options menu
+- new log viewer control, still a work in progress
+- Added new 'Fill' stretch mode, maps to Silverlight's UniformToFill.  Like stretch, but preserves aspect by clipping
+- shink duration and position text to MM:SS unless clip is over an hour, then show HH:MM:SS
+
+
 Version 2.0.26
 2008-11-19	Nick Brookins <nbrookin at akamai d0t com>
 
-// Tweaked the project to eliminate sever files/folder, including Bin, ClientBin, and Silverlight.js
-// New prebuild.cmd pre build script updates versions on all projects, including subversion revision.
+- Tweaked the project to eliminate several files/folders, including Bin, ClientBin, and Silverlight.js
+- New prebuild.cmd pre build script updates versions on all projects, including subversion revision.
 
 
 Version 2.0.24 
@@ -11,15 +23,15 @@ Version 2.0.24
 // Code changes (from v1.8)
 - Based on final Silverlight v2.0 runtime
 	
-- Support for MediaRSS, Reference files, and direct media content
+*- Support for MediaRSS, Reference files, and direct media content
 - Add support for a single source, as well as a playlist
 - Fixes for Seek bar / duration to support live content
 	
-- Completed configuration tool
+*- Completed configuration tool
 - Error box if content can't be played
 - More stats incl. bitrates avail. and in use (video only), measured bandwidth, resolution, and buffer values
-- New options menu with scaling and debug statistics toggle
-- Allow runtime changes to scaling mode, matched terminology to flash ver.
+*- New options menu with scaling and debug statistics toggle
+*- Allow runtime changes to scaling mode, matched terminology to flash ver.
    
 - Hide controls in full screen mode, show if mouse is near bottom
 - Double-click on surface causes fullscreen toggle
@@ -27,7 +39,7 @@ Version 2.0.24
 - allow click anywhere on volume bar for value change  (instead of having to precisely grab the indicator)
 - allow sliding the volume / seek bar with mouse 
     
-- Playlist Side by Side as well as overlay
+*- Playlist Side by Side as well as overlay
 - Support for link/embed
 
 

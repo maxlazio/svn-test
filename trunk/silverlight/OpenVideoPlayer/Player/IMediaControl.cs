@@ -52,6 +52,6 @@
         ///<summary>
         /// Shows or hides the debug panel
         /// </summary>
-        void ToggleDebugPanel();
+        void ToggleStatPanel();
     }
 }

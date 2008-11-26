@@ -6,7 +6,7 @@ namespace OVPImplementation {
 
 		public App() {
 			Startup += Application_Startup;
-			//this.UnhandledException += this.Application_UnhandledException;
+			this.UnhandledException += this.Application_UnhandledException;
 
 			InitializeComponent();
 		}
