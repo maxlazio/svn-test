@@ -61,20 +61,41 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 		</style>
 
 	<script type="text/javascript">
+		var pl = new Array(
+			'http://rss.streamos.com/streamos/rss/genfeed.php?feedid=426&groupname=products',
+			'',
+			'adaptive-playlist.xml',
+			'',
+			'<playList><playListItems><playListItem title="Adaptive Demo" description="A%20short%20demo" mediaSource="http://video.smoothhd.com/Media/AD_Streaming/Coral_Reefs.ism\Manifest" adaptiveStreaming="True" thumbSource="http://video.smoothhd.com/Media/AD_Streaming/Silverlight_2008_LAGS_720p24_2ch_Thumb.jpg" ></playListItem></playList>');
+
+		var lastSourceType = -1;
 
 		function OnChange() {
-			document.getElementById('sourceDesc').innerHTML = document.getElementById('sourceType').value;
-			document.getElementById('stretchDesc').innerHTML = document.getElementById('stretchMode').value;
+			var st = document.getElementById('sourceType');
+			if (st.selectedIndex != lastSourceType) {
+				if (lastSourceType < 0 || document.getElementById('source').value == pl[lastSourceType]
+				|| document.getElementById('source').value == "") {
+					document.getElementById('source').value = pl[st.selectedIndex];
+				} else {
+					//alert(document.getElementById('source').value + '\n' + pl[lastSourceType]);
+				}
+				lastSourceType = st.selectedIndex;
+			}
+			
+			var sm = document.getElementById('stretchMode');
+			document.getElementById('sourceDesc').innerHTML = st.value;
+			document.getElementById('stretchDesc').innerHTML = sm.value;
 
 			var playerXAP = 'OVP.xap';
 			
 			var autoplay = document.getElementById('autoplay').value;
 			var ismuted = document.getElementById('muted').value;
 			var isdebug = document.getElementById('showStats').value;
-			var mystretchmode = document.getElementById('stretchMode').options[document.getElementById('stretchMode').selectedIndex].text;
+			var mystretchmode = sm.options[sm.selectedIndex].text;
+
+			
 			
 			var source = document.getElementById('source').value;
-			var st = document.getElementById('sourceType');
 			var sourceType = st.options[st.selectedIndex].text.toLowerCase();
 
 			var h = document.getElementById('pHeight').value;
@@ -102,7 +123,8 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			 + '" id="slp" >';
 			tag += '\n<param name="source" value="' + playerXAP + '"/>';
 			tag += '<param name="minRuntimeVersion" value="2.0.30923.0" />';
-			if (document.getElementById('showErrors').value == "true") tag += '<param name="onerror" value="onSilverlightError" />';
+			//if (document.getElementById('showErrors').value == "true") 
+			tag += '<param name="onerror" value="onSilverlightError" />';
 			tag += '<param name="MaxFrameRate" value="30" />';
 			tag += '\n<param name="initparams" value=\'' + initparams + '\' />';
 			tag += '\n<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">';
@@ -123,7 +145,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			window.open('preview.html?tag=' + tag  ,'OpenVideoPlayer_Preview','width=' + ww + ',height='+ wh + ',directories=no,location=no,menubar=no,scrollbars=no,status=yes,toolbar=no,resizable=yes');
 		}
 
-		var version = 'v2.0.30.12'; //auto version
+		var version = 'v2.0.30.19'; //auto version
 
 		function BodyLoad() {
 			OnChange();
@@ -239,7 +261,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					<span id="sourceDesc0" class="newStyle1">True to initially show the chapter 
 					selection box</span></td>
 			</tr>-->
-			<tr>
+			<!--<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 22px;" class="style3">
 					ShowErrors:</td>
 				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 22px;">
@@ -250,7 +272,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 22px;" class="style3" colspan="2">
 					<span id="sourceDesc8" class="newStyle1">True to show 
 					silverlight / player errors in browser for debugging</span></td>
-			</tr>
+			</tr>-->
 			<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 33px;" class="style3">
 					Player Size:</td>
@@ -293,9 +315,9 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					</td>
 				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 26px;" class="style2">
 					<select id="sourceType" onchange="OnChange();" class="bordered" style="width: 120px" name="sourceType">
-						<option value="Link to a MediaRSS Feed" selected="selected">FeedSource</option>
+						<option value="Link to a MediaRSS Feed">FeedSource</option>
 						<option value="Link to a reference file, such as asx or wax">RefSource</option>
-						<option value="Link to a Microsoft xml playlist from Expression Encoder">PlayListSource</option>
+						<option value="Link to a Microsoft xml playlist from Expression Encoder" selected="selected">PlayListSource</option>
 						<option value="Direct http or mms link to a media source">MediaSource</option>
 						<option value="Directly embed playlist text">PlayList</option>
 					</select></td>
@@ -304,7 +326,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			</tr>
 			<tr>
 				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; text-align: center;" valign="top">
-					<textarea id="source" cols="69" rows ="4" name="source" onchange="OnChange();">http://rss.streamos.com/streamos/rss/genfeed.php?feedid=426&groupname=products</textarea></td>
+					<textarea id="source" cols="69" rows ="4" name="source" onchange="OnChange();"></textarea></td>
 			</tr>
 			<tr>
 				<td colspan="2" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; text-align: center;" valign="top">

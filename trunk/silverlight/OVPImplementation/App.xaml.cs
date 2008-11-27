@@ -28,6 +28,7 @@ namespace OVPImplementation {
 				e.Handled = true;
 				Deployment.Current.Dispatcher.BeginInvoke(delegate { ReportErrorToDOM(e); });
 			}
+			e.Handled = true;
 		}
 		private void ReportErrorToDOM(ApplicationUnhandledExceptionEventArgs e) {
 			try {

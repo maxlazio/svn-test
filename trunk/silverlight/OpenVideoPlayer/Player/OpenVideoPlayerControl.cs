@@ -36,7 +36,7 @@ namespace org.OpenVideoPlayer.Player {
 
 			PlaybackPosition = 0;
 			PlaybackDuration = 0;
-			PlaybackDurationText = PlaybackPositionText = "00:00:00";
+			PlaybackDurationText = PlaybackPositionText = "00:00";
 
 			BufferingControlVisibility = Visibility.Collapsed;
 			LogVisibility= StatVisibility = Visibility.Collapsed;
@@ -62,40 +62,24 @@ namespace org.OpenVideoPlayer.Player {
 		}
 		#endregion
 
-		#region Constants
-
-		//Supported marker type names
-		private const Double START_VOLUME = 0.5;
-		private const Double LOWER_VOLUME_THRESHOLD = 0.01;
-		public const string PLAYER_CONTROL_NAME = "OpenVideoPlayerControl";
-
-		#endregion
-
-		#region private instance variables
-
-		/// <summary>
-		/// Stores any alternate media source objects to send directly to the
-		/// video screen.
-		/// </summary>
-		private MediaStreamSource altMediaStreamSource;
-
-		private Border mainBorder;
+		#region Protected UI Element fields - bound to XAML Template
+		protected Border mainBorder;
 		protected Grid mainGrid;
 
 		protected ListBox optionsMenu;
 
 		protected FrameworkElement playToggle;
 		protected FrameworkElement pauseToggle;
-		protected MediaElement mainMediaElement;
+		protected MediaElement mediaElement;
 
-		protected Button playPauseButton;
-		protected Button previousButton;
-		protected Button nextButton;
-		protected Button stopButton;
+		protected Button buttonPlayPause;
+		protected Button buttonPrevious;
+		protected Button buttonNext;
+		protected Button buttonStop;
 		protected Button buttonLinkEmbed;
 
-		protected Grid itemsButton;
-		protected Grid chaptersButton;
+		protected Grid buttonPlaylist;
+		protected Grid buttonChapters;
 		protected Grid menuScaling;
 		protected Grid menuDebug;
 
@@ -112,22 +96,22 @@ namespace org.OpenVideoPlayer.Player {
 		protected ListBox subMenuDebug;
 		protected ListBox subMenuScaling;
 
-		protected Button fullscreenButton;
-		protected Button muteButton;
-		protected Button menuButton;
+		protected Button buttonFullScreen;
+		protected Button buttonMute;
+		protected Button buttonMenu;
 
-		protected ScrubberBar volumeSlider;
+		protected ScrubberBar sliderVolume;
 		protected ScrubberBar scrubberBar;
-		protected ListBox itemListBox;
-		protected Border itemsContainer;
-		protected ListBox chapterListBox;
-		protected Border chaptersContainer;
+		protected ListBox listBoxPlaylist;
+		protected Border borderPlaylist;
+		protected ListBox listBoxChapters;
+		protected Border borderChapters;
 		protected Border closePlaylist;
 		protected Border closeChapters;
 		protected Border closeLinkEmbed;
 
 		protected Grid controlBox;
-		protected Border debugBox;
+		protected Border statBox;
 		protected Border customToolTip;
 		protected Border messageBox;
 		protected TextBlock messageBoxText;
@@ -138,8 +122,24 @@ namespace org.OpenVideoPlayer.Player {
 		protected TextBox linkText;
 
 		protected Border linkEmbedBox;
+		protected LogViewer logViewer;
+		#endregion
 
-		private Version version;
+		#region private instance variables
+
+		#region Constants
+		private const Double START_VOLUME = 0.5;
+		private const Double LOWER_VOLUME_THRESHOLD = 0.01;
+		public const string PLAYER_CONTROL_NAME = "OpenVideoPlayerControl";
+		#endregion
+
+		/// <summary>
+		/// Stores any alternate media source objects to send directly to the
+		/// video screen.
+		/// </summary>
+		private MediaStreamSource altMediaStreamSource;
+
+		protected Version version;
 
 		protected bool autoplaySetting;
 		protected bool timerIsUpdating;
@@ -179,10 +179,11 @@ namespace org.OpenVideoPlayer.Player {
 		private bool adaptiveInit;
 		private ConstructorInfo adaptiveConstructor;
 
-		private LogViewer logViewer;
-
 		private LogCollection logList = new LogCollection();
 		private OutputLog log = new OutputLog("Player");
+
+		SolidColorBrush sel = new SolidColorBrush(Color.FromArgb(0xFF, 0x37, 0x80, 0x94));//377994
+		SolidColorBrush unsel = new SolidColorBrush(Colors.Transparent);
 
 		#endregion
 
@@ -198,16 +199,16 @@ namespace org.OpenVideoPlayer.Player {
 			set { 
 				isMuted = value;
 				if (!isMuted) {
-					mainMediaElement.Volume = lastUsedVolume;
-					volumeSlider.Value = lastUsedVolume;
-					muteButton.Opacity = 1;
-					ToolTipService.SetToolTip(this.muteButton, "Mute");
+					mediaElement.Volume = lastUsedVolume;
+					sliderVolume.Value = lastUsedVolume;
+					buttonMute.Opacity = 1;
+					ToolTipService.SetToolTip(buttonMute, "Mute");
 				} else {
-					lastUsedVolume = mainMediaElement.Volume;
-					mainMediaElement.Volume = 0;
-					volumeSlider.Value = 0;
-					muteButton.Opacity = .5;
-					ToolTipService.SetToolTip(this.muteButton, "UnMute");
+					lastUsedVolume = mediaElement.Volume;
+					mediaElement.Volume = 0;
+					sliderVolume.Value = 0;
+					buttonMute.Opacity = .5;
+					ToolTipService.SetToolTip(buttonMute, "UnMute");
 				}
 			}
 		}
@@ -216,7 +217,7 @@ namespace org.OpenVideoPlayer.Player {
 			get { return stretchMode; }
 			set { 
 				stretchMode = value;
-				if(mainMediaElement!=null) mainMediaElement.Stretch = StretchMode;
+				if(mediaElement!=null) mediaElement.Stretch = StretchMode;
 				CheckMenuHighlights(); 
 			}
 		}
@@ -448,67 +449,19 @@ namespace org.OpenVideoPlayer.Player {
 		/// Binds all the protected properties of the object into the template
 		/// </summary>
 		protected void BindTemplate() {
-			mainBorder = GetTemplateChild("mainBorder") as Border;
-			mainGrid = GetTemplateChild("mainGrid") as Grid;
-
-			mainMediaElement = GetTemplateChild("mediaElement") as MediaElement;
-			playPauseButton = GetTemplateChild("buttonPlayPause") as Button;
-			pauseToggle = GetTemplateChild("pauseToggle") as FrameworkElement;
-			playToggle = GetTemplateChild("playToggle") as FrameworkElement;
-			previousButton = GetTemplateChild("buttonPrevious") as Button;
-			nextButton = GetTemplateChild("buttonNext") as Button;
-			stopButton = GetTemplateChild("buttonStop") as Button;
-			fullscreenButton = GetTemplateChild("buttonFullScreen") as Button;
-			scrubberBar = GetTemplateChild("scrubberBar") as ScrubberBar;
-			muteButton = GetTemplateChild("buttonMute") as Button;
-			menuButton = GetTemplateChild("buttonMenu") as Button;
-
-			volumeSlider = GetTemplateChild("sliderVolume") as ScrubberBar;
-
-			itemsButton = GetTemplateChild("buttonPlaylistItems") as Grid;
-			chaptersButton = GetTemplateChild("buttonChapter") as Grid;
-
-			itemListBox = GetTemplateChild("listBoxItems") as ListBox;
-			itemsContainer = GetTemplateChild("borderItems") as Border;
-			chapterListBox = GetTemplateChild("listBoxChapters") as ListBox;
-			chaptersContainer = GetTemplateChild("borderChapters") as Border;
-
-			debugBox = GetTemplateChild("statBox") as Border;
-			customToolTip = GetTemplateChild("customToolTip") as Border;
-			messageBox = GetTemplateChild("messageBox") as Border;
-			messageBoxText = GetTemplateChild("messageBoxText") as TextBlock;
-			controlBox = GetTemplateChild("controlBox") as Grid;
-
-			optionsMenu = GetTemplateChild("optionsMenu") as ListBox;
-			closePlaylist = GetTemplateChild("closePlaylist") as Border;
-			closeChapters = GetTemplateChild("closeChapters") as Border;
-			closeLinkEmbed = GetTemplateChild("closeLinkEmbed") as Border;
-
-			menuScaling = GetTemplateChild("menuScaling") as Grid;
-			menuDebug = GetTemplateChild("menuDebug") as Grid;
-
-			menuLogs = GetTemplateChild("menuLogs") as Grid;
-			menuStats = GetTemplateChild("menuStats") as Grid;
-			menuStretch = GetTemplateChild("menuStretch") as Grid;
-			menuFit = GetTemplateChild("menuFit") as Grid;
-			menuFill = GetTemplateChild("menuFill") as Grid;
-			menuNative = GetTemplateChild("menuNative") as Grid;
-			menuNativeSmaller = GetTemplateChild("menuNativeSmaller") as Grid;
-
-			subMenuDebugBox = GetTemplateChild("subMenuDebugBox") as Border;
-			subMenuScalingBox = GetTemplateChild("subMenuScalingBox") as Border;
-			subMenuDebug = GetTemplateChild("subMenuDebug") as ListBox;
-			subMenuScaling = GetTemplateChild("subMenuScaling") as ListBox;
-
-			linkEmbedBox = GetTemplateChild("linkEmbedBox") as Border;
-			buttonLinkEmbed = GetTemplateChild("buttonLinkEmbed") as Button;
-
-			linkText = GetTemplateChild("linkText") as TextBox;
-			embedText = GetTemplateChild("embedText") as TextBox;
-
-			playSymbol = GetTemplateChild("playSymbol") as Path;
-
-			logViewer = GetTemplateChild("logViewer") as LogViewer;
+			//use reflection to eliminate all that biolerplate binding code.
+			//NOTE - field names must match element names in the xaml for binding to work!
+			FieldInfo[] fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+			foreach(FieldInfo fi in fields) {
+				if ((fi.FieldType.Equals(typeof(FrameworkElement)) || fi.FieldType.IsSubclassOf(typeof(FrameworkElement))) && fi.GetValue(this) == null) {
+					object o = GetTemplateChild(fi.Name);
+					if (o != null && (o.GetType().Equals(fi.FieldType) || o.GetType().IsSubclassOf(fi.FieldType))) {
+						fi.SetValue(this, o);
+					} else {
+						Debug.WriteLine(string.Format("No template match for: {0}, {1}", fi.Name, fi.FieldType));
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -539,7 +492,8 @@ namespace org.OpenVideoPlayer.Player {
 		/// Wires up all the event handlers to the controls
 		/// </summary>
 		protected void HookHandlers() {
-			OutputLog.StaticOutputEvent += new OutputHandler(OutputLog_StaticOutputEvent);
+			OutputLog.StaticOutputEvent += OutputLog_StaticOutputEvent;
+
 			if (mainTimer == null) {
 				mainTimer = new DispatcherTimer {Interval = new TimeSpan(0, 0, 0, 0, (6*1001/30))};
 				mainTimer.Tick += OnTimerTick;
@@ -554,35 +508,35 @@ namespace org.OpenVideoPlayer.Player {
 
 			MouseMove += On_MouseMove;
 
-			if (mainMediaElement != null) {
-				mainMediaElement.MediaFailed += OnMediaElementMediaFailed;
-				mainMediaElement.MediaOpened += OnMediaElementMediaOpened;
-				mainMediaElement.MediaEnded += OnMediaElementMediaEnded;
-				mainMediaElement.CurrentStateChanged += OnMediaElementCurrentStateChanged;
-				mainMediaElement.MarkerReached += OnMediaElementMarkerReached;
-				mainMediaElement.BufferingProgressChanged += OnMediaElementBufferingProgressChanged;
-				mainMediaElement.DownloadProgressChanged += OnMediaElementDownloadProgressChanged;
-				mainMediaElement.MouseLeftButtonDown += OnMediaElement_MouseLeftButtonDown;
+			if (mediaElement != null) {
+				mediaElement.MediaFailed += OnMediaElementMediaFailed;
+				mediaElement.MediaOpened += OnMediaElementMediaOpened;
+				mediaElement.MediaEnded += OnMediaElementMediaEnded;
+				mediaElement.CurrentStateChanged += OnMediaElementCurrentStateChanged;
+				mediaElement.MarkerReached += OnMediaElementMarkerReached;
+				mediaElement.BufferingProgressChanged += OnMediaElementBufferingProgressChanged;
+				mediaElement.DownloadProgressChanged += OnMediaElementDownloadProgressChanged;
+				mediaElement.MouseLeftButtonDown += OnMediaElement_MouseLeftButtonDown;
 			}
 
-			if (playPauseButton != null) {
-				playPauseButton.Click += OnButtonClickPlayPause;
+			if (buttonPlayPause != null) {
+				buttonPlayPause.Click += OnButtonClickPlayPause;
 			}
 
-			if (stopButton != null) {
-				stopButton.Click += OnButtonClickStop;
+			if (buttonStop != null) {
+				buttonStop.Click += OnButtonClickStop;
 			}
 
-			if (previousButton != null) {
-				previousButton.Click += OnButtonClickPrevious;
+			if (buttonPrevious != null) {
+				buttonPrevious.Click += OnButtonClickPrevious;
 			}
 
-			if (nextButton != null) {
-				nextButton.Click += OnButtonClickNext;
+			if (buttonNext != null) {
+				buttonNext.Click += OnButtonClickNext;
 			}
 
-			if (muteButton != null) {
-				muteButton.Click += OnButtonClickMute;
+			if (buttonMute != null) {
+				buttonMute.Click += OnButtonClickMute;
 			}
 
 			if (menuDebug != null) menuDebug.MouseLeftButtonDown += OnMenuDebug_MouseLeftButtonDown;
@@ -597,22 +551,22 @@ namespace org.OpenVideoPlayer.Player {
 			//if (menuNativeSmaller != null) menuNativeSmaller.MouseLeftButtonDown += OnMenuNativeSmaller_MouseLeftButtonDown;
 			if (menuStretch != null) menuStretch.MouseLeftButtonDown += OnMenuStretch_MouseLeftButtonDown;
 			
-			if (menuButton != null) {
-				menuButton.Click += OnButtonClickMenu;
-				menuButton.MouseEnter += new System.Windows.Input.MouseEventHandler(OnMenuButton_MouseEnter);
-				menuButton.MouseLeave += new System.Windows.Input.MouseEventHandler(OnMenuButton_MouseLeave);
+			if (buttonMenu != null) {
+				buttonMenu.Click += OnButtonClickMenu;
+				buttonMenu.MouseEnter += OnMenuButton_MouseEnter;
+				buttonMenu.MouseLeave += OnMenuButton_MouseLeave;
 			}
 
-			if (fullscreenButton != null) {
-				fullscreenButton.Click += OnButtonClickFullScreen;
+			if (buttonFullScreen != null) {
+				buttonFullScreen.Click += OnButtonClickFullScreen;
 			}
 
-			if (itemsButton != null) {
-				itemsButton.MouseLeftButtonUp += OnButtonClickPlaylistItems;
+			if (buttonPlaylist != null) {
+				buttonPlaylist.MouseLeftButtonUp += OnButtonClickPlaylistItems;
 			}
 
-			if (itemListBox != null) {
-				itemListBox.SelectionChanged += OnItemListSelectionChanged;
+			if (listBoxPlaylist != null) {
+				listBoxPlaylist.SelectionChanged += OnItemListSelectionChanged;
 			}
 
 			if (closePlaylist != null) {
@@ -627,12 +581,12 @@ namespace org.OpenVideoPlayer.Player {
 				closeChapters.MouseLeftButtonUp += OnCloseChapters_Click;
 			}
 
-			if (chapterListBox != null) {
-				chapterListBox.SelectionChanged += OnChapterListSelectionChanged;
+			if (listBoxChapters != null) {
+				listBoxChapters.SelectionChanged += OnChapterListSelectionChanged;
 			}
 
-			if (chaptersButton != null) {
-				chaptersButton.MouseLeftButtonUp += OnButtonClickChapter;
+			if (buttonChapters != null) {
+				buttonChapters.MouseLeftButtonUp += OnButtonClickChapter;
 			}
 
 			if (scrubberBar != null) {
@@ -642,27 +596,27 @@ namespace org.OpenVideoPlayer.Player {
 				scrubberBar.MouseLeave += OnScrubberMouseLeave;
 			}
 
-			if (volumeSlider != null && mainMediaElement != null) {
-				volumeSlider.Minimum = 0;
-				volumeSlider.Maximum = 1;
+			if (sliderVolume != null && mediaElement != null) {
+				sliderVolume.Minimum = 0;
+				sliderVolume.Maximum = 1;
 
 				if (isMuted) {
-					volumeSlider.Value = 0;
-					mainMediaElement.Volume = 0;
+					sliderVolume.Value = 0;
+					mediaElement.Volume = 0;
 				}
 				else {
-					volumeSlider.Value = START_VOLUME;
+					sliderVolume.Value = START_VOLUME;
 				}
-				mainMediaElement.Volume = volumeSlider.Value;
+				mediaElement.Volume = sliderVolume.Value;
 
-				volumeSlider.ValueChanged += OnSliderVolumeChanged;
-				volumeSlider.ValueChangeRequest += OnVolumeChangeRequest;
-				volumeSlider.MouseOver += OnVolumeMouseOver;
-				volumeSlider.MouseLeave += OnVolumeMouseLeave;
+				sliderVolume.ValueChanged += OnSliderVolumeChanged;
+				sliderVolume.ValueChangeRequest += OnVolumeChangeRequest;
+				sliderVolume.MouseOver += OnVolumeMouseOver;
+				sliderVolume.MouseLeave += OnVolumeMouseLeave;
 			}
 
-			if (itemListBox != null) {
-				itemListBox.ItemsSource = Playlist;
+			if (listBoxPlaylist != null) {
+				listBoxPlaylist.ItemsSource = Playlist;
 			}
 
 			if(messageBox!=null) {
@@ -686,12 +640,6 @@ namespace org.OpenVideoPlayer.Player {
 			}
 		}
 
-		void OutputLog_StaticOutputEvent(OutputEntry outputEntry) {
-			logList.Add(outputEntry);
-			while (logList.Count > 999) logList.RemoveAt(0);
-		}
-
-
 		/// <summary>
 		/// Unwires all event handlers
 		/// </summary>
@@ -699,46 +647,46 @@ namespace org.OpenVideoPlayer.Player {
 
 			MouseMove -= On_MouseMove;
 
-			if (mainMediaElement != null) {
-				mainMediaElement.MediaFailed -= OnMediaElementMediaFailed;
-				mainMediaElement.MediaOpened -= OnMediaElementMediaOpened;
-				mainMediaElement.MediaEnded -= OnMediaElementMediaEnded;
-				mainMediaElement.CurrentStateChanged -= OnMediaElementCurrentStateChanged;
-				mainMediaElement.MarkerReached -= OnMediaElementMarkerReached;
-				mainMediaElement.BufferingProgressChanged -= OnMediaElementBufferingProgressChanged;
-				mainMediaElement.DownloadProgressChanged -= OnMediaElementDownloadProgressChanged;
+			if (mediaElement != null) {
+				mediaElement.MediaFailed -= OnMediaElementMediaFailed;
+				mediaElement.MediaOpened -= OnMediaElementMediaOpened;
+				mediaElement.MediaEnded -= OnMediaElementMediaEnded;
+				mediaElement.CurrentStateChanged -= OnMediaElementCurrentStateChanged;
+				mediaElement.MarkerReached -= OnMediaElementMarkerReached;
+				mediaElement.BufferingProgressChanged -= OnMediaElementBufferingProgressChanged;
+				mediaElement.DownloadProgressChanged -= OnMediaElementDownloadProgressChanged;
 			}
 
-			if (playPauseButton != null) {
-				playPauseButton.Click -= OnButtonClickPlayPause;
+			if (buttonPlayPause != null) {
+				buttonPlayPause.Click -= OnButtonClickPlayPause;
 			}
 
-			if (stopButton != null) {
-				stopButton.Click -= OnButtonClickStop;
+			if (buttonStop != null) {
+				buttonStop.Click -= OnButtonClickStop;
 			}
 
-			if (previousButton != null) {
-				previousButton.Click -= OnButtonClickPrevious;
+			if (buttonPrevious != null) {
+				buttonPrevious.Click -= OnButtonClickPrevious;
 			}
 
-			if (nextButton != null) {
-				nextButton.Click -= OnButtonClickNext;
+			if (buttonNext != null) {
+				buttonNext.Click -= OnButtonClickNext;
 			}
 
-			if (muteButton != null) {
-				muteButton.Click -= OnButtonClickMute;
+			if (buttonMute != null) {
+				buttonMute.Click -= OnButtonClickMute;
 			}
 
-			if (menuButton != null) {
-				menuButton.Click -= OnButtonClickMenu;
+			if (buttonMenu != null) {
+				buttonMenu.Click -= OnButtonClickMenu;
 			}
 
 			if (closeChapters != null) {
 				closeChapters.MouseLeftButtonUp -= OnCloseChapters_Click;
 			}
 
-			if (fullscreenButton != null) {
-				fullscreenButton.Click -= OnButtonClickFullScreen;
+			if (buttonFullScreen != null) {
+				buttonFullScreen.Click -= OnButtonClickFullScreen;
 			}
 
 			if (menuDebug != null) menuDebug.MouseLeftButtonDown -= OnMenuDebug_MouseLeftButtonDown;
@@ -757,20 +705,20 @@ namespace org.OpenVideoPlayer.Player {
 				closePlaylist.MouseLeftButtonUp -= OnClosePlaylist_Click;
 			}
 
-			if (itemsButton != null) {
-				itemsButton.MouseLeftButtonUp -= OnButtonClickPlaylistItems;
+			if (buttonPlaylist != null) {
+				buttonPlaylist.MouseLeftButtonUp -= OnButtonClickPlaylistItems;
 			}
 
-			if (itemListBox != null) {
-				itemListBox.SelectionChanged -= OnItemListSelectionChanged;
+			if (listBoxPlaylist != null) {
+				listBoxPlaylist.SelectionChanged -= OnItemListSelectionChanged;
 			}
 
-			if (chapterListBox != null) {
-				chapterListBox.SelectionChanged -= OnChapterListSelectionChanged;
+			if (listBoxChapters != null) {
+				listBoxChapters.SelectionChanged -= OnChapterListSelectionChanged;
 			}
 
-			if (chaptersButton != null) {
-				chaptersButton.MouseLeftButtonUp -= OnButtonClickChapter;
+			if (buttonChapters != null) {
+				buttonChapters.MouseLeftButtonUp -= OnButtonClickChapter;
 			}
 
 			if (scrubberBar != null) {
@@ -780,11 +728,11 @@ namespace org.OpenVideoPlayer.Player {
 				scrubberBar.MouseLeave -= OnScrubberMouseLeave;
 			}
 
-			if (volumeSlider != null) {
-				volumeSlider.ValueChanged -= OnSliderVolumeChanged;
-				volumeSlider.ValueChangeRequest -= OnVolumeChangeRequest;
-				volumeSlider.MouseOver -= OnVolumeMouseOver;
-				volumeSlider.MouseLeave -= OnVolumeMouseLeave;
+			if (sliderVolume != null) {
+				sliderVolume.ValueChanged -= OnSliderVolumeChanged;
+				sliderVolume.ValueChangeRequest -= OnVolumeChangeRequest;
+				sliderVolume.MouseOver -= OnVolumeMouseOver;
+				sliderVolume.MouseLeave -= OnVolumeMouseLeave;
 			}
 
 			if (Application.Current != null) {
@@ -816,12 +764,12 @@ namespace org.OpenVideoPlayer.Player {
 			//TODO: apply Markers from playlist.
 			//TODO: ApplyConfiguration the markers to the video item
 
-			if (itemsContainer != null) {
-				itemsContainer.Visibility = Visibility.Collapsed;
+			if (borderPlaylist != null) {
+				borderPlaylist.Visibility = Visibility.Collapsed;
 			}
 
-			if (chaptersContainer != null) {
-				chaptersContainer.Visibility = Visibility.Collapsed;
+			if (borderChapters != null) {
+				borderChapters.Visibility = Visibility.Collapsed;
 			}
 
 			if (string.IsNullOrEmpty(EmbedUrl) && string.IsNullOrEmpty(LinkUrl)) {//check embed 
@@ -834,9 +782,9 @@ namespace org.OpenVideoPlayer.Player {
 			//Call the fullscreen support for if we're starting in fullscreen
 			PerformResize();
 
-			if (mainMediaElement != null) {
-				mainMediaElement.AutoPlay = autoplaySetting;
-				mainMediaElement.Stretch = stretchMode;
+			if (mediaElement != null) {
+				mediaElement.AutoPlay = autoplaySetting;
+				mediaElement.Stretch = stretchMode;
 
 				StartAutoPlay();
 			}
@@ -862,8 +810,8 @@ namespace org.OpenVideoPlayer.Player {
 			currentlyPlayingChapter = 0;
 			currentlyPlayingItem = playlistItemIndex;
 
-			if (chapterListBox != null) {
-				chapterListBox.ItemsSource = Playlist[currentlyPlayingItem].Chapters;
+			if (listBoxChapters != null) {
+				listBoxChapters.ItemsSource = Playlist[currentlyPlayingItem].Chapters;
 			}
 
 			if (Playlist[currentlyPlayingItem].DeliveryType == DeliveryTypes.Adaptive) {
@@ -879,7 +827,7 @@ namespace org.OpenVideoPlayer.Player {
 						return; //get out of here so WC can work..
 					}
 				} else {
-					altMediaStreamSource = adaptiveConstructor.Invoke(new object[] {mainMediaElement, new Uri(Playlist[currentlyPlayingItem].Url)}) as MediaStreamSource;
+					altMediaStreamSource = adaptiveConstructor.Invoke(new object[] {mediaElement, new Uri(Playlist[currentlyPlayingItem].Url)}) as MediaStreamSource;
 				}
 
 				if (altMediaStreamSource == null) {
@@ -887,11 +835,11 @@ namespace org.OpenVideoPlayer.Player {
 					throw new Exception("Unable to load adaptive DLL");
 				}
 
-				mainMediaElement.SetSource(altMediaStreamSource);
+				mediaElement.SetSource(altMediaStreamSource);
 
 			} else {
 				//Assign the source directly from the playlist url
-				mainMediaElement.Source = new Uri(Playlist[currentlyPlayingItem].Url);
+				mediaElement.Source = new Uri(Playlist[currentlyPlayingItem].Url);
 
 				// Set altMediaStreamSource to null, it is not used for non-adaptive streams
 				altMediaStreamSource = null;
@@ -951,7 +899,7 @@ namespace org.OpenVideoPlayer.Player {
 		/// chapters in the current playlist.
 		/// </summary>
 		private void SetChapterButtonVisibility() {
-			chaptersButton.Opacity = Playlist[currentlyPlayingItem].Chapters.Count <= 0 ? .5 : 1;
+			buttonChapters.Opacity = Playlist[currentlyPlayingItem].Chapters.Count <= 0 ? .5 : 1;
 		}
 
 		/// <summary>
@@ -977,14 +925,10 @@ namespace org.OpenVideoPlayer.Player {
 		protected bool SeekToChapterPoint(int chapterIndex) {
 			if (chapterIndex >= 0 && chapterIndex < Playlist[currentlyPlayingItem].Chapters.Count) {
 				currentlyPlayingChapter = chapterIndex;
-				chapterListBox.SelectedIndex = currentlyPlayingChapter;
+				listBoxChapters.SelectedIndex = currentlyPlayingChapter;
 				return true;
 			}
 			return false;
-		}
-
-		public object GetTemplateChildItem(String name) {
-			return GetTemplateChild(name);
 		}
 
 		/// <summary>
@@ -1021,14 +965,14 @@ namespace org.OpenVideoPlayer.Player {
 
 				//check adaptive rate, right now just put in our rendered fps
 				StringBuilder sb = new StringBuilder();
-				string state = (mainMediaElement == null) ? "" : " (" + mainMediaElement.CurrentState + ")";
+				string state = (mediaElement == null) ? "" : " (" + mediaElement.CurrentState + ")";
 				sb.AppendFormat("OpenVideoPlayer v{0}{1}", version, state);
 
-				if (mainMediaElement != null) {
-					if (isPlaying) sb.AppendFormat("\n{0}/{1} FPS (Render/Drop), Res: {2}x{3}", mainMediaElement.RenderedFramesPerSecond, mainMediaElement.DroppedFramesPerSecond, mainMediaElement.NaturalVideoWidth, mainMediaElement.NaturalVideoHeight);
+				if (mediaElement != null) {
+					if (isPlaying) sb.AppendFormat("\n{0}/{1} FPS (Render/Drop), Res: {2}x{3}", mediaElement.RenderedFramesPerSecond, mediaElement.DroppedFramesPerSecond, mediaElement.NaturalVideoWidth, mediaElement.NaturalVideoHeight);
 
-					if (mainMediaElement.DownloadProgress > 0 && mainMediaElement.DownloadProgress < 1) {
-						sb.AppendFormat("\nDownload progress: {0}%", (int) (100*mainMediaElement.DownloadProgress));
+					if (mediaElement.DownloadProgress > 0 && mediaElement.DownloadProgress < 1) {
+						sb.AppendFormat("\nDownload progress: {0}%", (int) (100*mediaElement.DownloadProgress));
 					}
 				}
 
@@ -1089,20 +1033,21 @@ namespace org.OpenVideoPlayer.Player {
 
 			startupArgs = e;
 
-			//OpenVideoPlayer Ready
+			//OpenVideoPlayer Loaded
 		}
 
 		void Current_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e) {
 			//Debug.WriteLine("Exception: " + e.ExceptionObject);
-			log.Output(OutputType.Error, "Error: ", e.ExceptionObject);
+			log.Output(OutputType.Error, "Error: ", e.ExceptionObject);			
+			e.Handled = true;
 		}
 
 		public void OnButtonClickPlaylistItems(object sender, RoutedEventArgs e) {
 			//PlayListOverlay = false;
 
-			if (itemsContainer != null) {
+			if (borderPlaylist != null) {
 				ShowPlaylist = !ShowPlaylist;
-				//itemsContainer.Visibility = (itemsContainer.Visibility == Visibility.Collapsed) ?
+				//borderPlaylist.Visibility = (borderPlaylist.Visibility == Visibility.Collapsed) ?
 				//    Visibility.Visible : Visibility.Collapsed;
 
 				AdjustForPlaylist();
@@ -1114,16 +1059,16 @@ namespace org.OpenVideoPlayer.Player {
 
 		private void AdjustForPlaylist() {
 			if (PlayListOverlay == false) {
-				mainBorder.Margin = new Thickness(0, 0, ((itemsContainer.Visibility == Visibility.Collapsed) ? 0 : itemListBox.ActualWidth), 0);
-				itemsContainer.Margin = new Thickness(0, 5, 3, 5);
+				mainBorder.Margin = new Thickness(0, 0, ((borderPlaylist.Visibility == Visibility.Collapsed) ? 0 : listBoxPlaylist.ActualWidth), 0);
+				borderPlaylist.Margin = new Thickness(0, 5, 3, 5);
 			} else {
-				itemsContainer.Margin = new Thickness(0, 3, 3, 24);
+				borderPlaylist.Margin = new Thickness(0, 3, 3, 24);
 			}
 		}
 
 		public void OnButtonClickChapter(object sender, RoutedEventArgs e) {
-			if (chaptersContainer != null && currentlyPlayingItem > 0 && Playlist.Count > currentlyPlayingItem && Playlist[currentlyPlayingItem].Chapters.Count > 0) {
-				//chaptersContainer.Visibility = (chaptersContainer.Visibility == Visibility.Collapsed) ?
+			if (borderChapters != null && currentlyPlayingItem > 0 && Playlist.Count > currentlyPlayingItem && Playlist[currentlyPlayingItem].Chapters.Count > 0) {
+				//borderChapters.Visibility = (borderChapters.Visibility == Visibility.Collapsed) ?
 				//    Visibility.Visible : Visibility.Collapsed;
 				ShowChapters = !ShowChapters;
 			}
@@ -1134,45 +1079,45 @@ namespace org.OpenVideoPlayer.Player {
 
 		public void OnTimerTick(object sender, EventArgs e) {
 			try {
-				if (mainMediaElement == null) {
+				if (mediaElement == null) {
 					return;
 				}
 				timerIsUpdating = true;
 
-				if (PlayListOverlay == false && itemsContainer.Visibility == Visibility.Visible && mainBorder.Margin.Right == 0) {
-					mainBorder.Margin = new Thickness(0, 0, itemListBox.ActualWidth, 0);
+				if (PlayListOverlay == false && borderPlaylist.Visibility == Visibility.Visible && mainBorder.Margin.Right == 0) {
+					mainBorder.Margin = new Thickness(0, 0, listBoxPlaylist.ActualWidth, 0);
 				}
 
-				itemsButton.Opacity = (Playlist.Count < 2) ? .5 : 1;
+				buttonPlaylist.Opacity = (Playlist.Count < 2) ? .5 : 1;
 
-				TimeSpan pos = mainMediaElement.Position;
-				scrubberBar.IsEnabled = mainMediaElement.NaturalDuration.TimeSpan != TimeSpan.Zero;
+				TimeSpan pos = mediaElement.Position;
+				scrubberBar.IsEnabled = mediaElement.NaturalDuration.TimeSpan != TimeSpan.Zero;
 				PlaybackPosition = pos.TotalSeconds;
 
 				//hack - sometimes gets into a wierd state.  need to l0ok more at this
 				if(PlaybackPosition > scrubberBar.Maximum) {
-					if(mainMediaElement.RenderedFramesPerSecond == 0) {
+					if(mediaElement.RenderedFramesPerSecond == 0) {
 						if (currentlyPlayingItem < Playlist.Count - 1) {
 							SeekToNextItem();
 						} else {
-							mainMediaElement.Position = TimeSpan.Zero;
+							mediaElement.Position = TimeSpan.Zero;
 							Pause();
 						}
 					}
 				}
-				TimeSpan dur = mainMediaElement.NaturalDuration.TimeSpan;
+				TimeSpan dur = mediaElement.NaturalDuration.TimeSpan;
 
 				PlaybackPositionText = (dur.Hours >= 1) ? string.Format("{0}:{1}:{2}", pos.Hours.ToString("00"), pos.Minutes.ToString("00"), pos.Seconds.ToString("00"))
 					: string.Format("{0}:{1}", pos.Minutes.ToString("00"), pos.Seconds.ToString("00"));
 
-				if (chapterListBox != null && currentlyPlayingChapter >= 0 && currentlyPlayingChapter < chapterListBox.Items.Count && chapterListBox.SelectedIndex != currentlyPlayingChapter) {
+				if (listBoxChapters != null && currentlyPlayingChapter >= 0 && currentlyPlayingChapter < listBoxChapters.Items.Count && listBoxChapters.SelectedIndex != currentlyPlayingChapter) {
 					// set the currently playing chapter on the list box without triggering our events
-					chapterListBox.SelectionChanged -= OnChapterListSelectionChanged;
-					chapterListBox.SelectedIndex = currentlyPlayingChapter;
-					chapterListBox.SelectionChanged += OnChapterListSelectionChanged;
+					listBoxChapters.SelectionChanged -= OnChapterListSelectionChanged;
+					listBoxChapters.SelectedIndex = currentlyPlayingChapter;
+					listBoxChapters.SelectionChanged += OnChapterListSelectionChanged;
 
 					// move that into view
-					chapterListBox.ScrollIntoView(chapterListBox.Items[currentlyPlayingChapter]);
+					listBoxChapters.ScrollIntoView(listBoxChapters.Items[currentlyPlayingChapter]);
 				}
 
 				UpdateDebugPanel();
@@ -1180,15 +1125,15 @@ namespace org.OpenVideoPlayer.Player {
 				if (updateDownloading) {
 					updateDownloading = false;
 
-					DownloadPercent = mainMediaElement.DownloadProgress*100;
-					DownloadOffsetPercent = mainMediaElement.DownloadProgressOffset*100;
+					DownloadPercent = mediaElement.DownloadProgress*100;
+					DownloadOffsetPercent = mediaElement.DownloadProgressOffset*100;
 				}
 
 				if (updateBuffering) {
 					updateBuffering = false;
 
-					BufferingControlVisibility = (mainMediaElement.BufferingProgress < 1) ? Visibility.Visible : Visibility.Collapsed;
-					BufferingPercent = mainMediaElement.BufferingProgress*100;
+					BufferingControlVisibility = (mediaElement.BufferingProgress < 1) ? Visibility.Visible : Visibility.Collapsed;
+					BufferingPercent = mediaElement.BufferingProgress*100;
 				}
 
 				//Catch single click for play pause
@@ -1206,7 +1151,7 @@ namespace org.OpenVideoPlayer.Player {
 		}
 
 		void OnClosePlaylist_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			itemsContainer.Visibility = Visibility.Collapsed;
+			borderPlaylist.Visibility = Visibility.Collapsed;
 			AdjustForPlaylist();
 		}
 
@@ -1215,46 +1160,41 @@ namespace org.OpenVideoPlayer.Player {
 		}
 
 		void OnCloseChapters_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			chaptersContainer.Visibility = Visibility.Collapsed;
+			borderChapters.Visibility = Visibility.Collapsed;
 		}
 
 		public void OnMediaElementCurrentStateChanged(object sender, RoutedEventArgs e) {
-			if (mainMediaElement.CurrentState == lastMediaState) return;
-			lastMediaState = mainMediaElement.CurrentState;
+			if (mediaElement.CurrentState == lastMediaState) return;
+			lastMediaState = mediaElement.CurrentState;
 
 			// If we're playing make the play element invisible and the pause element visible, otherwise invert.
-			if (mainMediaElement.CurrentState == MediaElementState.Playing) {
+			if (mediaElement.CurrentState == MediaElementState.Playing) {
 				playToggle.Visibility = Visibility.Collapsed;
 				pauseToggle.Visibility = Visibility.Visible;
 
 			//	isPlaying = true;
-				ToolTipService.SetToolTip(playPauseButton, "Pause");
-			}else if (mainMediaElement.CurrentState == MediaElementState.Opening) {
-			} else if (mainMediaElement.CurrentState == MediaElementState.Closed) {
+				ToolTipService.SetToolTip(buttonPlayPause, "Pause");
+			}else if (mediaElement.CurrentState == MediaElementState.Opening) {
+			} else if (mediaElement.CurrentState == MediaElementState.Closed) {
 			} else {
 				playToggle.Visibility = Visibility.Visible;
 				pauseToggle.Visibility = Visibility.Collapsed;
 
 			//	isPlaying = false;
-				ToolTipService.SetToolTip(playPauseButton, "Play");
+				ToolTipService.SetToolTip(buttonPlayPause, "Play");
 			}
 
-			//Debug.WriteLine("State: " + mainMediaElement.CurrentState);
-			log.Output(OutputType.Debug, "State: " + mainMediaElement.CurrentState);
+			//Debug.WriteLine("State: " + mediaElement.CurrentState);
+			log.Output(OutputType.Debug, "State: " + mediaElement.CurrentState);
 		}
 
 		public void OnMediaElementMediaOpened(object sender, RoutedEventArgs e) {
 			PerformResize();
 			
-			MediaElement mediaElement;
-			if ((mediaElement = sender as MediaElement) == null) {
-				return;
-			}
-
 			//Detect that we opened a streaming link (perhaps through an asx) and hide the download progress bar
 			DownloadProgressControlVisibility = (mediaElement.DownloadProgress == 1) ? Visibility.Collapsed : Visibility.Visible;
 
-			if (mainMediaElement.NaturalDuration.HasTimeSpan && mainMediaElement.NaturalDuration.TimeSpan > TimeSpan.Zero) {
+			if (mediaElement.NaturalDuration.HasTimeSpan && mediaElement.NaturalDuration.TimeSpan > TimeSpan.Zero) {
 				TimeSpan dur = mediaElement.NaturalDuration.TimeSpan;
 				PlaybackDuration = dur.TotalSeconds;
 
@@ -1270,10 +1210,16 @@ namespace org.OpenVideoPlayer.Player {
 				Play();
 			}
 
-			itemListBox.SelectedIndex = currentlyPlayingItem;
+			listBoxPlaylist.SelectedIndex = currentlyPlayingItem;
 			messageBox.Visibility = Visibility.Collapsed;
 
 			log.Output(OutputType.Info, "Opened: " + currentlyPlayingItem + ", " + CurrentSource);
+		}
+
+
+		void OutputLog_StaticOutputEvent(OutputEntry outputEntry) {
+			logList.Add(outputEntry);
+			while (logList.Count > 999) logList.RemoveAt(0);
 		}
 
 		public void OnMediaElementMediaEnded(object sender, RoutedEventArgs e) {
@@ -1368,14 +1314,14 @@ namespace org.OpenVideoPlayer.Player {
 		}
 
 		/// <summary>
-		/// Event callback to update the mainMediaElement with the volume's current value
+		/// Event callback to update the mediaElement with the volume's current value
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		public void OnSliderVolumeChanged(object sender, RoutedEventArgs e) {
-			mainMediaElement.Volume = volumeSlider.Value;
-			isMuted = volumeSlider.Value < LOWER_VOLUME_THRESHOLD;
-			optionsMenu.Visibility = Visibility.Collapsed;
+			mediaElement.Volume = sliderVolume.Value;
+			isMuted = sliderVolume.Value < LOWER_VOLUME_THRESHOLD;
+			CollapseMenus();
 		}
 
 		/// <summary>
@@ -1413,14 +1359,14 @@ namespace org.OpenVideoPlayer.Player {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		public void OnItemListSelectionChanged(object sender, RoutedEventArgs e) {
-			SeekToPlaylistItem(itemListBox.SelectedIndex);
+			SeekToPlaylistItem(listBoxPlaylist.SelectedIndex);
 			if (PlayListOverlay) {
-				//itemsContainer.Visibility = Visibility.Collapsed; // hides the playlist
-				if (isPlaying) itemsContainer.Visibility = Visibility.Collapsed; // hides the playlist
+				//borderPlaylist.Visibility = Visibility.Collapsed; // hides the playlist
+				if (isPlaying) borderPlaylist.Visibility = Visibility.Collapsed; // hides the playlist
 			
 				AdjustForPlaylist();
 			}
-			//chaptersContainer.Visibility = Visibility.Collapsed;
+			//borderChapters.Visibility = Visibility.Collapsed;
 		}
 
 		/// <summary>
@@ -1429,14 +1375,14 @@ namespace org.OpenVideoPlayer.Player {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		public void OnChapterListSelectionChanged(object sender, RoutedEventArgs e) {
-			currentlyPlayingChapter = chapterListBox.SelectedIndex;
+			currentlyPlayingChapter = listBoxChapters.SelectedIndex;
 			if (currentlyPlayingChapter >= 0) {
-				mainMediaElement.Position = TimeSpan.FromSeconds(Playlist[currentlyPlayingItem].Chapters[currentlyPlayingChapter].Position);
+				mediaElement.Position = TimeSpan.FromSeconds(Playlist[currentlyPlayingItem].Chapters[currentlyPlayingChapter].Position);
 			}
 		}
 
 		/// <summary>
-		/// Event callback, fires when the mainMediaElement hits a marker.  Markers may or may not be
+		/// Event callback, fires when the mediaElement hits a marker.  Markers may or may not be
 		/// defined for each item in the playlist.
 		/// </summary>
 		/// <param name="sender">Sender</param>
@@ -1445,7 +1391,7 @@ namespace org.OpenVideoPlayer.Player {
 			// Marker types could trigger add points, captions, interactions or chapters
 			switch (MarkerTypeConv.StringToMarkerType(e.Marker.Type)) {
 				case MarkerTypes.Chapter:
-					if (chapterListBox != null) {
+					if (listBoxChapters != null) {
 						currentlyPlayingChapter = ChapterIndexFromPosition(e.Marker.Time);
 					}
 					break;
@@ -1466,14 +1412,15 @@ namespace org.OpenVideoPlayer.Player {
 			//Debug.WriteLine("Click received from : " + sender.GetType());
 
 			if (optionsMenu.Visibility == Visibility.Visible) {
-				optionsMenu.Visibility = Visibility.Collapsed;
+				CollapseMenus();
 				return;
 			}
 
 			if (DateTime.Now - lastClick < TimeSpan.FromMilliseconds(10)) {
 				//duplicate
 				return;
-			} else if (DateTime.Now - lastClick < TimeSpan.FromMilliseconds(250)) {
+			} 
+			if (DateTime.Now - lastClick < TimeSpan.FromMilliseconds(250)) {
 				//this means a double click..
 				lastClick = DateTime.MinValue;
 				waitOnClick = false;
@@ -1488,18 +1435,18 @@ namespace org.OpenVideoPlayer.Player {
 
 		public void OnScrubberChanged(object sender, RoutedEventArgs e) {
 			if (!timerIsUpdating) {
-				mainMediaElement.Position = TimeSpan.FromSeconds(scrubberBar.Value);
+				mediaElement.Position = TimeSpan.FromSeconds(scrubberBar.Value);
 			}
 		}
 
 		public void OnScrubberChangeRequest(object sender, ScrubberBarValueChangeArgs e) {
 			if (!timerIsUpdating) {
-				mainMediaElement.Position = TimeSpan.FromSeconds(e.Value);
+				mediaElement.Position = TimeSpan.FromSeconds(e.Value);
 			}
 		}
 
 		void OnVolumeChangeRequest(object sender, ScrubberBarValueChangeArgs e) {
-			volumeSlider.Value = e.Value;
+			sliderVolume.Value = e.Value;
 		}
 
 		void OnVolumeMouseOver(object sender, ScrubberBarValueChangeArgs e) {
@@ -1511,7 +1458,7 @@ namespace org.OpenVideoPlayer.Player {
 			SetCustomToolTip(pt, text); 
 			
 			if (e.MousePressed) {
-				volumeSlider.Value = val;
+				sliderVolume.Value = val;
 			}
 		}
 
@@ -1631,9 +1578,6 @@ namespace org.OpenVideoPlayer.Player {
 			CollapseMenus();
 		}
 
-		SolidColorBrush sel = new SolidColorBrush(Color.FromArgb(0xFF, 0x37, 0x80, 0x94));//377994
-		SolidColorBrush unsel = new SolidColorBrush(Colors.Transparent);
-		
 		private void CollapseMenus() {
 			subMenuDebugBox.Visibility = optionsMenu.Visibility = subMenuScalingBox.Visibility = Visibility.Collapsed;
 		}
@@ -1661,7 +1605,7 @@ namespace org.OpenVideoPlayer.Player {
 		protected MediaElementState lastMediaState = MediaElementState.Closed;
 		protected string lastCommand;
 		/// <summary>
-		/// Causes the mainMediaElement to begin playing
+		/// Causes the mediaElement to begin playing
 		/// </summary>
 		[ScriptableMember]
 		public void Play() {
@@ -1671,29 +1615,29 @@ namespace org.OpenVideoPlayer.Player {
 
 			isPlaying = true;
 
-			if (mainMediaElement != null) {
+			if (mediaElement != null) {
 				if(Playlist.Count > 0 && currentlyPlayingItem == -1) {
 					SeekToPlaylistItem(0);
 					return;
 				}
-				if (mainMediaElement.CurrentState == MediaElementState.Stopped) {
-					mainMediaElement.Position = new TimeSpan(0);
+				if (mediaElement.CurrentState == MediaElementState.Stopped) {
+					mediaElement.Position = new TimeSpan(0);
 				}
-				mainMediaElement.Play();
+				mediaElement.Play();
 				//Debug.WriteLine("Play");
 				log.Output(OutputType.Debug, "Command: Play");
 			}
-			ToolTipService.SetToolTip(playPauseButton, "Pause");
+			ToolTipService.SetToolTip(buttonPlayPause, "Pause");
 			messageBox.Visibility = Visibility.Collapsed;
 		}
 
 		/// <summary>
-		/// Pause's the mainMediaElement
+		/// Pause's the mediaElement
 		/// </summary>
 		[ScriptableMember]
 		public void Pause() {
-			if (mainMediaElement == null) return;
-			if (!mainMediaElement.CanPause) {
+			if (mediaElement == null) return;
+			if (!mediaElement.CanPause) {
 				Stop();
 				return;
 			}
@@ -1702,11 +1646,11 @@ namespace org.OpenVideoPlayer.Player {
 			if (command == lastCommand) return;
 			lastCommand = command;
 
-			mainMediaElement.Pause();
+			mediaElement.Pause();
 
 			log.Output(OutputType.Debug, "Command: " + command);
 			isPlaying = false;
-			ToolTipService.SetToolTip(playPauseButton, "Play");
+			ToolTipService.SetToolTip(buttonPlayPause, "Play");
 			SetPausedMessageBox();
 		}
 
@@ -1731,13 +1675,12 @@ namespace org.OpenVideoPlayer.Player {
 			}
 		}
 
-
 		/// <summary>
 		/// Toggles the Play or Pause state
 		/// </summary>
 		[ScriptableMember]
 		public void TogglePlayPause() {
-			if (mainMediaElement != null && mainMediaElement.CurrentState != MediaElementState.Playing) {
+			if (mediaElement != null && mediaElement.CurrentState != MediaElementState.Playing) {
 				Play();
 			}else {
 				Pause();	
@@ -1749,7 +1692,7 @@ namespace org.OpenVideoPlayer.Player {
 		public bool PlayListOverlay { get; set; }
 
 		/// <summary>
-		/// Stops the mainMediaElement
+		/// Stops the mediaElement
 		/// </summary>
 		[ScriptableMember]
 		public void Stop() {
@@ -1759,10 +1702,10 @@ namespace org.OpenVideoPlayer.Player {
 			log.Output(OutputType.Debug, "Command: " + command);
 
 			isPlaying = false;
-			if (mainMediaElement != null) {
-				mainMediaElement.Stop();
-				mainMediaElement.AutoPlay = false;
-				mainMediaElement.Source = null;
+			if (mediaElement != null) {
+				mediaElement.Stop();
+				mediaElement.AutoPlay = false;
+				mediaElement.Source = null;
 			}
 		}
 
@@ -1828,12 +1771,12 @@ namespace org.OpenVideoPlayer.Player {
 		/// here causes a decrement</param>
 		[ScriptableMember]
 		public void VolumeIncrement(double incrementValue) {
-			double currentVolume = mainMediaElement.Volume;
+			double currentVolume = mediaElement.Volume;
 			currentVolume = Math.Min(1.0, Math.Max(0.0, currentVolume + incrementValue));
-			mainMediaElement.Volume = currentVolume;
-			volumeSlider.Value = currentVolume;
+			mediaElement.Volume = currentVolume;
+			sliderVolume.Value = currentVolume;
 			lastUsedVolume = currentVolume;
-			isMuted = volumeSlider.Value < LOWER_VOLUME_THRESHOLD;
+			isMuted = sliderVolume.Value < LOWER_VOLUME_THRESHOLD;
 		}
 
 		///<summary>
@@ -1860,7 +1803,7 @@ namespace org.OpenVideoPlayer.Player {
 			get { return controlBox.Visibility == Visibility.Visible; }
 			set {
 				controlBox.Visibility = (value) ? Visibility.Visible : Visibility.Collapsed;
-				mainGrid.RowDefinitions[2].Height = (value) ? new GridLength(32) : new GridLength(0); ;
+				mainGrid.RowDefinitions[2].Height = (value) ? new GridLength(32) : new GridLength(0); 
 			}
 		}
 
@@ -1868,7 +1811,7 @@ namespace org.OpenVideoPlayer.Player {
 		public string CurrentSource {
 			get {
 				string plsource = (Playlist != null && Playlist.Count > currentlyPlayingItem && Playlist[currentlyPlayingItem] != null) ? Playlist[currentlyPlayingItem].Url : null;
-				string source = (mainMediaElement.Source == null) ? plsource : mainMediaElement.Source.ToString(); //TODO - add support for non-playlisted adapative sources?
+				string source = (mediaElement.Source == null) ? plsource : mediaElement.Source.ToString(); //TODO - add support for non-playlisted adapative sources?
 				return source;
 			}
 		}
@@ -1883,12 +1826,12 @@ namespace org.OpenVideoPlayer.Player {
 		public void ToggleFullscreen() {
 			bool full = Application.Current.Host.Content.IsFullScreen;
 			Application.Current.Host.Content.IsFullScreen = !full;
-			if (fullscreenButton != null) {
+			if (buttonFullScreen != null) {
 				if (!full) {
-					ToolTipService.SetToolTip(fullscreenButton, "Restore Screen");
+					ToolTipService.SetToolTip(buttonFullScreen, "Restore Screen");
 				}
 				else {
-					ToolTipService.SetToolTip(fullscreenButton, "FullScreen");
+					ToolTipService.SetToolTip(buttonFullScreen, "FullScreen");
 				}
 			}
 			if(optionsMenu!=null) optionsMenu.Visibility = Visibility.Collapsed;
@@ -1896,14 +1839,14 @@ namespace org.OpenVideoPlayer.Player {
 
 		[ScriptableMember]
 		public bool ShowChapters{
-			get { return chaptersContainer.Visibility == Visibility.Visible; }
-			set { chaptersContainer.Visibility = (value && chapterListBox.Items.Count > 0) ? Visibility.Visible : Visibility.Collapsed; }
+			get { return borderChapters.Visibility == Visibility.Visible; }
+			set { borderChapters.Visibility = (value && listBoxChapters.Items.Count > 0) ? Visibility.Visible : Visibility.Collapsed; }
 		}
 
 		[ScriptableMember]
 		public bool ShowPlaylist {
-			get { return itemsContainer.Visibility == Visibility.Visible; }
-			set { itemsContainer.Visibility = (value && (Playlist.Count > 1)) ? Visibility.Visible : Visibility.Collapsed; }
+			get { return borderPlaylist.Visibility == Visibility.Visible; }
+			set { borderPlaylist.Visibility = (value && (Playlist.Count > 1)) ? Visibility.Visible : Visibility.Collapsed; }
 		}
 
 		public Border MainBorder {
@@ -1911,5 +1854,15 @@ namespace org.OpenVideoPlayer.Player {
 		}
 
 		#endregion
+
+		internal void SetTheme(Uri uri) {
+			try {
+				ImplicitStyleManager.SetResourceDictionaryUri(MainBorder, uri);
+				ImplicitStyleManager.SetApplyMode(MainBorder, ImplicitStylesApplyMode.Auto);
+				ImplicitStyleManager.Apply(MainBorder);
+			}catch(Exception ex) {
+				log.Output(OutputType.Error, "Couldnt set theme: ", ex);
+			}
+		}
 	}
 }

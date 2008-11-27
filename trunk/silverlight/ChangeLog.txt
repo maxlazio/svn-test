@@ -1,23 +1,25 @@
-Version 2.0.30
+*** Version 2.0.30 ***
 2008-11-26	Nick Brookins <nbrookin at akamai d0t com>
 
+- implemented playlist downloading in connection class where it belonged
+- new bindtemplate() that is more dynamic
 - Fixed url encoding issue so percentages work for height/width on Mac.
 - Fixed bug (typo) that was causing crash when loading adaptive dll
 - various styling improvements
-- some improvements to options menu
+- some improvements to options menu, zorder, etc
 - new log viewer control, still a work in progress
 - Added new 'Fill' stretch mode, maps to Silverlight's UniformToFill.  Like stretch, but preserves aspect by clipping
-- shink duration and position text to MM:SS unless clip is over an hour, then show HH:MM:SS
+- shrink duration and position text to MM:SS unless clip is over an hour, then show HH:MM:SS
 
 
-Version 2.0.26
+*** Version 2.0.26 ***
 2008-11-19	Nick Brookins <nbrookin at akamai d0t com>
 
 - Tweaked the project to eliminate several files/folders, including Bin, ClientBin, and Silverlight.js
 - New prebuild.cmd pre build script updates versions on all projects, including subversion revision.
 
 
-Version 2.0.24 
+*** Version 2.0.24 ***
 2008-11-19	Nick Brookins <nbrookin at akamai d0t com>
 
 // Code changes (from v1.8)
