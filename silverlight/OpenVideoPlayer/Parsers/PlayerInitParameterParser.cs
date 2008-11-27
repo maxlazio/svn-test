@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Media;
@@ -19,84 +20,28 @@ namespace org.OpenVideoPlayer.Parsers {
 	/// OpenVideoPlayer Control.
 	/// </summary>
 	public class PlayerInitParameterParser {
-		protected ParserManager parserMgr;
+		//protected ParserManager parserMgr;
+
 		protected IConnection connection;
-		protected Uri link;
+		protected OpenVideoPlayerControl _player;
+		protected OutputLog log = new OutputLog("InitParser");
 
-		public PlayerInitParameterParser() {
-
-		}
+		public PlayerInitParameterParser() { }
 
 		public void ImportInitParams(StartupEventArgs e, OpenVideoPlayerControl player) {
 			String initValue;
+			_player = player;
 			player.Playlist.Clear();
-			if (e.InitParams.TryGetValue("playlist", out initValue)) {
-				//load our local parser manager
-				parserMgr = getParserManager();
-				connection = new DefaultConnection(parserMgr);
 
-				// If we find a non-source (direct playlist) parameter then we can
-				//parse the xml directly through the connection object.  The playlist
-				//can be a lot of things, including a ms-playlist, rss feed, asx file, etc...
-				try {
-					Stream inStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(initValue));
-					connection.ParseStream(HtmlPage.Document.DocumentUri, inStream);
-					for (int i = 0; i < connection.Playlist.Count; i++) {
-						player.Playlist.Add(connection.Playlist[i]);
-					}
-				} catch (System.Xml.XmlException xe) {
-					Debug.WriteLine("Playlist Parsing Error:" + xe);
-				} catch (NullReferenceException) {
-				}
-
-			} else if (e.InitParams.TryGetValue("mediasource", out initValue)) {
-				//direct-link create a new media item here
-				player.Playlist.Add(new VideoItem() { Url = initValue });
-			} else {
-				if (e.InitParams.TryGetValue("playlistsource", out initValue)) {
-					parserMgr = getParserManager();
-				} else if (e.InitParams.TryGetValue("feedsource", out initValue)) {
-					parserMgr = getFeedParserManager();
-				} else if (e.InitParams.TryGetValue("refsource", out initValue)) {
-					parserMgr = getRefParserManager();
-				}
-				if (parserMgr != null) {
-					connection = new DefaultConnection(parserMgr);
-					// If we find a refsource parameter then we need to setup a factory with only reference file parsers
-					try {
-						//connect to remote uri turn the data to a memory stream and pass the stream in here
-						WebClient wc = new WebClient();
-						wc.DownloadStringCompleted += wc_DownloadStringCompleted;
-
-						link = (Uri.IsWellFormedUriString(initValue, UriKind.Absolute))
-							? new Uri(initValue)
-							: new Uri(HtmlPage.Document.DocumentUri, initValue);
-
-						wc.DownloadStringAsync(link, player);
-
-					} catch (System.Xml.XmlException xe) {
-						Debug.WriteLine("XML Parsing Error:" + xe);
-					} catch (NullReferenceException) {
-					}
-				}
-			}
+			//parse the source/input - can be inseveral different params
+			ParseSource(player, e);
 
 			if (e.InitParams.TryGetValue("theme", out initValue)) {
-				try {
-					//FrameworkElement layoutRoot = (FrameworkElement) GetTemplateChild("LayoutRoot");
-					if(!initValue.Contains(";component/")) {
-						initValue = "OpenVideoPlayer;component/themes/" + initValue + (initValue.Contains(".xaml")?"":".xaml");
-					}
-					Uri uri = new Uri(initValue, UriKind.Relative);//@"SLLib;component/themes/default.xaml"
-
-					ImplicitStyleManager.SetResourceDictionaryUri(player.MainBorder, uri);
-					ImplicitStyleManager.SetApplyMode(player.MainBorder, ImplicitStylesApplyMode.Auto);
-					ImplicitStyleManager.Apply(player.MainBorder);
-
-
-				} catch (Exception ex) {
-					Debug.WriteLine("Failed to load theme : " + initValue + ", " + ex);
+				if (!initValue.Contains(";component/")) {
+					initValue = "OpenVideoPlayer;component/themes/" + initValue + (initValue.Contains(".xaml") ? "" : ".xaml");
 				}
+				Uri uri = new Uri(initValue, UriKind.Relative); //@"SLLib;component/themes/default.xaml"
+				player.SetTheme(uri);
 			}
 
 			if (e.InitParams.TryGetValue("autoplay", out initValue)) {
@@ -144,36 +89,6 @@ namespace org.OpenVideoPlayer.Parsers {
 			}
 		}
 
-		//TODO - integrate with conn. class
-		void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e) {
-			OpenVideoPlayerControl player = e.UserState as OpenVideoPlayerControl;
-			if (e.Cancelled) {
-				throw new Exception("Playlist load cancelled");
-			}
-			if (e.Error != null) {
-				throw e.Error;
-			}
-			if (e.Result == null) {
-				throw new Exception("Invalid result from playlist request");
-			}
-			if (player == null) {
-				throw new Exception("Null player on download result");
-			}
-
-			Stream inStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(e.Result));
-			connection.ParseStream(link, inStream);
-
-			if (connection.Playlist != null) {
-				for (int i = 0; i < connection.Playlist.Count; i++) {
-					player.Playlist.Add(connection.Playlist[i]);
-				}
-			} else {
-				//TODO - get error message into player
-			}
-
-			player.StartAutoPlay();//if(player.Playlist.Count>0  && player.AutoPlay) player.SeekToNextItem();
-		}
-
 		protected Stretch ParseStretchMode(string args) {
 			args = args.ToLower();  // force it to-lower for matching
 			if (args == "1" || args == "uniform" || args == "fit") {
@@ -196,6 +111,85 @@ namespace org.OpenVideoPlayer.Parsers {
 			} catch (System.FormatException) {
 				return Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
 			}
+		}
+
+		#region Source/Playlist specific
+		private void ParseSource(OpenVideoPlayerControl player, StartupEventArgs e) {
+			string initValue;
+			// ** Playlist handing ***
+			ParserManager parserMgr = null;
+			Stream sourceStream = null;
+			Uri sourceUri = null;
+
+			if (e.InitParams.TryGetValue("playlist", out initValue)) {
+
+				//load our local parser manager
+				parserMgr = getParserManager();
+				// If we find a non-source (direct playlist) parameter then we can
+				//parse the xml directly through the connection object.  The playlist
+				//can be a lot of things, including a ms-playlist, rss feed, asx file, etc...
+
+				//For now put in stream for later..
+				sourceStream = new MemoryStream(Encoding.UTF8.GetBytes(initValue));
+
+			} else if (e.InitParams.TryGetValue("mediasource", out initValue)) {
+				//direct-link create a new media item here
+				player.Playlist.Add(new VideoItem() { Url = initValue });
+
+			} else {
+				//otherise - create the right parser manager for our connection..
+				if (e.InitParams.TryGetValue("playlistsource", out initValue)) {
+					parserMgr = getParserManager();
+
+				} else if (e.InitParams.TryGetValue("feedsource", out initValue)) {
+					parserMgr = getFeedParserManager();
+
+					// If we find a refsource parameter then we need to setup a factory with only reference file parsers
+				} else if (e.InitParams.TryGetValue("refsource", out initValue)) {
+					parserMgr = getRefParserManager();
+				}
+				//create a uri to use below.
+				sourceUri = (Uri.IsWellFormedUriString(initValue, UriKind.Absolute))
+								? new Uri(initValue)
+								: new Uri(HtmlPage.Document.DocumentUri, initValue);
+			}
+
+			//if we ended up with a parser manager then give it to our connection class
+			if (parserMgr != null) {
+				connection = new DefaultConnection(parserMgr);
+				connection.Loaded += OnConnection_Loaded;
+				connection.Error += OnConnection_Error;
+
+				if (sourceStream != null) {
+					//if the stream is there, parse directly
+					connection.ParseStream(HtmlPage.Document.DocumentUri, sourceStream);
+				} else {
+					//otherwise connect to the uri for the source/playlist
+					connection.Connect(sourceUri);
+				}
+			}
+			// ** End Playlist handing ***
+		}
+
+		void OnConnection_Error(object sender, UnhandledExceptionEventArgs e) {
+			log.Output(OutputType.Error, "Connection error: ", (Exception)e.ExceptionObject);
+		}
+
+		void OnConnection_Loaded(object sender, EventArgs e) {
+			if (_player == null) {
+				log.Output(OutputType.Critical, "Error: received source input, but no player to use");
+				return;
+			}
+
+			if (connection.Playlist != null) {
+				for (int i = 0; i < connection.Playlist.Count; i++) {
+					_player.Playlist.Add(connection.Playlist[i]);
+				}
+			} else {
+				log.Output(OutputType.Critical, "Could not access playlist - no items.");
+			}
+
+			_player.StartAutoPlay();
 		}
 
 		/// <summary>
@@ -225,9 +219,7 @@ namespace org.OpenVideoPlayer.Parsers {
 			List<IPlaylistParserFactory> parserFactories = new List<IPlaylistParserFactory>();
 
 			//Add expected parser factories here
-			//parserFactories.Add(new MSPlaylistFactory());
 			parserFactories.Add(new RssFactory());
-			//parserFactories.Add(new BossFactory());
 
 			//load the parsers we've selected into the parser manager and return it
 			pm.LoadParsers(parserFactories.ToArray());
@@ -239,13 +231,14 @@ namespace org.OpenVideoPlayer.Parsers {
 			List<IPlaylistParserFactory> parserFactories = new List<IPlaylistParserFactory>();
 
 			//Add expected parser factories here
-			//parserFactories.Add(new MSPlaylistFactory());
-			//parserFactories.Add(new RssFactory());
 			parserFactories.Add(new BossFactory());
 
 			//load the parsers we've selected into the parser manager and return it
 			pm.LoadParsers(parserFactories.ToArray());
 			return pm;
 		}
+
+		#endregion
+
 	}
 }

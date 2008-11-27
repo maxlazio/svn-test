@@ -347,9 +347,9 @@
                                           VerticalAlignment="Bottom" Grid.Row="2" Background="#FF333333">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="58"/><!-- Play -->
-                                            <ColumnDefinition Width="56"/><!-- pos -->
+                                            <ColumnDefinition Width="36"/><!-- pos -->
                                             <ColumnDefinition Width="*"/><!-- scrubber -->
-                                            <ColumnDefinition Width="56"/><!-- dur -->
+                                            <ColumnDefinition Width="36"/><!-- dur -->
                                             <ColumnDefinition Width="32"/><!-- vol -->
                                             <ColumnDefinition Width="80"/><!-- vol bar-->
                                             <!--<ColumnDefinition Width="20"/>--><!-- quality -->
@@ -466,7 +466,7 @@
                             </Border>
 
                             <!-- PLAYLIST ITEMS PANEL-->
-                            <Border Height="Auto" HorizontalAlignment="Right" x:Name="borderItems" Opacity=".8" VerticalAlignment="Stretch" Width="Auto" Grid.Row="0" Margin="2,6,3,-20" CornerRadius="3,3,3,3" BorderThickness="3" BorderBrush="#FF333333">
+                            <Border Height="Auto" HorizontalAlignment="Right" x:Name="borderPlaylist" Opacity=".8" VerticalAlignment="Stretch" Width="Auto" Grid.Row="0" Margin="2,6,3,-20" CornerRadius="3,3,3,3" BorderThickness="3" BorderBrush="#FF333333">
                                 <Grid Background="#FF000000" >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="20" />
@@ -478,7 +478,7 @@
                                         <TextBlock Margin="0" Height="Auto" HorizontalAlignment="Center" Width="Auto" Foreground="White" FontSize="11" Text="X"></TextBlock>
                                     </Border>
 
-                                    <ListBox Foreground="#FFFFFFFF" Background="#FF000000" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,0,0,0" x:Name="listBoxItems" Width="Auto" Grid.Row="1">
+                                    <ListBox Foreground="#FFFFFFFF" Background="#FF000000" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,0,0,0" x:Name="listBoxPlaylist" Width="Auto" Grid.Row="1">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid Height="Auto" HorizontalAlignment="Stretch" Width="261">
@@ -565,7 +565,7 @@
                                     </ListBoxItem>
 
                                     <ListBoxItem  Margin="0" Padding="0" >
-                                        <Grid x:Name="buttonChapter" Height="24" HorizontalAlignment="Stretch" Width="100" Margin="0" >
+                                        <Grid x:Name="buttonChapters" Height="24" HorizontalAlignment="Stretch" Width="100" Margin="0" >
                                             <Border Margin="2"  CornerRadius="1.75" BorderThickness="1" HorizontalAlignment="Left" Width="22" BorderBrush="#FF757575">
                                                 <Border.Background>
                                                     <LinearGradientBrush EndPoint="0.4,2" StartPoint="0.0,0">
@@ -580,7 +580,7 @@
                                     </ListBoxItem>
 
                                     <ListBoxItem Margin="0" Padding="0" >
-                                        <Grid x:Name="buttonPlaylistItems" Height="24" HorizontalAlignment="Stretch" Width="100" Margin="0" >
+                                        <Grid x:Name="buttonPlaylist" Height="24" HorizontalAlignment="Stretch" Width="100" Margin="0" >
                                             <Border Margin="2"  CornerRadius="1.75" BorderThickness="1" HorizontalAlignment="Left" Width="22" BorderBrush="#FF757575">
                                                 <Border.Background>
                                                     <LinearGradientBrush EndPoint="0.4,2" StartPoint="0.0,0">

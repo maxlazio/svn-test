@@ -24,9 +24,9 @@ namespace org.OpenVideoPlayer.Connections {
 		/// The last error message stored on the connection.  This is cleared on every
 		/// operation.
 		/// </summary>
-		public string ErrorMsg {
-			get { return error; }
-		}
+		//public string ErrorMsg {
+		//    get { return error; }
+		//}
 
 		/// <summary>
 		/// The uri that was most recently parsed
@@ -51,16 +51,17 @@ namespace org.OpenVideoPlayer.Connections {
 		#endregion
 
 		#region Event Delegates
-		public event ConnectionEvents.ConnectionEventHandler Ready;
-		public event ConnectionEvents.ConnectionEventHandler Error;
+		public event ConnectionEvents.ConnectionEventHandler Loaded;
+		public event EventHandler<UnhandledExceptionEventArgs> Error;
+			//ConnectionEvents.ConnectionEventHandler Error;
 
 		protected virtual void OnLoaded(EventArgs e) {
-			if (Ready != null) {
-				Ready(this, e);
+			if (Loaded != null) {
+				Loaded(this, e);
 			}
 		}
 
-		protected virtual void OnError(EventArgs e) {
+		protected virtual void OnError(UnhandledExceptionEventArgs e) {
 			if (Error != null) {
 				Error(this, e);
 			}
@@ -107,9 +108,9 @@ namespace org.OpenVideoPlayer.Connections {
 				isConnected = true;
 			} catch (Exception ex) {
 				isConnected = false;
-				error = "Error encountered connecting to resource " + uri + ". The message was: " + ex.Message;
-				System.Diagnostics.Debug.WriteLine("URL Error: " + ex.Message);
-				OnError(EventArgs.Empty);
+				//error = "Error encountered connecting to resource " + uri + ". The message was: " + ex.Message;
+				//System.Diagnostics.Debug.WriteLine("URL Error: " + ex.Message);
+				OnError(new UnhandledExceptionEventArgs(new Exception("Error encountered connecting to resource " + uri + ". The message was: " + ex.Message),false ));
 			}
 		}
 
@@ -138,22 +139,41 @@ namespace org.OpenVideoPlayer.Connections {
 				playlist = p.getMediaItemList();
 				OnLoaded(EventArgs.Empty);
 			} else {
-				error = "Error: No valid parsers to handle this request.";
-				System.Diagnostics.Debug.WriteLine("No Valid Parsers found");
-				OnError(EventArgs.Empty);
+				//error = "Error: No valid parsers to handle this request.";
+				//System.Diagnostics.Debug.WriteLine("No Valid Parsers found");
+				//OnError(EventArgs.Empty);
+				OnError(new UnhandledExceptionEventArgs(new Exception("No Valid Parsers found for " + _currentURI ?? "(null)"), false));
 			}
 		}
 
 		internal void connect_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e) {
+			if (e.Cancelled) {
+				//log.Output(OutputType.Critical, "Playlist Load cancelled");
+				OnError(new UnhandledExceptionEventArgs(new Exception("Playlist loading was cancelled"), false));
+				return;
+			}
+			if (e.Error != null) {
+				//throw e.Error;
+				OnError(new UnhandledExceptionEventArgs(new Exception("Error connecting to " + _currentURI??"(null)" + " : " + e.Error ), false));
+				return;
+			}
+			if (e.Result == null) {
+				//throw new Exception("Invalid result from playlist request");
+				//log.Output(OutputType.Critical, "Invalid result from playlist request");
+				OnError(new UnhandledExceptionEventArgs(new Exception("Invalid result from playlist request"), false));
+				return;
+			}
+			
 			try {
 				System.Diagnostics.Debug.WriteLine("Load complete. parsing");
 				Stream reader = new MemoryStream(Encoding.UTF8.GetBytes(e.Result));
 				parseStreamNow(reader);
 
 			} catch (Exception ex) {
-				error = "Error encountered Parsing the response. The message was: " + ex.Message;
-				System.Diagnostics.Debug.WriteLine("Error loading remote playlist");
-				OnError(EventArgs.Empty);
+				//error = "Error encountered Parsing the response. The message was: " + ex.Message;
+				//System.Diagnostics.Debug.WriteLine("Error loading remote playlist");
+				//OnError(EventArgs.Empty);
+				OnError(new UnhandledExceptionEventArgs(new Exception("Error loading remote playlist" + ex.Message), false));
 			}
 		}
 

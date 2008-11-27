@@ -42,7 +42,7 @@ namespace org.OpenVideoPlayer.Connections
         /// <summary>
         /// Property containing any error messages present on the connection
         /// </summary>
-        string ErrorMsg { get; }
+       // string ErrorMsg { get; }
 
         /// <summary>
         /// Property showing the connection state
@@ -55,13 +55,13 @@ namespace org.OpenVideoPlayer.Connections
         List<IMediaItem> Playlist { get; }
 
         /// <summary>
-        /// Register a Ready event handler
+        /// Register a Loaded event handler
         /// </summary>
-        event ConnectionEvents.ConnectionEventHandler Ready;
+        event ConnectionEvents.ConnectionEventHandler Loaded;
 
         /// <summary>
         /// Register an Error event handler
         /// </summary>
-        event ConnectionEvents.ConnectionEventHandler Error;
+		event EventHandler<UnhandledExceptionEventArgs> Error;
     }
 }
