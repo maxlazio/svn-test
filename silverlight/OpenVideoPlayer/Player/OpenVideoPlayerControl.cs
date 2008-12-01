@@ -9,7 +9,6 @@ using System.Windows.Browser;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Diagnostics;
-using Microsoft.Windows.Controls.Theming;
 using org.OpenVideoPlayer.EventHandlers;
 using org.OpenVideoPlayer.Media;
 using org.OpenVideoPlayer.Parsers;
@@ -1857,9 +1856,9 @@ namespace org.OpenVideoPlayer.Player {
 
 		internal void SetTheme(Uri uri) {
 			try {
-				ImplicitStyleManager.SetResourceDictionaryUri(MainBorder, uri);
-				ImplicitStyleManager.SetApplyMode(MainBorder, ImplicitStylesApplyMode.Auto);
-				ImplicitStyleManager.Apply(MainBorder);
+				//ImplicitStyleManager.SetResourceDictionaryUri(MainBorder, uri);
+				//ImplicitStyleManager.SetApplyMode(MainBorder, ImplicitStylesApplyMode.Auto);
+				//ImplicitStyleManager.Apply(MainBorder);
 			}catch(Exception ex) {
 				log.Output(OutputType.Error, "Couldnt set theme: ", ex);
 			}

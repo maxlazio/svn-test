@@ -8,7 +8,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Media;
-using Microsoft.Windows.Controls.Theming;
 using org.OpenVideoPlayer.Connections;
 using org.OpenVideoPlayer.Media;
 using org.OpenVideoPlayer.Player;
