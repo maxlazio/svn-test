@@ -13,5 +13,5 @@ using System.Runtime.InteropServices;
 [assembly: Guid("d7cb176e-fedf-47a9-aa76-39858250c5b6")]
 
 //NOTE: Automatic Versioning - from version.txt.  Do not modify the version directly.
-[assembly: AssemblyVersion("2.0.30.19")]
-[assembly: AssemblyFileVersion("2.0.30.19")]
+[assembly: AssemblyVersion("2.0.30.22")]
+[assembly: AssemblyFileVersion("2.0.30.22")]
