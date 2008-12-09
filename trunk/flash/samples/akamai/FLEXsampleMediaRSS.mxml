@@ -517,7 +517,10 @@ Akamai recommends breaking at the various UI and functional items into reusable 
 				}
 				
 				var match:int = matchAnyOrAll.selectedValue.toString().toLowerCase() == "any" ? _playlist.FILTER_ANY : _playlist.FILTER_ALL;
-				_filteredList = _playlist.filterItemList(filterText.text, filterFields, match);			
+				var startFilter:Number = getTimer();
+				_filteredList = _playlist.filterItemList(filterText.text, filterFields, match);
+				var endFilter:Number = getTimer();
+				write("Filter method took "+(endFilter-startFilter)+"ms to execute.");			
 				tileList.dataProvider = _filteredList;
 			}
 		]]>

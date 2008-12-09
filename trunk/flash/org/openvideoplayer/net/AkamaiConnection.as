@@ -50,6 +50,10 @@ package org.openvideoplayer.net
 		 * @private
 		 */
 		protected var _ip:String;
+		/**
+		 * @private
+		 */
+		protected var _isLive:Boolean;
 		
 		//-------------------------------------------------------------------
 		// 
@@ -62,6 +66,7 @@ package org.openvideoplayer.net
 		 */
 		public function AkamaiConnection()
 		{
+			_isLive = false;
 			super();
 		}
 		
@@ -137,12 +142,33 @@ package org.openvideoplayer.net
 			_authParams = value;
 		}
 		
-		
 		override public function get serverIPaddress():String {
 			return _connectionEstablished ? ((_ip && _ip != "") ? _ip : _hostName) : null;
 		}
 		
+		/**
+		 * Returns true if the server requires clients to subscribe to live streams. This 
+		 * property can only be used after a succesfull connection has been established.
+		 */
+		public function get subscribeRequiredForLiveStreams():Boolean {
+			// Get the server version
+			var serverVersionInfo:Object = new Object();
+			var temp:String = super.serverVersion(serverVersionInfo);
+					
+			// If the server version is less than 3.5 the FCSubscribe call is required
+			if ((serverVersionInfo.major < 3) || (serverVersionInfo.major == 3 && serverVersionInfo.minor < 5)) {
+				return true;
+			}
+			
+			return false;
+		}
 		
+		/**
+		 * Returns true if connected to a live stream
+		 */
+		public function get isLive():Boolean {
+			return _isLive;
+		} 
 		
 		//-------------------------------------------------------------------
 		//
@@ -195,6 +221,7 @@ package org.openvideoplayer.net
 			_isProgressive = false;
 			_hostName = command.indexOf("/") != -1 ? command.slice(0,command.indexOf("/")):command;
 			_appNameInstName = ((command.indexOf("/") != -1) && (command.indexOf("/") != command.length-1)) ? command.slice(command.indexOf("/")+1) : "";
+			_isLive = (_appNameInstName == "live") ? true : false;
 			_connectionEstablished = false;
 			
 			var versionInfo:Object = new Object();			
