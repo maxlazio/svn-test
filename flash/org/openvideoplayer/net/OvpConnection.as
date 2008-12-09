@@ -195,6 +195,10 @@ package org.openvideoplayer.net
    		 * @private
    		 */
 		protected var _isProgressive:Boolean;
+		/**
+		 * @private
+		 */
+		protected var _serverVersion:String;
 		
 		// Declare private constants
 		private const TIMEOUT:uint = 15000;
@@ -221,6 +225,7 @@ package org.openvideoplayer.net
 			_liveStreamAuthParams = "";
 			_aboutToStop = 0;
 			_isProgressive = false;
+			_serverVersion = "";
 
 			// Master connection timeout
 			_timeOutTimerDelay = TIMEOUT;
@@ -491,7 +496,7 @@ package org.openvideoplayer.net
 		public function get appNameInstanceName():String {
 			return _appNameInstName;
 		}
-		
+				
 		//-------------------------------------------------------------------
 		//
 		// Public methods
@@ -599,6 +604,32 @@ package org.openvideoplayer.net
 			return TimeUtil.timeCode(value);
 		}
 		
+		/**
+		 * Returns the server version if detectable.
+		 * 
+		 * @param an object that, upon return, will contain the major, minor, sub-minor and build information as
+		 * integers for ease of making comparisons. If the server version is not available, these values will be zero.
+		 * 
+		 * @return the server version as a string "major, minor, sub-minor, build", i.e., "3,5,0,1234"
+		 */
+		public function serverVersion(info:Object):String {
+			if (!info)
+				return _serverVersion;
+			
+			if (!_serverVersion || !_serverVersion.length || _serverVersion == "") {
+				info.major = info.minor = info.subMinor = info.build = 0;
+				return _serverVersion;	
+			}	
+						
+			// Parse into major, minor, sub-minor, build number
+			var _aVer:Array = _serverVersion.split(",");
+				
+			info.major = parseInt(_aVer[0]);
+			info.minor = parseInt(_aVer[1]);
+			info.subMinor = parseInt(_aVer[2]);
+			info.build = parseInt(_aVer[3]);
+			return _serverVersion;
+		}
 					
 		//-------------------------------------------------------------------
 		//
@@ -699,9 +730,11 @@ package org.openvideoplayer.net
 			_aNC[_connectionAttempt].client.id = _connectionAttempt;		// The identifier for this connection
 			_aNC[_connectionAttempt].client._onbwcheck = this._onbwcheck;	// Callbacks for bandwidth detection
 			_aNC[_connectionAttempt].client._onbwdone = this._onbwdone;
+			_aNC[_connectionAttempt].client.onFCSubscribe = this.onFCSubscribe;	// Callbacks for subscribing to live streams
+			_aNC[_connectionAttempt].client.onFCUnsubscribe = this.onFCUnsubscribe;
 			
 			try {
-			_aNC[_connectionAttempt].connect(_aConnections[_connectionAttempt].address, false);
+				_aNC[_connectionAttempt].connect(_aConnections[_connectionAttempt].address, false);
 			}
 			catch (error:Error) {
 				// the connectionTimer will time out and report an error.
@@ -807,9 +840,14 @@ package org.openvideoplayer.net
 					_actualPort = _aConnections[_nc.client.id].port;
 					_actualProtocol = _aConnections[_nc.client.id].protocol;
 
+					// See if we have version info
+					if (event.info.data && event.info.data.version)
+						_serverVersion = event.info.data.version;
+						
 					handleGoodConnect();
 					break;
 			}
+			
   		}
 		/** Catches any netconnection net security errors
 		 * @private
@@ -830,6 +868,25 @@ package org.openvideoplayer.net
 		 */
 		public function _onbwcheck(data:Object, ctx:Number):Number {
 			return ctx;
+		}
+		
+		// Live subscription callbacks - these are callbacks resulting from calling
+		// "FCSubscribe" on the server, we will dispatch a custom OVP event because 
+		// a NetStream object is most likely interested in these events.
+		/**
+		 * @private
+		 */
+		public function onFCSubscribe(info:Object):void {
+			_nc.dispatchEvent(new OvpEvent(OvpEvent.FCSUBSCRIBE,info)); 		
+		}
+	
+		/**
+		 * @private
+		 */
+		public function onFCUnsubscribe(info:Object):void {
+			if (info.code == "NetStream.Play.Stop") {
+				_nc.dispatchEvent(new OvpEvent(OvpEvent.FCUNSUBSCRIBE,info)); 
+			}
 		}
 		
 		/**

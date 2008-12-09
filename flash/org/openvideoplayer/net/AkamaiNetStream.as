@@ -31,7 +31,17 @@
 
 package org.openvideoplayer.net
 {
+	import flash.events.TimerEvent;
 	import flash.net.NetConnection;
+	import flash.utils.Timer;
+	
+	import org.openvideoplayer.events.OvpError;
+	import org.openvideoplayer.events.OvpEvent;
+	
+	[Event (name="subscribed", type="org.openvideoplayer.events.OvpEvent")]
+  	[Event (name="unsubscribed", type="org.openvideoplayer.events.OvpEvent")]
+  	[Event (name="subscribeattempt", type="org.openvideoplayer.events.OvpEvent")]
+ 	
 
 	/**
 	 * The AkamaiNetStream class extends the OvpNetStream class and provides functionality specific to the Akamai network, 
@@ -40,6 +50,17 @@ package org.openvideoplayer.net
 	public class AkamaiNetStream extends OvpNetStream
 	{
 		private var _liveStreamAuthParams:String;
+		private var _useFCSubscribe:Boolean;
+		private var _liveStreamTimer:Timer;
+		private var _liveStreamRetryTimer:Timer;
+		private var _liveFCSubscribeTimer:Timer;		
+		private var _liveStreamMasterTimeout:uint;
+		private var _pendingLiveStreamName:String;
+		private var _playingLiveStream:Boolean;
+		private var _successfullySubscribed:Boolean;		
+	
+		private const LIVE_RETRY_INTERVAL:Number = 30000;
+		private const LIVE_ONFCSUBSCRIBE_TIMEOUT:Number = 60000;
 		
 		//-------------------------------------------------------------------
 		// 
@@ -63,6 +84,12 @@ package org.openvideoplayer.net
 				_connection = NetConnection(connection.netConnection);
 				
 			_liveStreamAuthParams = "";
+			
+			if (connection is AkamaiConnection && (AkamaiConnection(connection).isLive)) {
+				_useFCSubscribe = AkamaiConnection(connection).subscribeRequiredForLiveStreams;
+			}
+			_liveStreamMasterTimeout = 3600000;
+			
 			super(_connection);
 		}
 
@@ -96,6 +123,27 @@ package org.openvideoplayer.net
 		}
 		public function set liveStreamAuthParams(ap:String):void {
 			_liveStreamAuthParams = ap;
+		}
+		
+		/**
+		 * The maximum number of seconds the class should wait before timing out while trying to locate a live stream
+		 * on the network. This time begins decrementing the moment a <code>play</code> request is made against a live
+		 * stream, or after the class receives an onUnpublish event while still playing a live stream, in which case it
+		 * attempts to automatically reconnect. After this master time out has been triggered, the class will issue
+		 * an OvpError event STREAM_NOT_FOUND.
+		 * 
+		 * @default 3600
+		 */
+		public function get liveStreamMasterTimeout():Number {
+			return _liveStreamMasterTimeout/1000;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set liveStreamMasterTimeout(numOfSeconds:Number):void {
+			_liveStreamMasterTimeout = numOfSeconds*1000;
+			_liveStreamTimer.delay = _liveStreamMasterTimeout;
 		}
 		
 		//-------------------------------------------------------------------
@@ -174,11 +222,53 @@ package org.openvideoplayer.net
 					var name:String = arguments[0];
 					arguments[0] = name.indexOf("?") != -1 ? name + "&"+_liveStreamAuthParams : name+"?"+_liveStreamAuthParams;
 				}
+				
+				if (_useFCSubscribe) {
+					_pendingLiveStreamName = arguments[0];
+					_playingLiveStream = false;
+					_successfullySubscribed = false;
+					
+					// Master live stream timeout
+					_liveStreamTimer = new Timer(_liveStreamMasterTimeout, 1);
+					_liveStreamTimer.addEventListener(TimerEvent.TIMER_COMPLETE, liveStreamTimeout);
+					// Timeout when waiting for a response from FCSubscribe
+					_liveFCSubscribeTimer = new Timer(LIVE_ONFCSUBSCRIBE_TIMEOUT,1);
+					_liveFCSubscribeTimer.addEventListener(TimerEvent.TIMER_COMPLETE, liveFCSubscribeTimeout);
+					// Retry interval when calling fcsubscribe
+					_liveStreamRetryTimer = new Timer(LIVE_RETRY_INTERVAL,1);
+					_liveStreamRetryTimer.addEventListener(TimerEvent.TIMER_COMPLETE, retrySubscription);
+					// Listen for internal events - these get dispatched from the OvpConnection class after we call
+					// FCSubscribe on our NetConnection instance.
+					_nc.addEventListener(OvpEvent.FCSUBSCRIBE, onFCSubscribe);
+					_nc.addEventListener(OvpEvent.FCUNSUBSCRIBE, onFCUnsubscribe);
+					
+					startLiveStream();
+					
+				}
 			}
 
 			super.play.apply(this, arguments);
 		}
 		
+		/**
+		 * Initiates the process of unsubscribing from the active live NetStream. This method can only be called if
+		 * the class is currently subscribed to a live stream. Since unsubscription is an asynchronous
+		 * process, confirmation of a successful unsubscription is delivered via the OvpEvent.UNSUBSCRIBED event. 
+		 * 
+		 * @return true if previously subscribed, otherwise false.
+		 */
+		public function unsubscribe():Boolean {
+			if (_successfullySubscribed) {
+				resetAllLiveTimers();
+				_playingLiveStream = false;
+				super.play(false);
+				_nc.call("FCUnsubscribe", null, _pendingLiveStreamName);
+				return true;
+			} else {
+				return false;
+			}
+		}
+				
 		//-------------------------------------------------------------------
 		//
 		// Private Methods
@@ -228,7 +318,75 @@ package org.openvideoplayer.net
 			}
 			
 			return returnVal;
-		}		
+		}
 		
+		private function startLiveStream():void {
+			resetAllLiveTimers();
+			_liveStreamTimer.start();
+			fcsubscribe();
+		}
+		
+		private function fcsubscribe():void {
+			dispatchEvent(new OvpEvent(OvpEvent.SUBSCRIBE_ATTEMPT));
+			_nc.call("FCSubscribe", null, _pendingLiveStreamName);
+			_liveFCSubscribeTimer.reset();
+			_liveFCSubscribeTimer.start();
+		}
+		
+		private function retrySubscription(e:TimerEvent):void {
+			fcsubscribe();
+		}
+		
+		private function liveFCSubscribeTimeout(e:TimerEvent):void {
+			resetAllLiveTimers();
+			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.NETWORK_FAILED)));
+		}
+		
+		private function liveStreamTimeout(e:TimerEvent):void {
+			resetAllLiveTimers();
+			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.STREAM_NOT_FOUND)));
+		}
+		
+		private function resetAllLiveTimers():void {
+			_liveStreamTimer.reset();
+			_liveStreamRetryTimer.reset();
+			_liveFCSubscribeTimer.reset();
+			_bufferFailureTimer.reset();
+			
+		}
+		
+		/** Handles the subscribe events dispatch from OvpConnection
+		 * @private
+		 */
+		private function onFCSubscribe(info:Object):void {
+			switch (info.data.code) {
+				case "NetStream.Play.Start" :
+					resetAllLiveTimers();
+					_successfullySubscribed = true;
+					dispatchEvent(new OvpEvent(OvpEvent.SUBSCRIBED));
+					super.play(_pendingLiveStreamName,-1);
+					break;
+				case "NetStream.Play.StreamNotFound" :
+					_liveStreamRetryTimer.reset();
+					_liveStreamRetryTimer.start();
+					break;
+			} 			
+		}
+			
+		/** Handles the onFCUnsubscribe call from the server
+		 * @private
+		 */
+		private function onFCUnsubscribe(info:Object):void {
+			switch (info.data.code) {
+				case "NetStream.Play.Stop":
+					_successfullySubscribed = false;
+					dispatchEvent(new OvpEvent(OvpEvent.UNSUBSCRIBED)) 
+					if (_playingLiveStream) {
+						startLiveStream();
+					}
+				break;
+			}
+		}
+				
 	}
 }

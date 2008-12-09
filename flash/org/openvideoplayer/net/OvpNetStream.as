@@ -109,7 +109,7 @@ package org.openvideoplayer.net
 			
 			_isProgressive = (_connection.uri == null || _connection.uri == "null") ? true : false;
 			_nc = _connection;
-			_maxBufferLength = 3
+			maxBufferLength = 3
 			_useFastStartBuffer = false;
 			_aboutToStop = 0;
 			_isBuffering = false;
@@ -156,8 +156,10 @@ package org.openvideoplayer.net
 		public function set maxBufferLength(length:Number):void {
 			if (length < 0.1)
 				dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.BUFFER_LENGTH))); 
-			else
+			else {
 				_maxBufferLength = length;
+				this.bufferTime = _maxBufferLength;
+			}	
 		}
 		
 		public function get useFastStartBuffer():Boolean {
@@ -277,7 +279,7 @@ package org.openvideoplayer.net
 			return true;
 		}
 		
-		public override function play(... arguments):void {
+		public override function play(... arguments):void {		
 			super.play.apply(this, arguments);
 			if (!_progressTimer.running)
 				_progressTimer.start();
@@ -328,8 +330,9 @@ package org.openvideoplayer.net
 				if (event.info.code == "NetStream.Buffer.Full") 
 					this.bufferTime = _maxBufferLength;
 			}
-			
+						
 			switch(event.info.code) {
+				
 				
 				case "NetStream.Play.Start":
 					_aboutToStop = 0;

@@ -203,6 +203,47 @@ package org.openvideoplayer.events
 		 * information object NetStream.Play.Complete). 
 		 */
 		public static const NETSTREAM_PLAYSTATUS:String = "playstatus";
+		
+  		/** 
+		 * The OvpEvent.SUBSCRIBED constant defines the value of the OvpEvent's
+		 * <code>type</code> property, which indicates the class has successfully subscribed to a live stream.
+		 * 
+		 */
+		public static const SUBSCRIBED:String = "subscribed";
+  			
+  		/** 
+		 * The OvpEvent.UNSUBSCRIBED constant defines the value of the OvpEvent's
+		 * <code>type</code> property, which indicates the class has unsubscribed from a live stream.
+		 * This may happen because the <code>unsubscribe</code> method was called by the parent or because the 
+		 * publisher of the stream ceased publication. In the latter case, the OvpConnection class will automatically
+		 * attempt to resubscribe to the live stream. It will do this until the <code>liveStreamMasterTimeout</code> period
+		 * has been exceeded, after which it will dispatch an error event.
+		 */
+  		public static const UNSUBSCRIBED:String = "unsubscribed";
+
+  		/** 
+		 * The OvpEvent.SUBSCRIBE_ATTEMPT constant defines the value of the OvpEvent's
+		 * <code>type</code> property, which indicates the class is making a new attempt to subscribe to a live stream.
+		 * This will occur immediately after the first <code>play</code> request for a live stream, as well as after
+		 * an OvpEvent.UNSUBSCRIBED event has been issued while the stream was still active.
+		 * These resubscription attempts will occur roughly every 30 seconds until the <code>liveStreamMasterTimeout</code> period
+		 * has been exceeded, after which an error event will be dispatched.
+		 */
+  		public static const SUBSCRIBE_ATTEMPT:String = "subscribeattempt";
+  		
+  		/** 
+		 * @private
+		 * Internal event for handling the "FCSubscribe" calls for playing live streams on some CDNs
+		 */
+		public static const FCSUBSCRIBE:String = "fcsubscribe";
+  		/** 
+		 * @private
+		 * Internal event for handling the "FCUnsubscribe" calls for playing live streams on some CDNs
+		 */
+		public static const FCUNSUBSCRIBE:String = "fcunsubscribe";
+  			
+   		
+		
 		 
 		private var _data:Object;
 		
