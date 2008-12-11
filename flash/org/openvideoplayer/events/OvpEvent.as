@@ -43,6 +43,7 @@ package org.openvideoplayer.events
 	 * &#xA0;&#xA0;&#xA0;&#xA0;trace("Bandwidth measured at " + e.data.bandwidth+ " kbps and latency is " + e.data.latency + " ms.");
 	 * }
 	 * </listing>
+	 * See the public constants below for a description of the data object for each event type.
 	 */
 
 	public class OvpEvent extends Event
@@ -50,7 +51,9 @@ package org.openvideoplayer.events
 		/** 
 		 * The OvpEvent.ERROR constant defines the value of an error event's
 		 * <code>type</code> property, which indicates that the class
-		 * has encountered a run-time error.
+		 * has encountered a run-time error. 
+		 * 
+		 * The data object will contain <code>errorNumber</code> and <code>errorDescription</code> properties.
 		 * 
 		 * @see OvpError
 		 */
@@ -69,7 +72,7 @@ package org.openvideoplayer.events
 		 * values can be accessed via the data property, for example <code>event.data.bandwidth</code>
 		 * and <code>event.data.latency</code>
 		 * 
-		 * @see org.openvideoplayer.net.OvpConnection#detectBandwidth
+		 * @see org.openvideoplayer.net.OvpConnection#detectBandwidth()
 		 */
   		public static const BANDWIDTH:String = "bandwidth";
   			 			
@@ -99,8 +102,7 @@ package org.openvideoplayer.events
 		 * has completed a stream length request. The <code>streamLength</code> value
 		 * can be accessed via the data property, for example <code>event.data.streamLength</code>.
 		 * 
-		 * @see org.openvideoplayer.net.OvpConnection#getStreamLength
-		 * @see org.openvideoplayer.net.OvpConnection#streamLengthAsTimeCode
+		 * @see org.openvideoplayer.net.OvpConnection#streamLengthAsTimeCode()
 		 * 
 		 */
   		public static const STREAM_LENGTH:String = "streamlength";
@@ -114,7 +116,7 @@ package org.openvideoplayer.events
 
 		 * 
 		 * @see org.openvideoplayer.net.OvpNetStream#progressInterval
-		 * @see org.openvideoplayer.net.OvpNetStream#close
+		 * @see org.openvideoplayer.net.OvpNetStream#close()
 		 */
   		public static const PROGRESS:String = "progress";
 			
@@ -140,7 +142,7 @@ package org.openvideoplayer.events
 		 * ID3 data embedded in an MP3 file. To trigger this event, first make a request to the
 		 * <code>getMp3Id3Info</code> method.
 		 * 
-		 * @see org.openvideoplayer.net.OvpNetStream#getMp3Id3Info
+		 * @see org.openvideoplayer.net.OvpNetStream#getMp3Id3Info()
 		 */
 		public static const MP3_ID3:String = "id3";
 		 		
@@ -249,11 +251,16 @@ package org.openvideoplayer.events
 		
 		/**
 		 * Returns the data for the event, which can differ based on the event type.
+		 * See the event constants in this class for a description of the data object for each event type.
+		 * 
 		 */
 		public function get data():Object { return _data; }
 		
 		/**
-		 * Constructor
+		 * Constructor.
+		 * 
+		 * @param type One of the event type constants defined in this class.
+		 * @param data Corresponding data for the event. This can differ depending on the event type. See the event type definitions in this class.
 		 */
 		public function OvpEvent(type:String, data:Object=null)
 		{
@@ -263,6 +270,7 @@ package org.openvideoplayer.events
 		
        /** 
         * Overrides the inherited clone() method.
+        * @private
         */
         override public function clone():Event {
             return new OvpEvent(type, data);

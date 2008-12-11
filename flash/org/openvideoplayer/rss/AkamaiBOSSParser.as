@@ -44,29 +44,20 @@ package org.openvideoplayer.rss {
 	
 	/**
 	 * Dispatched when an error condition has occurred. The event provides an error number and a verbose description
-	 * of each error. The errors thrown by this class include:
-	 * <table>
-	 * <tr><th> Error Number</th><th>Description</th></tr>
-	 * <tr><td>14</td><td>HTTP loading operation failed</td></tr>
-	 * <tr><td>15</td><td>XML is not well formed</td></tr>
-	 * <tr><td>17</td><td>Class is busy and cannot process your request</td></tr>
-	 * <tr><td>18</td><td>XML does not conform to BOSS standard</td></tr>
-	 * <tr><td>20</td><td>Timed out trying to load the XML file</td></tr>
-	 * </table>
-	 * 
-	 * @eventType org.openvideoplayer.events.OvpEvent.ERROR
+	 * of each error. 
+	 * @see org.openvideoplayer.events.OvpEvent#ERROR
 	 */
  	[Event (name="error", type="org.openvideoplayer.events.OvpEvent")]
 	/**
 	 * Dispatched when the BOSS xml response has been successfully loaded. 
 	 * 
-	 * @eventType org.openvideoplayer.events.OvpEvent.LOADED
+	 * @see org.openvideoplayer.events.OvpEvent#LOADED
 	 */
  	[Event (name="loaded", type="org.openvideoplayer.events.OvpEvent")]
 	/**
 	 * Dispatched when the BOSS xml response has been successfully parsed. 
 	 * 
-	 * @eventType org.openvideoplayer.events.OvpEvent.PARSED
+	 * @see org.openvideoplayer.events.OvpEvent#PARSED
 	 */
  	[Event (name="parsed", type="org.openvideoplayer.events.OvpEvent")]
  	
@@ -176,7 +167,7 @@ package org.openvideoplayer.rss {
 		 * 
 		 * @return true if the load is initiated otherwise false if the class is busy
 		 * 
-		 * @see isBusy
+		 * @see #isBusy
 		 */
 		public function load(src:String):Boolean {
 			if (!_busy) {
@@ -248,7 +239,7 @@ package org.openvideoplayer.rss {
 		 * The auth parameter string (auth=xxxx&aifp=yyyy&slist=zzzzz) to be used at connection time.
 		 * Note that for Type I and Type II metafiles, the auth params are appended to the appName value.
 		 * This class will strip them from the appName and expose them via the connectAuthParams property. This
-		 * is a departure in behavior from Media Framework versions prior to 1.7, where auth params were left
+		 * is a departure in behavior from Akamai Media Framework versions prior to 1.7, where auth params were left
 		 * attached as part of the app name and were not exposed via the connectAuthParams property for
 		 * Type I and II feeds. 
 		 * 
@@ -260,7 +251,7 @@ package org.openvideoplayer.rss {
 		 * The auth parameter string(auth=xxxx&aifp=yyyy&slist=zzzzz) to be used at stream play time.
 		 * Note that for Type I and Type II metafiles, the auth params are appended to the streamName value.
 		 * This class will strip them from the streamName and expose them via the playAuthParams property. This
-		 * is a departure in behavior from Media Framework versions prior to 1.7, where auth params were left
+		 * is a departure in behavior from Akamai Media Framework versions prior to 1.7, where auth params were left
 		 * attached as part of the stream name and were not exposed via the playAuthParams property for
 		 * Type I and II feeds. 
 		 * 

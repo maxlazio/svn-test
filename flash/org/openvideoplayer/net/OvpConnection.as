@@ -46,28 +46,36 @@ package org.openvideoplayer.net
 	//-----------------------------------------------------------------
 	
  	/**
- 	 * @see org.openvideoplayer.net.INetConnection
+ 	 * See the INetConnection interface for information on this event.
+ 	 * 
+ 	 * @see INetConnection
 	 */
  	[Event (name="asyncError", type="flash.events.AsyncErrorEvent.ASYNC_ERROR")]
 	
  	/**
- 	 * @see org.openvideoplayer.net.INetConnection
+ 	 * See the INetConnection interface for information on this event.
+ 	 * 
+ 	 * @see INetConnection
 	 */
 	[Event (name="ioError", type="flash.events.IOErrorEvent.IO_ERROR")]
 	
  	/**
- 	 * @see org.openvideoplayer.net.INetConnection
+ 	 * See the INetConnection interface for information on this event.
+ 	 * 
+ 	 * @see INetConnection
 	 */
 	[Event (name="netStatus", type="flash.events.NetStatusEvent.NET_STATUS")]
 	
  	/**
- 	 * @see org.openvideoplayer.net.INetConnection
+ 	 * See the INetConnection interface for information on this event.
+ 	 * 
+ 	 * @see INetConnection
 	 */
 	[Event (name="securityError", type="flash.events.SecurityErrorEvent.SECURITY_ERROR")]
 
 	/**
-	 * Dispatched when an error condition has occurred. The OvpEvent object contains a data
-	 * property.  The contents of the data property will vary based on the error type.
+	 * Dispatched when an OVP error condition has occurred. The OvpEvent object contains a data
+	 * property.  The contents of the data property will contain the error number and a description.
 	 * 
 	 * @see org.openvideoplayer.events.OvpError
 	 * @see org.openvideoplayer.events.OvpEvent
@@ -77,14 +85,14 @@ package org.openvideoplayer.net
  	/**
 	 * Dispatched when a bandwidth estimate is complete. 
 	 * 
-	 * @see #detectBandwidth
+	 * @see #detectBandwidth()
 	 */
  	[Event (name="bandwidth", type="org.openvideoplayer.events.OpvEvent.BANDWIDTH")]
  
 	/**
 	 * Dispatched when a stream length request is complete.
 	 * 
-	 * @see #requestStreamLength
+	 * @see #requestStreamLength()
 	 */
  	[Event (name="streamlength", type="org.openvideoplayer.events.OpvEvent.STREAMLENGTH")]
  		 
@@ -205,6 +213,9 @@ package org.openvideoplayer.net
 		private const LIVE_RETRY_INTERVAL:Number = 30000;
 		private const LIVE_ONFCSUBSCRIBE_TIMEOUT:Number = 60000;
 		private const DEFAULT_PROGRESS_INTERVAL:Number = 100;
+		/**
+		 * @private
+		 */
 		protected const VERSION:String = "1.0";
 		
 		//-------------------------------------------------------------------
@@ -343,14 +354,8 @@ package org.openvideoplayer.net
 		}
 		
 		/**
-		 * The IP address of the server to which the class connected. This parameter will only be returned if the class has managed to
-		 * successfully connect to the server. The class uses the IDENT function to locate the optimum (in terms
-		 * of physical proximity and load) server for connections. 
-		 * <p />
-		 * This property is not available with progressive playback. 
-		 * 
-		 * @return Server IP address as a string if the connection has been made, otherwise null.
-		 * 
+		 * This method is primarly here to be overridden.
+		 * @private 
 		 */
 		public function get serverIPaddress():String {
 			return _connectionEstablished ? _hostName: null;
@@ -461,11 +466,11 @@ package org.openvideoplayer.net
 		}
 		
 		/**
-		 * Defines whether the current connection is progressive or not.
+		 * Informs whether the current connection is progressive or not.
 		 * 
 		 * @return true if the conenction is progressive or false if not. 
 		 * 
-		 * @see #connect
+		 * @see #connect()
 		 */
 		public function get isProgressive():Boolean {
 			return _isProgressive;
@@ -474,8 +479,8 @@ package org.openvideoplayer.net
 		/**
 		 * The last hostName used by the class. If the hostName was sent in the <code>connect</code> method
 		 * concatenated with the application name (for example <code>connect("cpxxxx.edgefcs.net/myappalias")</code>)
-		 * then this method will only return "cpxxxx.edgefcs.net". Use the <code>appName</code> to retrieve the
-		 * application name.
+		 * then this method will only return "cpxxxx.edgefcs.net". Use the <code>appNameInstanceName</code> 
+		 * property to retrieve the application name.
 		 * 
 		 * @return the last hostName used by the class
 		 * 
@@ -532,9 +537,11 @@ package org.openvideoplayer.net
 		
 		/**
 		 * The connect method initiates a connection to either a streaming service or a progressive
-		 * link to a HTTP server. 
+		 * link to a HTTP server. A progressive connection is requested by passing 
+		 * the <code>null</code> object, or the string "null". All other strings
+		 * are treated as requests for a streaming connection. 
 		 * 
-		 * @param command string containing hostname/appname/instance
+		 * @param command A string containing hostname/appname/instance
 		 */
 		public function connect(command:String, ...arguments):void
 		{
@@ -582,9 +589,10 @@ package org.openvideoplayer.net
 		 * Note the name of the file being measured is decoupled from the file being played, meaning you can request the 
 		 * length of one file while playing another.
 		 * 
-		 * @param the name of the file for which length is to be requested.
+		 * @param filename The name of the file for which length is to be requested.
 		 * 
 		 * @return true if the connection has been established, otherwise false.
+		 * @see org.openvideoplayer.events.OvpEvent
 		 */
 		public function requestStreamLength(filename:String):Boolean {
 			if (!_connectionEstablished || filename == "")
@@ -607,7 +615,7 @@ package org.openvideoplayer.net
 		/**
 		 * Returns the server version if detectable.
 		 * 
-		 * @param an object that, upon return, will contain the major, minor, sub-minor and build information as
+		 * @param info An object that, upon return, will contain the major, minor, sub-minor and build information as
 		 * integers for ease of making comparisons. If the server version is not available, these values will be zero.
 		 * 
 		 * @return the server version as a string "major, minor, sub-minor, build", i.e., "3,5,0,1234"
@@ -687,6 +695,9 @@ package org.openvideoplayer.net
 			return aTemp;
 		}
 		
+		/**
+		 * @private
+		 */
 		protected function buildConnectionAddress(protocol:String, port:String):String
 		{
 			var address:String = protocol+"://"+_hostName+":"+port+"/"+_appNameInstName;
