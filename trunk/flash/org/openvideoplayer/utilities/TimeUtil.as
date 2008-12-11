@@ -31,9 +31,15 @@
 
 package org.openvideoplayer.utilities
 {
+	/**
+	 *  The TimeUtil utility class is an all-static class.
+	 *  You do not create instances of TimeUtil;
+	 *  instead you call methods such as 
+	 *  the <code>TimeUtil.timeCode()</code> method.  
+	 */
 	public class TimeUtil
 	{
-		/** Utility funciton for generating time code
+		/** Utility function for generating time code given a number seconds.
 		 * 
 		 */
 		public static function timeCode(sec:Number):String {

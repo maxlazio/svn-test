@@ -38,7 +38,7 @@ package org.openvideoplayer.net
 	import org.openvideoplayer.utilities.*;
 	
 	/**
-	 * The AkamaiConnection class extends the OvpConnection class and provides functionality specific to the Akamai network,
+	 * The AkamaiConnection class extends the OvpConnection class to provide functionality specific to the Akamai network,
 	 * such as connection authentication and host name formatting.
 	 * 
 	 */
@@ -118,12 +118,8 @@ package org.openvideoplayer.net
 		 * <p />
 		 * These properties must be set before calling the <code>connect</code> method,
 		 * since authorization is checked when the connection is first established.
-		 * If the authorization parameters are rejected by the server, then error #13 
-		 * will be dispatched  - "Connection attempt rejected by server".
-		 * <p />
-		 * For live stream, per stream authentication, which can occur in combination with connection
-		 * authentication, set the <code>liveStreamAuthParams</code> parameters before calling
-		 * the <code>play()</code> method. 
+		 * If the authorization parameters are rejected by the server, then <code>OvpError.CONNECTION_REJECTED</code> 
+		 * will be dispatched.
 		 * 
 		 * <p />
 		 * Auth params cannot be used with progressive playback and are for streaming connections only. 
@@ -132,8 +128,7 @@ package org.openvideoplayer.net
 		 * 
 		 * @default empty string.
 		 *
-		 * @see #connect
-		 * @see #AkamaiNetStream#liveStreamAuthParams
+		 * @see #connect()
 		 */		
 		public function get connectionAuth():String {
 			return _authParams;
@@ -142,13 +137,20 @@ package org.openvideoplayer.net
 			_authParams = value;
 		}
 		
+		/**
+		 * Returns the IP address if possible, otherwise the hostname. The IP address will only be available 
+		 * if the class uses the IDENT function to locate the optimum server (in terms of physical 
+		 * proximity and load) for connections.
+		 * 
+		 * @see #connect()
+		 */ 
 		override public function get serverIPaddress():String {
 			return _connectionEstablished ? ((_ip && _ip != "") ? _ip : _hostName) : null;
 		}
 		
 		/**
 		 * Returns true if the server requires clients to subscribe to live streams. This 
-		 * property can only be used after a succesfull connection has been established.
+		 * property can only be used after a succesful connection has been established.
 		 */
 		public function get subscribeRequiredForLiveStreams():Boolean {
 			// Get the server version
@@ -164,7 +166,10 @@ package org.openvideoplayer.net
 		}
 		
 		/**
-		 * Returns true if connected to a live stream
+		 * Returns true if connected to a live stream. This is determined by inspecting the arguments passed
+		 * to the connect method.
+		 * 
+		 * @see #connect()
 		 */
 		public function get isLive():Boolean {
 			return _isLive;
@@ -178,31 +183,33 @@ package org.openvideoplayer.net
 
 		/**
 		 * The connect method initiates a connection to either the Akamai Streaming service or a progressive
-		 * link to a HTTP server. It accepts a single hostName parameter, which describes the host account with which 
+		 * link to an HTTP server. It accepts a single hostName parameter, which describes the host account with which 
 		 * to connect. This parameter must include the application name, separated by a "/". A progressive
-		 * connection is requsted by passing the <code>null</code> object, or the string "null". All other strings
-		 * are treated as requests for a streaming connection. Valid usage examples include:<ul>
-		 * 			<li>instance_name.connect("cpxxxxx.edgefcs.net/ondemand");</li>
-		 * 			<li>instance_name.connect("cpxxxxx.edgefcs.net/aliased_ondemand_app_name");</li>
-		 *  		<li>instance_name.connect("aliased.domain.name/aliased_ondemand_app_name");</li>
-		 * 			<li>instance_name.connect("cpxxxxx.live.edgefcs.net/live");</li>
-		 * 		    <li>instance_name.connect(null);</li>
-		 *  		<li>instance_name.connect("null");</li></ul>
+		 * connection is requested by passing the <code>null</code> object, or the string "null". All other strings
+		 * are treated as requests for a streaming connection. 
+		 * <p />
+		 * Valid usage examples include:<ul>
+		 * 			<li>_nc.connect("cpxxxxx.edgefcs.net/ondemand");</li>
+		 * 			<li>_nc.connect("cpxxxxx.edgefcs.net/aliased_ondemand_app_name");</li>
+		 *  		<li>_nc.connect("aliased.domain.name/aliased_ondemand_app_name");</li>
+		 * 			<li>_nc.connect("cpxxxxx.live.edgefcs.net/live");</li>
+		 * 		    <li>_nc.connect(null);</li>
+		 *  		<li>_nc.connect("null");</li></ul>
 		 *  To connect to a cp code requiring connection authorization, first set the <code>connectionAuth</code>
 		 *  property before calling this <code>connect</code> method. 
 		 * <p/>
-		 * If a connection attempt is rejected due to SWF auth being enabled for that CP code and the SWf being invalid,
+		 * If a connection attempt is rejected due to SWF auth being enabled for that CP code and the SWF being invalid,
 		 * then either one of the following behaviors can occur:
 		 * <ul><li> The connection will initially be accepted by the server and then closed a short moment after.
-		 * This pattern can be detected by listening for the <code>NetStatusEvent</code> event with an info.code value of 
-		 * "NetConnection.Connect.Success" followed by a <code>NetStatusEvent</code> event with an info.code value of 
+		 * This pattern can be detected by listening for the <code>NetStatusEvent</code> event with an <code>info.code</code> value of 
+		 * "NetConnection.Connect.Success" followed by a <code>NetStatusEvent</code> event with an <code>info.code</code> value of 
 		 * "NetConnection.Connect.Closed".<li>
 		 * <li> Or the connection will never actually be accepted by the server and the connection attempt will fail.
-		 * This pattern can be detected by listening for the <code>NetStatusEvent</code> event with an info.code value of
+		 * This pattern can be detected by listening for the <code>NetStatusEvent</code> event with an <code>info.code</code> value of
 		 * ""NetConnection.Connect.Failed".
 		 * </li></ul><p />
 		 * 
-		 * @param The Akamai hostname/appname to which to connect. For a progressive connection,
+		 * @param command The Akamai hostname/appname to which to connect. For a progressive connection,
 		 * pass <code>null</code>, either as a null object or as a string.
 		 * 
 		 * @see #connectionAuth

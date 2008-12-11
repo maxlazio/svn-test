@@ -54,26 +54,89 @@ package org.openvideoplayer.events
 	 */
 	public class OvpError
 	{
+		/**
+		 * A method was given an empty hostname.
+		 */
 		public static const HOSTNAME_EMPTY:uint 			= 1;
+		/**
+		 * Invalid buffer length value.
+		 */
 		public static const BUFFER_LENGTH:uint 				= 2;
+		/**
+		 * Protocol is not supported.
+		 */
 		public static const PROTOCOL_NOT_SUPPORTED:uint 	= 3;
+		/**
+		 * Port is not supported.
+		 */
 		public static const PORT_NOT_SUPPORTED:uint 		= 4;
+		/**
+		 * ident request failure.
+		 */
 		public static const IDENT_REQUEST_FAILED:uint 		= 5;
+		/**
+		 * Connection attempt timed out.
+		 */
 		public static const CONNECTION_TIMEOUT:uint 		= 6;
+		/**
+		 * Stream is not defined, therefore unable to play, pause, seek or resume.
+		 */
 		public static const STREAM_NOT_DEFINED:uint			= 8;
+		/**
+		 * A time out occurred while trying to find the stream.
+		 */
 		public static const STREAM_NOT_FOUND:uint			= 9;
+		/**
+		 * Could not successfully request the stream length.
+		 */
 		public static const STREAM_LENGTH_REQ_ERROR:uint	= 10;
+		/**
+		 * Value for volume is out of range.
+		 */
 		public static const VOLUME_OUT_OF_RANGE:uint		= 11;
+		/**
+		 * A network failure has occured
+		 */
 		public static const NETWORK_FAILED:uint				= 12;
+		/**
+		 * Connection attempt was rejected by the server.
+		 */
 		public static const CONNECTION_REJECTED:uint		= 13;
+		/**
+		 * An HTTP load attempt failed.
+		 */
 		public static const HTTP_LOAD_FAILED:uint			= 14;
+		/**
+		 * XML is not properly formatted.
+		 */
 		public static const XML_MALFORMED:uint				= 15;
+		/**
+		 * The XML does not conform to the Media RSS standard.
+		 */
 		public static const XML_MEDIARSS_MALFORMED:uint		= 16;
+		/** 
+		 * The class is busy with a task and cannot process your request.
+		 */
 		public static const CLASS_BUSY:uint					= 17;
+		/**
+		 * The XML does not conform to the Akamai BOSS standard.
+		 */
 		public static const XML_BOSS_MALFORMED:uint			= 18;
+		/**
+		 * Error requesting the fast start feature on a stream.
+		 */
 		public static const STREAM_FASTSTART_INVALID:uint	= 19;
+		/**
+		 * Time out occurred trying to load an XML file.
+		 */
 		public static const XML_LOAD_TIMEOUT:uint			= 20;
+		/**
+		 * A stream IO error has occurred.
+		 */
 		public static const STREAM_IO_ERROR:uint			= 21;
+		/**
+		 * The stream buffer has remained empty past a time out threshold.
+		 */
 		public static const STREAM_BUFFER_EMPTY:uint		= 24;
 		
 		private static const _errorMap:Array = [
@@ -103,7 +166,8 @@ package org.openvideoplayer.events
 		private var _desc:String;
 		
 		/**
-		 * Constructor
+		 * Constructor. Give it one of the public constant error codes defined in this class 
+		 * and it will look up the corresponding description.
 		 */
 		public function OvpError(errorCode:uint)
 		{
@@ -119,7 +183,7 @@ package org.openvideoplayer.events
 		}
 		
 		/**
-		 * The error number for the error dispatched.
+		 * The error number for the error dispatched. This should be one of the public constants defined in this class.
 		 */
 		public function get errorNumber():uint { return _num; }
 		

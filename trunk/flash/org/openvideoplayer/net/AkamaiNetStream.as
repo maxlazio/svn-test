@@ -38,13 +38,39 @@ package org.openvideoplayer.net
 	import org.openvideoplayer.events.OvpError;
 	import org.openvideoplayer.events.OvpEvent;
 	
+ 	/**
+	 * Dispatched when the class has successfully subscribed to a live stream.
+	 * 
+	 * @see AkamaiConnection#subscribeRequiredForLiveStreams
+	 * @see #play
+	 * 
+	 * @eventType OvpEvent.SUBSCRIBED
+	 */	
 	[Event (name="subscribed", type="org.openvideoplayer.events.OvpEvent")]
-  	[Event (name="unsubscribed", type="org.openvideoplayer.events.OvpEvent")]
+ 	/**
+	 * Dispatched when the class has unsubscribed from a live stream, or when the live stream it was previously subscribed
+	 * to has ceased publication.
+	 * 
+	 * @see AkamaiConnection#subscribeRequiredForLiveStreams
+	 * @see #play
+	 * @see #unsubscribe
+	 * 
+	 * @eventType OvpEvent.UNSUBSCRIBED
+	 */
+	[Event (name="unsubscribed", type="org.openvideoplayer.events.OvpEvent")]
+ 	/**
+	 * Dispatched when the class is making a new attempt to subscribe to a live stream.
+	 * 
+	 * @see AkamaiConnection#subscribeRequiredForLiveStreams
+	 * @see #play
+	 * 
+	 * @eventType OvpEvent.SUBSCRIBE_ATTEMPT
+	 */	
   	[Event (name="subscribeattempt", type="org.openvideoplayer.events.OvpEvent")]
  	
 
 	/**
-	 * The AkamaiNetStream class extends the OvpNetStream class and provides functionality specific to the Akamai network, 
+	 * The AkamaiNetStream class extends the OvpNetStream class to provide functionality specific to the Akamai network, 
 	 * such as live stream authentication.
 	 */
 	public class AkamaiNetStream extends OvpNetStream
@@ -71,8 +97,10 @@ package org.openvideoplayer.net
 		/**
 		 * Constructor
 		 * 
-		 * @param This object can be either an OvpConnection object or a NetConnection object. If an OvpConnection
+		 * @param connection This object can be either an OvpConnection object or a NetConnection object. If an OvpConnection
 		 * object is provided, the constructor will use the NetConnection object within it.
+		 * <p />
+		 * If you are connecting to a live stream on the Akamai network, we recommend passing in an AkamaiConnection object.
 		 */
 		public function AkamaiNetStream(connection:Object)
 		{
@@ -113,7 +141,7 @@ package org.openvideoplayer.net
 		 * since per stream authorization is invoked when the file is first played (as opposed
 		 * to connection auth params which are invoked when the connection is made).
 		 * If the stream-level authorization parameters are rejected by the server, then
-		 * NetStatusEvent event with info.code set to "NetStream Failed" will be dispatched. 
+		 * <code>NetStatusEvent</code> event with <code>info.code</code> set to "NetStream Failed" will be dispatched. 
 		 *
 		 * @see AkamaiConnection#connectionAuth
 		 * @see #play
@@ -130,17 +158,13 @@ package org.openvideoplayer.net
 		 * on the network. This time begins decrementing the moment a <code>play</code> request is made against a live
 		 * stream, or after the class receives an onUnpublish event while still playing a live stream, in which case it
 		 * attempts to automatically reconnect. After this master time out has been triggered, the class will issue
-		 * an OvpError event STREAM_NOT_FOUND.
+		 * an <code>OvpError.STREAM_NOT_FOUND</code> event .
 		 * 
 		 * @default 3600
 		 */
 		public function get liveStreamMasterTimeout():Number {
 			return _liveStreamMasterTimeout/1000;
 		}
-		
-		/**
-		 * @private
-		 */
 		public function set liveStreamMasterTimeout(numOfSeconds:Number):void {
 			_liveStreamMasterTimeout = numOfSeconds*1000;
 			_liveStreamTimer.delay = _liveStreamMasterTimeout;
@@ -167,7 +191,7 @@ package org.openvideoplayer.net
 		 * <ul><li>FLV files - when streaming .flv files (both vp6 and Spark codec), the file extension must NOT be included.
 		 * If it is, then stream length lookup and playback will fail. </li>
 		 * <li>MP3 files - the file extension must NOT be included. The reserved prefix "mp3:" must be used at the start of the stream name.</li>
-		 * <li>H.264 files - this includes all files these extensions: .mp4, .m4v, .m4a, .mov, .3gp, f4v, f4p, f4a, and f4b.
+		 * <li>H.264 files - this includes all files with these extensions: .mp4, .m4v, .m4a, .mov, .3gp, f4v, f4p, f4a, and f4b.
 		 * The file extension MUST be included, except if the file is a .mp4 file in which case the default extension of .mp4 will
 		 * be applied. The reserved prefix "mp4:" must also be used at the start of the stream name. </li>
 		 * </ul>
@@ -355,7 +379,7 @@ package org.openvideoplayer.net
 			
 		}
 		
-		/** Handles the subscribe events dispatch from OvpConnection
+		/** Handles the subscribe event dispatched from OvpConnection
 		 * @private
 		 */
 		private function onFCSubscribe(info:Object):void {
@@ -373,7 +397,7 @@ package org.openvideoplayer.net
 			} 			
 		}
 			
-		/** Handles the onFCUnsubscribe call from the server
+		/** Handles the unsubscribe event dispatched from OvpConnection
 		 * @private
 		 */
 		private function onFCUnsubscribe(info:Object):void {

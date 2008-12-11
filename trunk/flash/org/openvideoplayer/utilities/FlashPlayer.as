@@ -33,8 +33,22 @@ package org.openvideoplayer.utilities
 {
 	import flash.system.Capabilities;
 	
-	public class FlashPlayer
+	/**
+	 *  The FlashPlayer utility class is an all-static class.
+	 *  You do not create instances of this class;
+	 *  instead you call methods such as 
+	 *  the <code>FlashPlayer.version()</code> method.  
+	 */	public class FlashPlayer
 	{
+		/**
+		 * Fills in the object passed in with the following:
+		 * <ul>
+		 * <li> versionInfo.os - string containing "WIN", "MAC", or "UNIX"</li>
+		 * <li> versionInfo.major - major version as an integer for easy comparison</li>
+		 * <li> versionInfo.minor - minor version as an integer</li>
+		 * <li> versionInfo.build - build number as an integer</li>
+		 * </ul>
+		 */
 		public static function version(versionInfo:Object):void {
 
 			var _ver:String = Capabilities.version;

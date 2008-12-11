@@ -46,23 +46,15 @@ package org.openvideoplayer.rss {
 	
 	/**
 	 * Dispatched when an error condition has occurred. The event provides an error number and a verbose description
-	 * of each error. The errors thrown by this class include:
-	 * <table>
-	 * <tr><th> Error Number</th><th>Description</th></tr>
-	 * <tr><td>14</td><td>HTTP loading operation failed</td></tr>
-	 * <tr><td>15</td><td>XML is not well formed</td></tr>
-	 * <tr><td>16</td><td>XML does not conform to Media RSS standard</td></tr>
-	 * <tr><td>17</td><td>Class is busy and cannot process your request</td></tr>
-	 * <tr><td>20</td><td>Timed out trying to load the XML file</td></tr>
-	 * </table>
+	 * of each error. 
 	 * 
-	 * @eventType org.openvideoplayer.events.OvpEvent.ERROR
+	 * @see org.openvideoplayer.events.OvpEvent#ERROR
 	 */
  	[Event (name="error", type="org.openvideoplayer.events.OvpEvent")]
 	/**
 	 * Dispatched when the BOSS xml response has been successfully loaded. 
 	 * 
-	 * @eventType org.openvideoplayer.events.OvpEvent.LOADED
+	 * @see org.openvideoplayer.events.OvpEvent#LOADED
 	 */
  	[Event (name="loaded", type="org.openvideoplayer.events.OvpEvent")]
 	/**
@@ -71,6 +63,7 @@ package org.openvideoplayer.rss {
 	 * @eventType org.openvideoplayer.events.OvpEvent.PARSED
 	 */
  	[Event (name="parsed", type="org.openvideoplayer.events.OvpEvent")]
+ 	
 	/**
 	 * The AkamaiMediaRSS class loads a Media RSS playlist, parses it and makes utility
 	 * properties and methods available which expose the contents of that feed.
@@ -106,7 +99,6 @@ package org.openvideoplayer.rss {
 		
 		/**
 		 * Constructor
-		 * @private
 		 */
 		public function AkamaiMediaRSS():void {
 			_busy = false;
@@ -118,7 +110,7 @@ package org.openvideoplayer.rss {
 		 * 
 		 * @return true if the load is initiated otherwise false if the class is busy
 		 * 
-		 * @see isBusy
+		 * @see #isBusy
 		 */
 		public function load(src:String):Boolean{
 			if (!_busy) {
@@ -212,17 +204,17 @@ package org.openvideoplayer.rss {
 		 * 
 		 * @return An array containing the filtered list or <code>null</code> if no matching items were found.
 		 *
-		 * @param The text string to search for in the item list of RSS feeds.
-		 * @param A FilterFields object specifying which fields in the item list of RSS feeds to search. If this argument 
+		 * @param filterText The text string to search for in the item list of RSS feeds.
+		 * @param filterFields A FilterFields object specifying which fields in the item list of RSS feeds to search. If this argument 
 		 * is null, all fields will be searched. 
-		 * @param Either <code>FILTER_ANY</code> or <code>FILTER_ALL</code>. <code>FILTER_ANY</code> will find a match if
+		 * @param filterMatch Either <code>FILTER_ANY</code> or <code>FILTER_ALL</code>. <code>FILTER_ANY</code> will find a match if
 		 * any string contained in the <code>filterText</code> argument is found in any of the <code>filterFields</code> specified.
 		 * <code>FILTER_ALL</code> will find a match only if the entire string is found in any of the <code>filterFields</code> specified.
-		 * @param A date to search for in the item list of RSS feeds that contain dates. If the <code>filterFields</code> argument
+		 * @param filterDate A date to search for in the item list of RSS feeds that contain dates. If the <code>filterFields</code> argument
 		 * is null, all fields containing dates will be searched. In order for the 'less than or equal to' comparison to work as expected,
 		 * we will set the time of this object to midnight if the hours, minutes, and seconds are all equal to zero. If this is not the
-		 * desired behavior, set the seconds to 1 on the this Date object before calling this method.
-		 * @param Either <code>FILTER_DATE_LEQ</code> specifying 'less than or equal to', or <code>FILTER_DATE_GEQ</code> specifying
+		 * desired behavior, set the seconds to 1 on the Date object before calling this method.
+		 * @param filterDateMatch Either <code>FILTER_DATE_LEQ</code> specifying 'less than or equal to', or <code>FILTER_DATE_GEQ</code> specifying
 		 * 'greater than or equal to'.
 		 */
 		public function filterItemList(filterText:String, filterFields:RSSFilterFields=null, filterMatch:int=FILTER_ANY,
