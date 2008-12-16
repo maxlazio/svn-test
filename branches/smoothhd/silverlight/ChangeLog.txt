@@ -1,3 +1,61 @@
+*** Version 2.1.000 ***
+2008-12-14	Nick Brookins <nbrookin at akamai d0t com>
+
+- Completed work on template/skinning system for OVP v2.1 
+   > No player code changes needed for styling
+   > look and feel is handled by a xaml template outside of the player dll 
+   
+- Added Quality Meter 
+   > The number of bars indicates how close to the full bitrate you are receiving 
+   > The color is white by default and goes green if the content is HD (480 lines or more) 
+   > Color goes yellow with over 10% framedrop, and red at over 25% drop or less than 240 lines/res 
+   > Tooltip shows more details, including resolution, bitrate in use, and framedrop (if any) 
+   
+- added new heuristic for resolution cap based on player window size
+   > added ability to adaptive code to report the current resolution correctly
+   > now will cap to 848x480 unless fullscreen, saving bandwidth and cycles
+   > if capped will report in tooltip
+   
+SmoothHD Specific
+- Reskinned OVP v2.1 to emulate look and feel of existing SmoothHD 
+   > SmoothHD will now inherits features such as draggable slider, controls in Fullscreen,
+       click video to pause, dbl-click FS, etc.. - this in itself should take care of the major UI complaints 
+   > Playlists and manifests are now feeds from StreamOS (previously hardcoded xml), the content hasn't moved 
+   > Fit player into background more cleanly, and added click spots for all logos, like IIS and Akamai 
+   
+- improved install experience: page is now html other than player and playlist 
+   > If SL not installed, page and links are intact, but player area has an install link, and requirements text.
+   > previously was all silverlight, would show nothing but install button if not installed 
+   
+- Dynamic player scaling
+    > When bitrate-in-use or browser size changes, an algorithm determines the best size of the player 
+    > It will only choose from HD resolutions, 480p or greater, leaving the minimum still at 848x480  
+    > The client must have the bandwidth capability, CPU, and browser real-estate to justify upsizing
+    > Fullscreen still works as before, and will fill the screen regardless of the content being received
+
+
+*** Version 2.0.60 ***
+2008-12-02	Nick Brookins <nbrookin at akamai d0t com>
+
+- Created new custom controls Menu and MenuItem, simplifies player greatly.
+- Tweaked namespaces to get all controls together
+- Created ThemeManager, implementing ImplicitStyleManager, to allow for runtime theme changing
+- Added new StartUp Param for theme, must be resource URI such as: 'OVPImplementation;component/themes/Default.xaml'
+  (standard Silverlight syntax)  Themes must be xaml files in a referenced assembly, compiled as a resource.
+- Removed explicit styles on buttons, controls allowing external themes
+- created 'CustomContentControl' with derived class for content of each control
+  As styles can be keyed by type, this allows overriding button/control content 
+  without overriding the entire player template!
+- Fix to volumebar when muted, volume change unmutes
+- Changed to dynamic stackcontrol for button container
+- Added Previous and Next button
+- New parser to resolve xml playlist links in MediaRSS Feeds
+- fix for controlbar sizing in fullscreen
+- rearranged parameter parser to allow for utility usage outside of player
+- Added support for external playlists, can be plugged into player
+
+  
+
 *** Version 2.0.30 ***
 2008-11-26	Nick Brookins <nbrookin at akamai d0t com>
 

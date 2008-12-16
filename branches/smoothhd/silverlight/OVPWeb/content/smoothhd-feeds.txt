@@ -1,0 +1,8 @@
+﻿http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15352&groupname=products
+http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15353&groupname=products
+http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15354&groupname=products
+http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15355&groupname=products
+http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15356&groupname=products
+http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15357&groupname=products
+http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15358&groupname=products
+http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15359&groupname=products
