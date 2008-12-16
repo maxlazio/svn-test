@@ -41,15 +41,14 @@ namespace org.OpenVideoPlayer.Parsers
         /// </summary>
         public string ImageURL
         {
-            get
-            {
-                //we only support a single channel thumbnail so return the last one added
-                if (this.thumbnails.Count > 0) {
-                    return this.thumbnails[this.thumbnails.Count - 1].Url;
-                } else {
-                    return null;
-                }
-            }
+			get {
+				//we only support a single channel url so return the last one added
+				if (thumbnails != null && this.thumbnails.Count > 0 && thumbnails[this.thumbnails.Count - 1] != null) {
+					return this.thumbnails[this.thumbnails.Count - 1].Url;
+				} else {
+					return null;
+				}
+			}
         }
 
         /// <summary>

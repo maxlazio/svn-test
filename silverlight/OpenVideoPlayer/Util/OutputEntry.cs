@@ -11,7 +11,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
 using org.OpenVideoPlayer.Media;
-using org.OpenVideoPlayer.Player.Visuals;
+using org.OpenVideoPlayer.Controls;
 
 namespace org.OpenVideoPlayer.Util {
 	public class OutputEntry {
@@ -48,15 +48,16 @@ namespace org.OpenVideoPlayer.Util {
 		[XmlIgnore]
 		public Exception ExceptionObject;
 
-		public SolidColorBrush[] Brushes = new [] {
-		                                                         	new SolidColorBrush(Colors.Orange),
-																	new SolidColorBrush(Colors.Gray),
-																	new SolidColorBrush(Colors.Red),
-																	new SolidColorBrush(Colors.White),
+		public Color[] Brushes = new [] {
+			Colors.Orange,Colors.Gray, Colors.Red, Colors.White
+																	//new SolidColorBrush(Colors.Orange),
+																	//new SolidColorBrush(Colors.Gray),
+																	//new SolidColorBrush(Colors.Red),
+																	//new SolidColorBrush(Colors.White),
 		                                                         };
 
 		//TODO - make this more extensible..
-		public Brush Foreground {
+		public Color Foreground {
 			get {
 				switch(OutputType) {
 					case OutputType.Error:
