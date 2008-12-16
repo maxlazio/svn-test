@@ -23,11 +23,10 @@ set sfile="%projectpath%properties\AssemblyInfo.cs"
 %projectpath%..\ReplaceLine.exe %sfile% AssemblyVersion "[assembly: AssemblyVersion("""%ver%""")]" 
 %projectpath%..\ReplaceLine.exe %sfile% AssemblyFileVersion "[assembly: AssemblyFileVersion("""%ver%""")]"  
 
-set sfile="%projectpath%index.html"
-
 if %projname%==OVPWeb (
+   set sfile="%projectpath%index.html"
    %projectpath%..\ReplaceLine.exe %sfile% //auto "		var version = 'v%ver%'; //auto version"
-   if exist %projectpath%..\..\packages.cmd %projectpath%..\..\packages.cmd
+   rem if exist %projectpath%..\..\packages.cmd %projectpath%..\..\packages.cmd
 )
 
 :skipVer

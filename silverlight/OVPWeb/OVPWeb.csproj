@@ -58,6 +58,10 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="clientaccesspolicy.xml" />
+    <Content Include="crossdomain.xml" />
+    <Content Include="smoothhd.html" />
+    <Content Include="feeds.html" />
     <Content Include="index.html" />
     <Content Include="example.html" />
     <Content Include="OVP.xap" />
