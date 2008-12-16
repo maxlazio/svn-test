@@ -96,12 +96,12 @@ namespace org.OpenVideoPlayer.Util {
 		/// <summary>
 		/// Flags for what types to send to Debug.Writeline, using provided template
 		/// </summary>
-		public OutputType DebugTypes = OutputType.None;
+		public OutputType DebugTypes = OutputType.All;
 
 		/// <summary>
 		/// Flags for what types to send to Debug.Writeline, using provided template
 		/// </summary>
-		public OutputType StreamTypes = OutputType.All;
+		public OutputType StreamTypes = OutputType.None;
 
 		/// <summary>
 		/// Flags for what types to send to EventLog - Not Tested
@@ -184,7 +184,7 @@ namespace org.OpenVideoPlayer.Util {
 
 				if ((DebugTypes & entry.OutputType) != 0) {
 					if (text == null) text = entry + "\r\n";
-					Debug.WriteLine(text);
+					Debug.WriteLine(text.Substring(0,text.Length-2));
 				}
 
 				//Events

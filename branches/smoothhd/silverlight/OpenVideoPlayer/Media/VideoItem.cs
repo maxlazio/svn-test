@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 
 namespace org.OpenVideoPlayer.Media {
 	/// <summary>
@@ -176,9 +177,8 @@ namespace org.OpenVideoPlayer.Media {
 			get {
 				if (_mediaThumbnails.Count > 0) {
 					return _mediaThumbnails[0].Url;
-				} else {
-					return "";
 				}
+				return "";
 			}
 		}
 
