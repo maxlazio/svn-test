@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="OVPImplementation.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:Player="clr-namespace:org.OpenVideoPlayer.Player;assembly=OpenVideoPlayer" 
+     xmlns:Vis="clr-namespace:org.OpenVideoPlayer.Player.Visuals;assembly=OpenVideoPlayer" 
+  
+    mc:Ignorable="d"
+    Width="Auto" 
+    Height="Auto">
+    <Grid x:Name="LayoutRoot" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Visible" Height="Auto" Width="Auto">
+        <Player:OpenVideoPlayerControl Margin="0,0,0,0" x:Name="Player"/>
+        <!--<Vis:LogViewer></Vis:LogViewer>-->
+        
+        <!--<Button Content="Test"></Button>-->
+    </Grid>
+</UserControl>
