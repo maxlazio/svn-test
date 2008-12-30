@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		version.txt = version.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OVPDefinitions", "OVPDefinitions\OVPDefinitions.csproj", "{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
@@ -70,6 +72,16 @@ Global
 		{14B58E75-546C-4B58-BBFA-666F9C8EBB47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{14B58E75-546C-4B58-BBFA-666F9C8EBB47}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{14B58E75-546C-4B58-BBFA-666F9C8EBB47}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Release|.NET.ActiveCfg = Release|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

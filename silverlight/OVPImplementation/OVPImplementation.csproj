@@ -75,6 +75,9 @@
     <Compile Include="Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="pages\SmoothHdPage.xaml.cs">
+      <DependentUpon>SmoothHdPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +86,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Page.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="pages\SmoothHdPage.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -104,10 +111,13 @@
       <Project>{C2F1DE86-68A2-4336-9E69-1E816BA906C2}</Project>
       <Name>OpenVideoPlayer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OVPDefinitions\OVPDefinitions.csproj">
+      <Project>{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}</Project>
+      <Name>OVPDefinitions</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="AppManifest.xml" />
-    <Resource Include="bg.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

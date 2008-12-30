@@ -15,6 +15,15 @@
    > added ability to adaptive code to report the current resolution correctly
    > now will cap to 848x480 unless fullscreen, saving bandwidth and cycles
    > if capped will report in tooltip
+
+- Dynamic player scaling
+    > When bitrate-in-use or browser size changes, an algorithm determines the best size of the player 
+    > It will only choose from HD resolutions, 480p or greater, leaving the minimum still at 848x480  
+    > The client must have the bandwidth capability, CPU, and browser real-estate to justify upsizing
+    > Fullscreen still works as before, and will fill the screen regardless of the content being received
+
+- New ControlBase class provides a base class that will automatically bind template to fields and events
+- New custom controls for logviewer, playlist, chapters box, stat box, tooltip, and others
    
 SmoothHD Specific
 - Reskinned OVP v2.1 to emulate look and feel of existing SmoothHD 
@@ -27,11 +36,10 @@ SmoothHD Specific
    > If SL not installed, page and links are intact, but player area has an install link, and requirements text.
    > previously was all silverlight, would show nothing but install button if not installed 
    
-- Dynamic player scaling
-    > When bitrate-in-use or browser size changes, an algorithm determines the best size of the player 
-    > It will only choose from HD resolutions, 480p or greater, leaving the minimum still at 848x480  
-    > The client must have the bandwidth capability, CPU, and browser real-estate to justify upsizing
-    > Fullscreen still works as before, and will fill the screen regardless of the content being received
+- Added EyeWonder UIF Advertisement integration plugin (not yet in sourceforge, waiting on permission)
+   > implemented Rogan content into smoothhd
+   > used UIF for ad integration with Rogan channel as demonstration
+   
 
 
 *** Version 2.0.60 ***
