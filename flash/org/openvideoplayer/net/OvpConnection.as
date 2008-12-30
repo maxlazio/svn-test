@@ -589,7 +589,7 @@ package org.openvideoplayer.net
 		 * Note the name of the file being measured is decoupled from the file being played, meaning you can request the 
 		 * length of one file while playing another.
 		 * 
-		 * @param filename The name of the file for which length is to be requested.
+		 * @param filename The name of the streaming file for which length is to be requested.
 		 * 
 		 * @return true if the connection has been established, otherwise false.
 		 * @see org.openvideoplayer.events.OvpEvent
@@ -598,7 +598,7 @@ package org.openvideoplayer.net
 			if (!_connectionEstablished || filename == "")
 				return false;
 				
-			// if the filename includes parameters, strip them off, since the server canot handle them.
+			// if the filename includes parameters, strip them off, since the server can't handle them.
 			_nc.call("getStreamLength", new Responder(onStreamLengthResult, onStreamLengthFault), filename.indexOf("?") != -1 ? filename.slice(0,filename.indexOf("?")):filename );
 			return true;
 		}

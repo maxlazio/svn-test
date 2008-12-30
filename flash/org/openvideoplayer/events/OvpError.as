@@ -138,6 +138,18 @@ package org.openvideoplayer.events
 		 * The stream buffer has remained empty past a time out threshold.
 		 */
 		public static const STREAM_BUFFER_EMPTY:uint		= 24;
+		/**
+		 * Invalid cue point name.
+		 */
+		public static const INVALID_CUEPOINT_NAME:uint		= 25;
+		/**
+		 * Invalid cue point time.
+		 */
+		public static const INVALID_CUEPOINT_TIME:uint		= 26;
+		/**
+		 * Invalid cue point object.
+		 */
+		public static const INVALID_CUEPOINT:uint			= 27;
 		
 		private static const _errorMap:Array = [
 			{n:HOSTNAME_EMPTY, 			d:"Hostname cannot be empty"}, 
@@ -160,7 +172,10 @@ package org.openvideoplayer.events
 			{n:STREAM_FASTSTART_INVALID,d:"The Fast Start feature cannot be used with live streams"},
 			{n:XML_LOAD_TIMEOUT,		d:"Timed out trying to load the XML file"},
 			{n:STREAM_IO_ERROR,			d:"NetStream IO Error event"},
-			{n:STREAM_BUFFER_EMPTY,		d:"NetStream buffer has remained empty past timeout threshold"} ];
+			{n:STREAM_BUFFER_EMPTY,		d:"NetStream buffer has remained empty past timeout threshold"}, 
+			{n:INVALID_CUEPOINT_NAME, 	d:"Invalid cue point name - cannot be null or undefined"},
+			{n:INVALID_CUEPOINT_TIME,	d:"Invalid cue point time - must be a number greater than zero"},
+			{n:INVALID_CUEPOINT,		d:"Invalid cue point object - must contain a 'name' and 'time' properties"} ];
 			
 		private var _num:uint;
 		private var _desc:String;
