@@ -25,10 +25,6 @@ namespace org.OpenVideoPlayer.Parsers {
 		public PlayerInitParameterParser() { }
 
 		public void ImportInitParams(StartupEventArgs e, OpenVideoPlayerControl player) {
-			//String initValue;
-			//_player = player;
-			//player.Playlist.Clear();
-
 			foreach (string param in e.InitParams.Keys) {
 				ParseParameter(param.ToLower(), e.InitParams[param], player);
 			}
@@ -42,13 +38,14 @@ namespace org.OpenVideoPlayer.Parsers {
 					}
 					try {
 						Uri uri = new Uri(initValue, UriKind.Relative); //@"SLLib;component/themes/default.xaml"
-						ControlHelper.ApplyTheme(player.LayoutRoot, uri, true);
-						ControlHelper.ApplyTheme(player, uri, false);
-						ControlHelper.ApplyTheme(player.Parent as FrameworkElement, uri, false);
+						player.ApplyTheme(uri, false);
+						ControlBase.ApplyThemeToElement(player.LayoutRoot, uri, true);
+						ControlBase.ApplyThemeToElement(player.Parent as FrameworkElement, uri, false);
 					} catch (Exception ex) {
 						log.Output(OutputType.Error, "Can't apply template: ", ex.Message);
 					}
 					break;
+
 				case "autoplay":
 					player.AutoPlay = (initValue == "1" || initValue.ToUpper() == "TRUE");
 					break;
@@ -70,9 +67,10 @@ namespace org.OpenVideoPlayer.Parsers {
 				case "linkurl":
 					player.LinkUrl = initValue;
 					break;
-				case "embedurl":
-					player.EmbedUrl = initValue;
+				case "embedtag":
+					player.EmbedTag = initValue;
 					break;
+
 				case "playlist":
 				case "mediasource":
 				case "playlistsource":
@@ -80,8 +78,21 @@ namespace org.OpenVideoPlayer.Parsers {
 				case "refsource":
 					ParseSource(player.Playlist, key, initValue);
 					break;
+
+				case "plugins":
+					//TODO - test this
+					if (!string.IsNullOrEmpty(initValue)) {
+						foreach (string s in initValue.Split(' ')) {
+							Uri u = (Uri.IsWellFormedUriString(s, UriKind.Absolute) ? new Uri(s) : new Uri(HtmlPage.Document.DocumentUri, s));
+							PluginManager.LoadPlugin(u, null);
+						}
+					}
+					break;
+				case "type":
+					break;
+
 				default:
-					log.Output(OutputType.Debug, "Unknown Parameter: " + key);
+					if(!key.Contains(":")) log.Output(OutputType.Debug, "Unknown Parameter: " + key);
 					break;
 			}
 		}
@@ -91,7 +102,6 @@ namespace org.OpenVideoPlayer.Parsers {
 		}
 
 		//parse the source/input - can be inseveral different params
-		//	ParseSource(player, e);
 
 		protected Stretch ParseStretchMode(string args) {
 			args = args.ToLower();  // force it to-lower for matching
@@ -139,7 +149,16 @@ namespace org.OpenVideoPlayer.Parsers {
 
 			} else if (key=="mediasource") {
 				//direct-link create a new media item here
-				playlist.Add(new VideoItem() { Url = initValue });
+				VideoItem vi = new VideoItem();
+				if (initValue.Contains(".ism")) {
+					vi.DeliveryType = DeliveryTypes.Adaptive;
+					if (!initValue.ToLower().Contains("/manifest")) {
+						initValue += "/manifest";
+					}
+				}
+				vi.Url = initValue;
+				playlist.Add(vi);
+				playlist.LoadCompleted();
 
 			} else {
 				//otherise - create the right parser manager for our connection..
@@ -191,16 +210,14 @@ namespace org.OpenVideoPlayer.Parsers {
 				return;
 			}
 
-			//bool ap = false;
-
 			if (connection.Playlist != null) {
-				log.Output(OutputType.Info, "Received playlist with " + connection.Playlist.Count + " items");
+				//log.Output(OutputType.Debug, "Received playlist with " + connection.Playlist.Count + " items");
 
 				for (int i = 0; i < connection.Playlist.Count; i++) {
 					//HACK
 					if (connection.Playlist[i].Url.Contains(".xml") && !tryLoad.Contains(connection.Playlist[i].Url)) {
 					} else {
-						log.Output(OutputType.Info, "Added item " + connection.Playlist[i].Url);
+						//log.Output(OutputType.Debug, "Added item " + connection.Playlist[i].Title);
 						_playlist.Add(connection.Playlist[i]);
 						connection.Playlist.RemoveAt(i);
 					}
@@ -214,7 +231,7 @@ namespace org.OpenVideoPlayer.Parsers {
 							temp.Loaded += temp_Loaded;
 							temp.Error += temp_Error;
 						}
-						log.Output(OutputType.Info, "Resolving xml item " + connection.Playlist[i].Url);
+						//log.Output(OutputType.Info, "Resolving xml item " + connection.Playlist[i].Url);
 						tryLoad.Add(connection.Playlist[i].Url);
 						temp.Connect(connection.Playlist[i].Url);
 						return;
@@ -245,7 +262,7 @@ namespace org.OpenVideoPlayer.Parsers {
 			
 			for (int i = 0; i < connection.Playlist.Count; i++) {
 			    if (connection.Playlist[i].Url == conn.Uri.ToString()) {
-					log.Output(OutputType.Info, "Converted uri " + conn.Playlist[0].Url);
+					//log.Output(OutputType.Info, "Loaded referenced playlist: " + conn.Playlist[0].Title);
 					connection.Playlist[i].Url = conn.Playlist[0].Url;
 					connection.Playlist[i].DeliveryType = conn.Playlist[0].DeliveryType;
 			    	conn.Clear();

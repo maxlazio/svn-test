@@ -9,27 +9,30 @@ using System.Reflection;
 
 namespace org.OpenVideoPlayer.Controls {
 
-	public class Menu : ContentControl {
+	public class Menu : ControlBase {
 
 		public Menu() {
-			DefaultStyleKey = GetType();
+			//DefaultStyleKey = GetType();
 			//InitializeComponent();
 		}
 
 		public event RoutedEventHandler ItemCheckedChanged;
 		public event RoutedEventHandler ItemClick;
 
-		protected ListBox listBox;
-		protected Panel layoutRoot;
+		internal ListBox listBox;
+		internal Panel layoutRoot;
 
 		public override void OnApplyTemplate() {
+			BindFields = false;
 			base.OnApplyTemplate();
+			listBox = GetTemplateChild("listBox") as ListBox;
+			layoutRoot = GetTemplateChild("layoutRoot") as Panel;
 
-			BindTemplate(this, GetTemplateChild);
+			//BindTemplate(this, GetTemplateChild);
 
-			menuItems.CollectionChanged += menuItems_CollectionChanged;
-			listBox.SelectionChanged += (listBox_SelectionChanged);
-			listBox.SizeChanged += (listBox_SizeChanged);
+			menuItems.CollectionChanged += OnMenuItemsCollectionChanged;
+			listBox.SelectionChanged += OnListBoxSelectionChanged;
+			listBox.SizeChanged += OnListBoxSizeChanged;
 
 			foreach(MenuItem mi in menuItems) {
 				mi.ApplyTemplate();
@@ -243,7 +246,7 @@ namespace org.OpenVideoPlayer.Controls {
 
 		#region Event Handlers
 
-		void menuItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+		void OnMenuItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
 			//sync our colelction with our listbox's items
 			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace) {
 				foreach (MenuItem mi in e.NewItems) {
@@ -272,7 +275,7 @@ namespace org.OpenVideoPlayer.Controls {
 		}
 
 		//this means an item was clicked
-		void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+		internal void OnListBoxSelectionChanged(object sender, SelectionChangedEventArgs e) {
 			MenuItem mi = e.AddedItems[0] as MenuItem;
 
 			//shouldn't happen
@@ -299,7 +302,7 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
-		void listBox_SizeChanged(object sender, SizeChangedEventArgs e) {
+		internal void OnListBoxSizeChanged(object sender, SizeChangedEventArgs e) {
 			PositionListbox();
 		}
 		#endregion
@@ -307,23 +310,23 @@ namespace org.OpenVideoPlayer.Controls {
 		/// <summary>
 		/// Binds all the protected properties of the object into the template
 		/// </summary>
-		public static void BindTemplate(Control sender, org.OpenVideoPlayer.Util.ControlHelper.GetChildDlg dlg) {
-			//use reflection to eliminate all that biolerplate binding code.
-			//NOTE - field names must match element names in the xaml for binding to work!
-			FieldInfo[] fields = sender.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+		//public static void BindTemplate(Control sender, org.OpenVideoPlayer.Util.ControlHelper.GetChildDlg dlg) {
+		//    //use reflection to eliminate all that biolerplate binding code.
+		//    //NOTE - field names must match element names in the xaml for binding to work!
+		//    FieldInfo[] fields = sender.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
 
-			foreach (FieldInfo fi in fields) {
-				if ((fi.FieldType.Equals(typeof(FrameworkElement)) || fi.FieldType.IsSubclassOf(typeof(FrameworkElement))) && fi.GetValue(sender) == null) {
-					//object o = sender.GetTemplateChild(fi.Name);
-					object o = dlg(fi.Name);
-					if (o != null && (o.GetType().Equals(fi.FieldType) || o.GetType().IsSubclassOf(fi.FieldType))) {
-						fi.SetValue(sender, o);
-					} else {
-						Debug.WriteLine(string.Format("No template match for: {0}, {1}", fi.Name, fi.FieldType));
-					}
-				}
-			}
-		}
+		//    foreach (FieldInfo fi in fields) {
+		//        if ((fi.FieldType.Equals(typeof(FrameworkElement)) || fi.FieldType.IsSubclassOf(typeof(FrameworkElement))) && fi.GetValue(sender) == null) {
+		//            //object o = sender.GetTemplateChild(fi.Name);
+		//            object o = dlg(fi.Name);
+		//            if (o != null && (o.GetType().Equals(fi.FieldType) || o.GetType().IsSubclassOf(fi.FieldType))) {
+		//                fi.SetValue(sender, o);
+		//            } else {
+		//                Debug.WriteLine(string.Format("No template match for: {0}, {1}", fi.Name, fi.FieldType));
+		//            }
+		//        }
+		//    }
+		//}
 
 	}
 

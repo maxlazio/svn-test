@@ -55,7 +55,6 @@ namespace org.OpenVideoPlayer.Connections {
 		#region Event Delegates
 		public event ConnectionEvents.ConnectionEventHandler Loaded;
 		public event EventHandler<UnhandledExceptionEventArgs> Error;
-			//ConnectionEvents.ConnectionEventHandler Error;
 
 		protected virtual void OnLoaded(EventArgs e) {
 			if (Loaded != null) {
@@ -98,7 +97,7 @@ namespace org.OpenVideoPlayer.Connections {
 		/// <param name="uri">The Uri to connect to</param>
 		public void Connect(Uri uri) {
 			this.error = null;
-			System.Diagnostics.Debug.WriteLine("Loading Url");
+			//System.Diagnostics.Debug.WriteLine("Loading Url");
 
 			//store out the current uri for use
 			_currentURI = uri;
@@ -110,8 +109,6 @@ namespace org.OpenVideoPlayer.Connections {
 				isConnected = true;
 			} catch (Exception ex) {
 				isConnected = false;
-				//error = "Error encountered connecting to resource " + uri + ". The message was: " + ex.Message;
-				//System.Diagnostics.Debug.WriteLine("URL Error: " + ex.Message);
 				OnError(new UnhandledExceptionEventArgs(new Exception("Error encountered connecting to resource " + uri + ". The message was: " + ex.Message),false ));
 			}
 		}
@@ -149,9 +146,6 @@ namespace org.OpenVideoPlayer.Connections {
 
 					OnLoaded(EventArgs.Empty);
 				} else {
-					//error = "Error: No valid parsers to handle this request.";
-					//System.Diagnostics.Debug.WriteLine("No Valid Parsers found");
-					//OnError(EventArgs.Empty);
 					OnError(new UnhandledExceptionEventArgs(new Exception("No Valid Parsers found for " + _currentURI ?? "(null)"), false));
 				}
 			}catch(Exception ex) {
@@ -171,8 +165,6 @@ namespace org.OpenVideoPlayer.Connections {
 				return;
 			}
 			if (e.Result == null) {
-				//throw new Exception("Invalid result from playlist request");
-				//log.Output(OutputType.Critical, "Invalid result from playlist request");
 				OnError(new UnhandledExceptionEventArgs(new Exception("Invalid result from playlist request"), false));
 				return;
 			}
@@ -183,9 +175,6 @@ namespace org.OpenVideoPlayer.Connections {
 				parseStreamNow(reader);
 
 			} catch (Exception ex) {
-				//error = "Error encountered Parsing the response. The message was: " + ex.Message;
-				//System.Diagnostics.Debug.WriteLine("Error loading remote playlist");
-				//OnError(EventArgs.Empty);
 				OnError(new UnhandledExceptionEventArgs(new Exception("Error loading remote playlist" + ex.Message), false));
 			}
 		}

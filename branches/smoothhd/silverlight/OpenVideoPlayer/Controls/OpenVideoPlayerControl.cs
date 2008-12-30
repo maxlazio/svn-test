@@ -1,25 +1,21 @@
 ﻿using System;
-using System.Net;
-using System.Reflection;
+using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using System.Windows;
+using System.Windows.Browser;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Browser;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Diagnostics;
 using org.OpenVideoPlayer.Controls.Visuals;
 using org.OpenVideoPlayer.EventHandlers;
 using org.OpenVideoPlayer.Media;
 using org.OpenVideoPlayer.Parsers;
 using org.OpenVideoPlayer.Util;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace org.OpenVideoPlayer.Controls {
 	[ScriptableType]
-	public class OpenVideoPlayerControl : Control, IMediaControl {
+	public class OpenVideoPlayerControl : ControlBase, IMediaControl {
 
 		#region Constructor
 		/// <summary>
@@ -27,6 +23,7 @@ namespace org.OpenVideoPlayer.Controls {
 		/// </summary>
 		public OpenVideoPlayerControl() {
 			Application.Current.UnhandledException += Current_UnhandledException;
+			log.ModuleName = "Player";
 			/***
 			 * Setup all our default values and initialize all internal properties.
 			 */
@@ -50,83 +47,49 @@ namespace org.OpenVideoPlayer.Controls {
 
 			stretchMode = Stretch.None;
 
-			backgroundColor = Color.FromArgb(0xFF, 0x00, 0x00, 0x00);
-
-			autoplaySetting = true;
+			AutoPlay = true;
+			//autoplaySetting = true;
 			isMuted = false;
 
-			string fn = Assembly.GetExecutingAssembly().FullName;
-			if (fn != null) {
-				int iv = fn.IndexOf("Version=");
-				version = new Version(fn.Substring(iv + 8, fn.IndexOf(" ", iv + 1) - iv - 9));
-			}
-
+			version = ReflectionHelper.GetAssemblyVersion();
+			BindFields = BindEvents = true;
 		}
 
-		public event RoutedEventHandler TemplateBound;
 		public event RoutedEventHandler ItemChanged;
 		public event EventHandler BrowserSizeChanged;
-		public event EventHandler AdaptiveBitrateChanged;
+		public event EventHandler AdaptiveBitrateChanged;  //
+
+		enum ChangeType { Bitrate, Size };
 		//TODO - we need to carry through many of the media events and properties
 		#endregion
 
-		private Brush highlight = new SolidColorBrush(Color.FromArgb(255, 33, 33, 33));
-		public Brush Highlight {
-			get { return highlight; }
-			set { highlight = value; }
-		}
+		#region internal UI Element fields - bound to XAML Template
+		protected internal Border mainBorder;
+		protected internal Panel layoutRoot;
+		protected internal Grid mainGrid;
 
-		#region Protected UI Element fields - bound to XAML Template
-		protected Border mainBorder;
-		protected Panel layoutRoot;
-		protected Grid mainGrid;
+		protected internal MediaElement mediaElement;
 
-		protected FrameworkElement playToggle;
-		protected FrameworkElement pauseToggle;
-		protected MediaElement mediaElement;
+		protected internal ScrubberBar sliderVolume, scrubberBar;
 
-		protected Button buttonPlayPause;
-		protected Button buttonPrevious;
-		protected Button buttonNext;
-		protected Button buttonStop;
-		protected Button buttonLinkEmbed;
+		protected internal ContentLinkEmbedBox linkEmbed;
+		protected internal IElementList playlist, chapters, logViewer;
 
-		private Menu menuOptions;
+		protected internal QualityGauge qualityGauge;
 
-		protected Button buttonFullScreen;
-		protected Button buttonMute;
-		protected Button buttonMenu;
+		protected internal Panel controlBox;
+		protected internal Button buttonPlayPause, buttonPrevious, buttonNext, buttonStop, buttonLinkEmbed, buttonFullScreen, buttonMute, buttonMenu;
+		protected internal FrameworkElement playToggle, pauseToggle, playSymbol;
 
-		protected ScrubberBar sliderVolume;
-		protected ScrubberBar scrubberBar;
-		protected ListBox listBoxPlaylist;
-		protected Border borderPlaylist;
-		protected ListBox listBoxChapters;
-		protected Border borderChapters;
-		protected Border closePlaylist;
-		protected Border closeChapters;
-		protected Border closeLinkEmbed;
+		protected internal Menu menuOptions;
 
-		protected Panel controlBox;
-		protected Border statBox;
-		protected Border customToolTip;
-		protected Border messageBox;
-		protected TextBlock messageBoxText;
+		protected internal TextBlock stats;
 
-		protected Path playSymbol;
+		protected internal Border messageBox;
+		protected internal TextBlock messageBoxText;
 
-		protected TextBox embedText;
-		protected TextBox linkText;
+		protected internal CustomToolTip toolTip;
 
-		protected Border linkEmbedBox;
-		protected LogViewer logViewer;
-
-		//TODO - make these configurable, define in xaml
-		SolidColorBrush bad = new SolidColorBrush(Color.FromArgb(255, 255, 175, 175));
-		SolidColorBrush warn = new SolidColorBrush(Color.FromArgb(255, 255, 255, 140));
-		SolidColorBrush std = new SolidColorBrush(Colors.White);
-		SolidColorBrush good = new SolidColorBrush(Color.FromArgb(255, 175, 255, 175));
-		protected QualityGauge qualityGauge;
 		#endregion
 
 		#region private instance variables
@@ -143,51 +106,25 @@ namespace org.OpenVideoPlayer.Controls {
 		/// </summary>
 		private MediaStreamSource altMediaStreamSource;
 
-		protected Version version;
+		private Version version;
 
-		protected bool autoplaySetting;
-		protected bool timerIsUpdating;
-		protected bool fullscreenSetting;
-
-		protected Stretch stretchMode;
-		protected Color backgroundColor;
+		protected bool timerIsUpdating, isPlaying, updateBuffering, updateDownloading, isMuted;
 
 		protected DispatcherTimer mainTimer;
 		protected Timer threadTimer;
 
-		private int currentlyPlayingItem;
-		protected int currentlyPlayingChapter;
-		protected bool isPlaying;
-
-		protected bool updateBuffering;
-		protected bool updateDownloading;
-
-		// Volume
-		protected bool isMuted;
-		protected Double lastUsedVolume;
+		protected int currentlyPlayingItem, currentlyPlayingChapter;
 
 		//mouse clicks
 		private bool waitOnClick;
 		protected DateTime lastClick = DateTime.MinValue;
 
-		//cache these for better performance, although getting away from reflection would be nice
-		private ConstructorInfo adaptiveConstructor; 
-		private MethodInfo methodBitrates;
-		private MethodInfo methodAttributes;
-		private PropertyInfo propCurrentBitrate;
-		private PropertyInfo propCurrentBandwidth;
-		private MethodInfo methodBufferSize;
-		private MethodInfo methodBufferTime;
-		private MethodInfo methodSetBitrateRange;
-
-		private StartupEventArgs startupArgs;
-
-		private bool adaptiveInit;
-
+		public StartupEventArgs StartupArgs{get; protected set;}
 		private LogCollection logList = new LogCollection();
-		private OutputLog log = new OutputLog("Player");
 
+		protected Double lastUsedVolume;
 		private DateTime lastDebugUpdate;
+		private bool adaptiveInit;
 		DateTime lastMouseMove;
 		string lastSource = null;
 		HorizontalAlignment lastHAlighn;
@@ -196,36 +133,165 @@ namespace org.OpenVideoPlayer.Controls {
 		string bitrateString = "";
 		protected MediaElementState lastMediaState = MediaElementState.Closed;
 		protected string lastCommand;
+		Stretch lastStretchMode;
 
-		//stats stuff - go to struct?
-		public long AdaptiveAvailableBandwidth { get; protected set; }
-		public long AdaptiveCurrentBitrate {  get; protected set; }//	= -1.0;
-		public long AdaptivePeakBitrate {  get; protected set; }//	= -1.0;
-		public int AdaptiveSegmentCapIndex { get; protected set; }
-		//ulong[] AdaptiveAvailableBitrates { public get; protected set; }
+		private Size currentPlayerSize = new Size(0,0);//848 + 16, 480 + 200);
+		Size plMargin = new Size(16, 200);//TODO - configgable
+		Size bMargin = new Size(60, 80);
 
-		public AdaptiveSegment[] AdaptiveSegments {  get; protected set; }
+		#endregion
 
-		//IList<IDictionary<MediaStreamAttributeKeys, string>> attributes = null;
+		#region Template Methods
 
-		public ulong AdaptiveBufferSize {  get; protected set; }
-		public TimeSpan AdaptiveBufferLength {  get; protected set; }
-		public Double FPSRendered {  get; protected set; }
-		public Double FPSDropped {  get; protected set; }
-		public Double FPSTotal {  get; protected set; }
+		/// <summary>
+		/// Overrides the controls OnApplyTemplate Method to capture and wire things up
+		/// </summary>
+		public override void OnApplyTemplate() {
+			try {
+				lastSize = new Size(Width, Height);
+				lastMargin = Margin;
+				lastHAlighn = HorizontalAlignment;
+				lastVAlighn = VerticalAlignment;
 
-		public Size VideoResolution {  get; protected set; }
-		public Size MediaElementSize {  get; protected set; }
-		public Size BrowserSize {  get; protected set; }
+				//GetChildDlg = GetTemplateChild;
+				base.OnApplyTemplate();
+
+				//BindTemplate(this, GetTemplateChild);
+				if (menuOptions != null) {
+					menuOptions.ApplyTemplate();
+				}
+
+				ApplyConfiguration();
+
+				HookHandlers();
+
+			} catch (Exception ex) {
+				// Debug.WriteLine("Failed to load theme : " + ", " + ex);
+				log.Output(OutputType.Error, "Error in Apply Template", ex);
+			}
+		}
+
+
+		/// <summary>
+		/// Wires up all the event handlers to the controls
+		/// </summary>
+		protected void HookHandlers() {
+			OutputLog.StaticOutputEvent += OutputLog_StaticOutputEvent;
+
+			if (mainTimer == null) {
+				mainTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, (6 * 1001 / 30)) };
+				mainTimer.Tick += OnTimerTick;
+			}
+			if (threadTimer == null) {
+				threadTimer = new Timer(OnThreadTimerTick, threadTimer, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+			}
+
+			mainTimer.Start();
+
+			if (Application.Current != null) {
+				Application.Current.Host.Content.FullScreenChanged += OnFullScreenChanged;
+				Application.Current.Host.Content.Resized += OnFullScreenChanged;
+			}
+
+			MouseMove += On_MouseMove;
+			MouseLeftButtonDown += On_MouseLeftButtonDown;
+			PluginManager.PluginLoaded += On_PluginLoaded;
+			this.BindingValidationError += On_BindingValidationError;
+
+			if (Playlist != null) {
+				Playlist.LoadComplete += Playlist_LoadComplete;
+			}
+		}
+
+		void On_BindingValidationError(object sender, ValidationErrorEventArgs e) {
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Applies the configuration of the properties to the template
+		/// </summary>
+		protected void ApplyConfiguration() {
+			if (logViewer != null) {
+				logViewer.Source = logList;
+			}
+
+			if (StartupArgs != null) {
+				//Import our initialization values via the init parser
+				PlayerInitParameterParser playerInitParser = new PlayerInitParameterParser();
+				playerInitParser.ImportInitParams(StartupArgs, this);
+			}
+
+			//TODO: apply Markers from playlist.
+			//TODO: ApplyConfiguration the markers to the video item
+
+			if (playlist != null) {
+				playlist.Source = Playlist;
+			}
+
+			if (string.IsNullOrEmpty(EmbedTag) && string.IsNullOrEmpty(LinkUrl)) {
+				//check embed 
+				if(buttonLinkEmbed!=null) buttonLinkEmbed.Visibility = Visibility.Collapsed;
+			} else {
+				if (linkEmbed != null) {
+					linkEmbed.EmbedText.Text = EmbedTag??"";
+					linkEmbed.LinkText.Text = LinkUrl??"";
+				}
+				if (buttonLinkEmbed != null) buttonLinkEmbed.Visibility = Visibility.Visible;
+			}
+
+			//Call the fullscreen support for if we're starting in fullscreen
+			PerformResize();
+
+			if (mediaElement != null) {
+				mediaElement.AutoPlay = AutoPlay;
+				mediaElement.Stretch = stretchMode;
+
+				if (sliderVolume != null) {
+					sliderVolume.Minimum = 0;
+					sliderVolume.Maximum = 1;
+
+					if (isMuted) {
+						sliderVolume.Value = 0;
+						mediaElement.Volume = 0;
+					} else {
+						sliderVolume.Value = START_VOLUME;
+					}
+					mediaElement.Volume = sliderVolume.Value;
+				}
+				StartAutoPlay();
+			}
+
+			if (menuOptions != null) {
+				menuOptions.SetCheckState((object)StretchMode.ToString(), true);
+				menuOptions.SetCheckState("Statistics", StatVisibility == Visibility.Visible);
+				menuOptions.SetCheckState("Logs", LogVisibility == Visibility.Visible);
+			}
+
+			UpdateDebugPanel();
+		}
 
 		#endregion
 
 		#region properties
 
-		public bool AutoPlay {
-			get { return autoplaySetting; }
-			set { autoplaySetting = value; }
-		}
+		public int AdaptiveSegmentCapIndex { get; protected set; }
+		public IAdaptiveSegment[] AdaptiveSegments { get; protected set; }
+		public IAdaptiveSource AdaptiveSource { get { return altMediaStreamSource as IAdaptiveSource; } }
+
+		public Double FPSRendered { get; protected set; }
+		public Double FPSDropped { get; protected set; }
+		public Double FPSTotal { get; protected set; }
+
+		public Size VideoResolution { get; protected set; }
+		public Size MediaElementSize { get; protected set; }
+		public Size BrowserSize { get; protected set; }
+
+		public TimeSpan Position { get { return mediaElement.Position; } set { mediaElement.Position = value; } }
+		public TimeSpan Duration { get { return mediaElement.NaturalDuration.TimeSpan; } }
+		public MediaElement MediaElement { get { return mediaElement; } }
+		public bool InAd { get; set; }
+
+		public bool AutoPlay { get; set; }
 
 		public bool Muted {
 			get { return isMuted; }
@@ -247,6 +313,7 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
+		protected Stretch stretchMode;
 		public Stretch StretchMode {
 			get { return stretchMode; }
 			set {
@@ -256,6 +323,49 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
+		[ScriptableMember]
+		public void ToggleChapters() { ShowChapters = !ShowChapters; }
+
+		[ScriptableMember]
+		public bool ShowChapters {
+			get { return ((FrameworkElement)chapters.Parent).Visibility == Visibility.Visible; }
+			set { ((FrameworkElement)chapters.Parent).Visibility = (value && chapters.Count > 0) ? Visibility.Visible : Visibility.Collapsed; }
+		}
+
+		[ScriptableMember]
+		public void TogglePlaylist() { ShowPlaylist = !ShowPlaylist; }
+
+		[ScriptableMember]
+		public bool ShowPlaylist {
+			get { return ((FrameworkElement)playlist.Parent).Visibility == Visibility.Visible; }
+			set { ((FrameworkElement)playlist.Parent).Visibility = (value && (Playlist.Count > 1)) ? Visibility.Visible : Visibility.Collapsed; }
+		}
+
+		public Border MainBorder {
+			get { return mainBorder; }
+		}
+
+		public Panel LayoutRoot {
+			get { return layoutRoot; }
+		}
+
+		public Menu OptionsMenu {
+			get { return menuOptions; }
+			set { menuOptions = value; }
+		}
+
+		public int CurrentItem {
+			get { return currentlyPlayingItem; }
+			set { currentlyPlayingItem = value; }
+		}
+
+		private Brush highlight = new SolidColorBrush(Color.FromArgb(255, 33, 33, 33));
+		public Brush Highlight {
+			get { return highlight; }
+			set { highlight = value; }
+		}
+		public static readonly DependencyProperty HighlightProperty = DependencyProperty.Register("Highlight", typeof(Brush), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+
 		/// <summary>
 		/// Get's the object's playlist
 		/// </summary>
@@ -264,9 +374,14 @@ namespace org.OpenVideoPlayer.Controls {
 			get { return (PlaylistCollection)GetValue(PlaylistProperty); }
 			set {
 				SetValue(PlaylistProperty, value);
-				listBoxPlaylist.ItemsSource = value;
+				playlist.Source = value;
 			}
 		}
+		/// <summary>
+		/// Dependency Property storage for the playlist
+		/// </summary>
+		public static readonly DependencyProperty PlaylistProperty = DependencyProperty.Register("Playlist", typeof(PlaylistCollection), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+
 
 		public Double PlaybackPosition {
 			get { return (Double)GetValue(PlaybackPositionProperty); }
@@ -275,1446 +390,160 @@ namespace org.OpenVideoPlayer.Controls {
 				if (scrubberBar != null) scrubberBar.Value = value;
 			}
 		}
-
-		public String PlaybackPositionText {
-			get { return (String)GetValue(PlaybackPositionTextProperty); }
-			set { SetValue(PlaybackPositionTextProperty, value); }
-		}
-
-		public Double PlaybackDuration {
-			get { return (Double)GetValue(PlaybackDurationProperty); }
-			set { SetValue(PlaybackDurationProperty, value); }
-		}
-
-		public String PlaybackDurationText {
-			get { return (String)GetValue(PlaybackDurationTextProperty); }
-			set { SetValue(PlaybackDurationTextProperty, value); }
-		}
-
-		public Double BufferingPercent {
-			get { return (Double)GetValue(BufferingPercentProperty); }
-			set { SetValue(BufferingPercentProperty, value); }
-		}
-
-		public String BufferingImageSource {
-			get { return (String)GetValue(BufferingImageSourceProperty); }
-			set { SetValue(BufferingImageSourceProperty, value); }
-		}
-
-		public Visibility BufferingControlVisibility {
-			get { return (Visibility)GetValue(BufferingControlVisibilityProperty); }
-			set { SetValue(BufferingControlVisibilityProperty, value); }
-		}
-
-		public Double DownloadOffsetPercent {
-			get { return (Double)GetValue(DownloadOffsetPercentProperty); }
-			set { SetValue(DownloadOffsetPercentProperty, value); }
-		}
-
-		public Double DownloadPercent {
-			get { return (Double)GetValue(DownloadPercentProperty); }
-			set { SetValue(DownloadPercentProperty, value); }
-		}
-
-		public Visibility DownloadProgressControlVisibility {
-			get { return (Visibility)GetValue(DownloadProgressControlVisibilityProperty); }
-			set { SetValue(DownloadProgressControlVisibilityProperty, value); }
-		}
-
-		public String CaptionText {
-			get { return (String)GetValue(CaptionTextProperty); }
-			set { SetValue(CaptionTextProperty, value); }
-		}
-
-		public String BitRateText {
-			get { return (String)GetValue(BitRateTextProperty); }
-			set { SetValue(BitRateTextProperty, value); }
-		}
-
-		public String MessageText {
-			get { return (String)GetValue(MessageTextProperty); }
-			set { SetValue(MessageTextProperty, value); }
-		}
-
-		public String CustomToolTipText {
-			get { return (String)GetValue(CustomToolTipTextProperty); }
-			set { SetValue(CustomToolTipTextProperty, value); }
-		}
-
-		public Visibility StatVisibility {
-			get { return (Visibility)GetValue(StatVisibilityProperty); }
-			set {
-				if (StatVisibility != value) SetValue(StatVisibilityProperty, value);
-			}
-		}
-
-		public Visibility LogVisibility {
-			get { return (Visibility)GetValue(LogVisibilityProperty); }
-			set {
-				SetValue(LogVisibilityProperty, value);
-			}
-		}
-
-		#endregion
-
-		#region Dependency Property fields
-		/**
-         * We register dependency property's as a storage for many of the control objects properties.
-         */
-
-		public static readonly DependencyProperty HighlightProperty = DependencyProperty.Register("Highlight", typeof(Brush), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
-		/// <summary>
-		/// Dependency Property storage for the playlist
-		/// </summary>
-		public static readonly DependencyProperty PlaylistProperty = DependencyProperty.Register("Playlist", typeof(PlaylistCollection), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
 		/// <summary>
 		/// Dependency Property stores the current playback position
 		/// </summary>
 		public static readonly DependencyProperty PlaybackPositionProperty = DependencyProperty.Register("PlaybackPosition", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public String PlaybackPositionText {
+			get { return (String)GetValue(PlaybackPositionTextProperty); }
+			set { SetValue(PlaybackPositionTextProperty, value); }
+		}
 		/// <summary>
 		/// Dependency Property stores the current playback position text value
 		/// </summary>
 		public static readonly DependencyProperty PlaybackPositionTextProperty = DependencyProperty.Register("PlaybackPositionText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public Double PlaybackDuration {
+			get { return (Double)GetValue(PlaybackDurationProperty); }
+			set { SetValue(PlaybackDurationProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the total media duration
 		/// </summary>
 		public static readonly DependencyProperty PlaybackDurationProperty = DependencyProperty.Register("PlaybackDuration", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public String PlaybackDurationText {
+			get { return (String)GetValue(PlaybackDurationTextProperty); }
+			set { SetValue(PlaybackDurationTextProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the total media duration text value
 		/// </summary>
-		public static readonly DependencyProperty PlaybackDurationTextProperty =
-			DependencyProperty.Register("PlaybackDurationText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty PlaybackDurationTextProperty =	DependencyProperty.Register("PlaybackDurationText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public Double BufferingPercent {
+			get { return (Double)GetValue(BufferingPercentProperty); }
+			set { SetValue(BufferingPercentProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the percent-complete of buffering
 		/// </summary>
-		public static readonly DependencyProperty BufferingPercentProperty =
-			DependencyProperty.Register("BufferingPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty BufferingPercentProperty =DependencyProperty.Register("BufferingPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public String BufferingImageSource {
+			get { return (String)GetValue(BufferingImageSourceProperty); }
+			set { SetValue(BufferingImageSourceProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the url for the overlay image to display when buffering
 		/// </summary>
-		public static readonly DependencyProperty BufferingImageSourceProperty =
-			DependencyProperty.Register("BufferingImageSource", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty BufferingImageSourceProperty =DependencyProperty.Register("BufferingImageSource", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public Visibility BufferingControlVisibility {
+			get { return (Visibility)GetValue(BufferingControlVisibilityProperty); }
+			set { SetValue(BufferingControlVisibilityProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the visibility level of the buffering control
 		/// </summary>
-		public static readonly DependencyProperty BufferingControlVisibilityProperty =
-			DependencyProperty.Register("BufferingControlVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty BufferingControlVisibilityProperty = DependencyProperty.Register("BufferingControlVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public Double DownloadOffsetPercent {
+			get { return (Double)GetValue(DownloadOffsetPercentProperty); }
+			set { SetValue(DownloadOffsetPercentProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the download offset
 		/// </summary>
-		public static readonly DependencyProperty DownloadOffsetPercentProperty =
-			DependencyProperty.Register("DownloadOffsetPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty DownloadOffsetPercentProperty = DependencyProperty.Register("DownloadOffsetPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public Double DownloadPercent {
+			get { return (Double)GetValue(DownloadPercentProperty); }
+			set { SetValue(DownloadPercentProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the download complete percentage
 		/// </summary>
-		public static readonly DependencyProperty DownloadPercentProperty =
-			DependencyProperty.Register("DownloadPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty DownloadPercentProperty = DependencyProperty.Register("DownloadPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public Visibility DownloadProgressControlVisibility {
+			get { return (Visibility)GetValue(DownloadProgressControlVisibilityProperty); }
+			set { SetValue(DownloadProgressControlVisibilityProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the visibility level of the download progress bar
 		/// </summary>
-		public static readonly DependencyProperty DownloadProgressControlVisibilityProperty =
-			DependencyProperty.Register("DownloadProgressControlVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty DownloadProgressControlVisibilityProperty = DependencyProperty.Register("DownloadProgressControlVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public String CaptionText {
+			get { return (String)GetValue(CaptionTextProperty); }
+			set { SetValue(CaptionTextProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores any caption text
 		/// </summary>
-		public static readonly DependencyProperty CaptionTextProperty =
-			DependencyProperty.Register("CaptionText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty CaptionTextProperty = DependencyProperty.Register("CaptionText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		//public String BitRateText {
+		//    get { return (String)GetValue(BitRateTextProperty); }
+		//    set { SetValue(BitRateTextProperty, value); }
+		//}
+		///// <summary>
+		///// Depencency Property stores the bitrate/diagnostics string.
+		///// </summary>
+		//public static readonly DependencyProperty BitRateTextProperty = DependencyProperty.Register("BitRateText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+
+
+		public String MessageText {
+			get { return (String)GetValue(MessageTextProperty); }
+			set { SetValue(MessageTextProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property stores the bitrate/diagnostics string.
 		/// </summary>
-		public static readonly DependencyProperty BitRateTextProperty =
-			DependencyProperty.Register("BitRateText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty MessageTextProperty = DependencyProperty.Register("MessageText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
 
-		/// <summary>
-		/// Depencency Property stores the bitrate/diagnostics string.
-		/// </summary>
-		public static readonly DependencyProperty CustomToolTipTextProperty =
-			DependencyProperty.Register("CustomToolTipText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		//public String CustomToolTipText {
+		//    get { return (String)GetValue(CustomToolTipTextProperty); }
+		//    set { SetValue(CustomToolTipTextProperty, value); }
+		//}
+		///// <summary>
+		///// Depencency Property stores the bitrate/diagnostics string.
+		///// </summary>
+		//public static readonly DependencyProperty CustomToolTipTextProperty = DependencyProperty.Register("CustomToolTipText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
 
-		/// <summary>
-		/// Depencency Property stores the bitrate/diagnostics string.
-		/// </summary>
-		public static readonly DependencyProperty MessageTextProperty =
-			DependencyProperty.Register("MessageText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
+		public Visibility StatVisibility {
+			get { return (Visibility)GetValue(StatVisibilityProperty); }
+			set { if (StatVisibility != value) SetValue(StatVisibilityProperty, value); }
+		}
 		/// <summary>
 		/// Depencency Property 
 		/// </summary>
-		public static readonly DependencyProperty StatVisibilityProperty =
-			DependencyProperty.Register("StatVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty StatVisibilityProperty = DependencyProperty.Register("StatVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
-		public static readonly DependencyProperty LogVisibilityProperty =
-	DependencyProperty.Register("LogVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
-		#endregion
-
-		#region Template Methods
-
-
-		/// <summary>
-		/// Overrides the controls OnApplyTemplate Method to capture and wire things up
-		/// </summary>
-		public override void OnApplyTemplate() {
-			try {
-				base.OnApplyTemplate();
-
-				lastSize = new Size(Width, Height);
-				lastMargin = Margin;
-				lastHAlighn = HorizontalAlignment;
-				lastVAlighn = VerticalAlignment;
-
-				//UnhookHandlers();
-				BindTemplate(this, GetTemplateChild);
-				if (menuOptions != null) {
-					menuOptions.ApplyTemplate();
-				}
-				if (TemplateBound != null) TemplateBound(this, new RoutedEventArgs());
-
-				ApplyConfiguration();
-
-				HookHandlers();
-
-			} catch (Exception ex) {
-				// Debug.WriteLine("Failed to load theme : " + ", " + ex);
-				log.Output(OutputType.Error, "Error in Apply Template", ex);
-			}
-		}
-
-		/// <summary>
-		/// Binds all the protected properties of the object into the template
-		/// </summary>
-		public static void BindTemplate(Control sender, org.OpenVideoPlayer.Util.ControlHelper.GetChildDlg dlg) {
-			//use reflection to eliminate all that biolerplate binding code.
-			//NOTE - field names must match element names in the xaml for binding to work!
-			FieldInfo[] fields = sender.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-
-			foreach (FieldInfo fi in fields) {
-				if ((fi.FieldType.Equals(typeof(FrameworkElement)) || fi.FieldType.IsSubclassOf(typeof(FrameworkElement))) && fi.GetValue(sender) == null) {
-					//object o = sender.GetTemplateChild(fi.Name);
-					object o = dlg(fi.Name);
-					if (o != null && (o.GetType().Equals(fi.FieldType) || o.GetType().IsSubclassOf(fi.FieldType))) {
-						fi.SetValue(sender, o);
-					} else {
-						Debug.WriteLine(string.Format("No template match for: {0}, {1}", fi.Name, fi.FieldType));
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Wires up all the event handlers to the controls
-		/// </summary>
-		protected void HookHandlers() {
-			OutputLog.StaticOutputEvent += OutputLog_StaticOutputEvent;
-
-			if (mainTimer == null) {
-				mainTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, (6 * 1001 / 30)) };
-				mainTimer.Tick += OnTimerTick;
-			}
-
-			if (threadTimer == null) {
-				threadTimer = new Timer(OnThreadTimerTick, threadTimer, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
-			}
-
-			mainTimer.Start();
-
-			if (Application.Current != null) {
-				Application.Current.Host.Content.FullScreenChanged += OnFullScreenChanged;
-				Application.Current.Host.Content.Resized += OnFullScreenChanged;
-			}
-
-			MouseMove += On_MouseMove;
-			MouseLeftButtonDown += On_MouseLeftButtonDown;
-			SizeChanged += OnPlayerSizeChanged;
-
-			if (mediaElement != null) {
-				mediaElement.MediaFailed += OnMediaElementMediaFailed;
-				mediaElement.MediaOpened += OnMediaElementMediaOpened;
-				mediaElement.MediaEnded += OnMediaElementMediaEnded;
-				mediaElement.CurrentStateChanged += OnMediaElementCurrentStateChanged;
-				mediaElement.MarkerReached += OnMediaElementMarkerReached;
-				mediaElement.BufferingProgressChanged += OnMediaElementBufferingProgressChanged;
-				mediaElement.DownloadProgressChanged += OnMediaElementDownloadProgressChanged;
-				mediaElement.MouseLeftButtonDown += OnMediaElement_MouseLeftButtonDown;
-			}
-
-			if (controlBox != null) {
-				controlBox.SizeChanged += OnControlBoxSizeChanged;
-				controlBox.MouseMove += new System.Windows.Input.MouseEventHandler(controlBox_MouseMove);
-			}
-			if (menuOptions != null) {
-				menuOptions.ItemCheckedChanged += (OnMenuItemCheckedChanged);
-				menuOptions.ItemClick += OnMenuItemClick;
-			}
-
-			if (qualityGauge != null) {
-				qualityGauge.MouseMove += qualityGauge_MouseMove;
-				qualityGauge.MouseLeave += qualityGauge_MouseLeave;
-			}
-
-			if (buttonPlayPause != null) {
-				buttonPlayPause.Click += OnButtonClickPlayPause;
-			}
-
-			if (buttonStop != null) {
-				buttonStop.Click += OnButtonClickStop;
-			}
-
-			if (buttonPrevious != null) {
-				buttonPrevious.Click += OnButtonClickPrevious;
-			}
-
-			if (buttonNext != null) {
-				buttonNext.Click += OnButtonClickNext;
-			}
-
-			if (buttonMute != null) {
-				buttonMute.Click += OnButtonClickMute;
-			}
-
-			if (buttonMenu != null) {
-				buttonMenu.Click += OnButtonClickMenu;
-			}
-
-			if (buttonFullScreen != null) {
-				buttonFullScreen.Click += OnButtonClickFullScreen;
-			}
-
-			if (listBoxPlaylist != null) {
-				listBoxPlaylist.SelectionChanged += OnItemListSelectionChanged;
-			}
-
-			if (closePlaylist != null) {
-				closePlaylist.MouseLeftButtonUp += OnClosePlaylist_Click;
-			}
-
-			if (closeLinkEmbed != null) {
-				closeLinkEmbed.MouseLeftButtonUp += OnCloseLinkEmbed_Click;
-			}
-
-			if (closeChapters != null) {
-				closeChapters.MouseLeftButtonUp += OnCloseChapters_Click;
-			}
-
-			if (listBoxChapters != null) {
-				listBoxChapters.SelectionChanged += OnChapterListSelectionChanged;
-			}
-
-			if (scrubberBar != null) {
-				scrubberBar.ValueChanged += OnScrubberChanged;
-				scrubberBar.ValueChangeRequest += OnScrubberChangeRequest;
-				scrubberBar.MouseOver += OnScrubberMouseOver;
-				scrubberBar.MouseLeave += OnScrubberMouseLeave;
-			}
-
-			if (sliderVolume != null && mediaElement != null) {
-				sliderVolume.Minimum = 0;
-				sliderVolume.Maximum = 1;
-
-				if (isMuted) {
-					sliderVolume.Value = 0;
-					mediaElement.Volume = 0;
-				} else {
-					sliderVolume.Value = START_VOLUME;
-				}
-				mediaElement.Volume = sliderVolume.Value;
-
-				sliderVolume.ValueChanged += OnSliderVolumeChanged;
-				sliderVolume.ValueChangeRequest += OnVolumeChangeRequest;
-				sliderVolume.MouseOver += OnVolumeMouseOver;
-				sliderVolume.MouseLeave += OnVolumeMouseLeave;
-			}
-
-			if (listBoxPlaylist != null) {
-				listBoxPlaylist.ItemsSource = Playlist;
-			}
-
-			if (messageBox != null) {
-				messageBox.MouseLeftButtonDown += OnMediaElement_MouseLeftButtonDown;
-			}
-
-			if (buttonLinkEmbed != null) {
-				buttonLinkEmbed.Click += OnButtonLinkEmbed_Click;
-			}
-
-			if (Playlist != null) {
-				Playlist.CollectionChanged += Playlist_CollectionChanged;
-				Playlist.LoadComplete += Playlist_LoadComplete;
-			}
-
-			if (linkText != null) {
-				//linkText.MouseLeftButtonDown += new System.Windows.Input.MouseButtonEventHandler(linkText_MouseLeftButtonDown);
-				linkText.GotFocus += OnLinkText_GotFocus;
-			}
-			if (embedText != null) {
-				embedText.GotFocus += OnEmbedText_GotFocus;
-			}
-		}
-
-
-		void controlBox_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
-			lastMouseMove = DateTime.Now;
-		}
-
-		void OnPlayerSizeChanged(object sender, SizeChangedEventArgs e) {
-			//OnControlBoxSizeChanged(sender, e);
-
-		}
-
-
-		void Playlist_LoadComplete(object sender, RoutedEventArgs e) {
-			StartAutoPlay();
-		}
-
-		void Playlist_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
-			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add) {
-				//StartAutoPlay();
-				//log.Output(OutputType.Debug, "Time to autoplay");
-			}
-		}
-
-		void OnControlBoxSizeChanged(object sender, SizeChangedEventArgs e) {
-			Double sum = 0;
-			foreach (FrameworkElement fe in controlBox.Children) {
-				if (fe != null && fe.Name != "scrubberBar" && fe.Visibility == Visibility.Visible) sum += fe.ActualWidth + fe.Margin.Left + fe.Margin.Right;
-			}
-			if (scrubberBar != null) scrubberBar.Width = ActualWidth - sum - scrubberBar.Margin.Right - scrubberBar.Margin.Right - 4;
-
-		}
-
-
-		void On_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			CollapseMenus();
-		}
-
-		void OnMenuItemCheckedChanged(object sender, RoutedEventArgs e) {
-			MenuItem m = sender as MenuItem;
-			if (m == null) return;
-			MenuItem t = (m.Menu.Target != null) ? m.Menu.Target as MenuItem : null;
-			Debug.WriteLine("Item changed: " + m.Text + ", " + m.Checked);
-
-			if (m.Checked) {
-				if (t != null && t.Text == "Scaling") {
-					StretchMode = (Stretch)Enum.Parse(typeof(Stretch), m.Tag.ToString(), true);
-				}
-			}
-
-			if (m.Text == "Statistics") StatVisibility = (m.Checked) ? Visibility.Visible : Visibility.Collapsed;
-			if (m.Text == "Logs") LogVisibility = (m.Checked) ? Visibility.Visible : Visibility.Collapsed;
-		}
-
-		void OnMenuItemClick(object sender, RoutedEventArgs e) {
-			MenuItem m = sender as MenuItem;
-			if (m == null) return;
-
-			if (m.Text == "Playlist") TogglePlaylist();
-			if (m.Text == "Chapters") ToggleChapters();
-		}
-
-		/// <summary>
-		/// Applies the configuration of the properties to the template
-		/// </summary>
-		protected void ApplyConfiguration() {
-			if (logViewer != null) {
-				logViewer.ItemsSource = logList;
-			}
-
-			if (startupArgs != null) {
-				//Import our initialization values via the init parser
-				PlayerInitParameterParser playerInitParser = new PlayerInitParameterParser();
-				playerInitParser.ImportInitParams(startupArgs, this);
-			}
-
-			//TODO: apply Markers from playlist.
-			//TODO: ApplyConfiguration the markers to the video item
-
-			if (borderPlaylist != null) {
-				borderPlaylist.Visibility = Visibility.Collapsed;
-			}
-
-			if (borderChapters != null) {
-				borderChapters.Visibility = Visibility.Collapsed;
-			}
-
-			if (string.IsNullOrEmpty(EmbedUrl) && string.IsNullOrEmpty(LinkUrl)) {
-				//check embed 
-				//controlBox.ColumnDefinitions[7].Width = new GridLength(0);
-				buttonLinkEmbed.Visibility = Visibility.Collapsed;
-			} else {
-				if (linkText != null && LinkUrl != null) linkText.Text = LinkUrl;
-				if (embedText != null && EmbedUrl != null) embedText.Text = EmbedUrl;
-				buttonLinkEmbed.Visibility = Visibility.Visible;
-			}
-
-			//Call the fullscreen support for if we're starting in fullscreen
-			PerformResize();
-
-			if (mediaElement != null) {
-				mediaElement.AutoPlay = autoplaySetting;
-				mediaElement.Stretch = stretchMode;
-
-				StartAutoPlay();
-			}
-
-			if (menuOptions != null) {
-				menuOptions.SetCheckState((object)StretchMode.ToString(), true);
-				menuOptions.SetCheckState("Statistics", StatVisibility == Visibility.Visible);
-				menuOptions.SetCheckState("Logs", LogVisibility == Visibility.Visible);
-			}
-
-			UpdateDebugPanel();
-		}
-
-		#endregion
-
-		#region Player Methods
-
-		/// <summary>
-		/// Moves to the given item in the playlist.  If the item does not exist it does nothing.
-		/// </summary>
-		/// <param name="playlistItemIndex">The item index to seek to</param>
-		public void SeekToPlaylistItem(int playlistItemIndex) {
-			if (playlistItemIndex < 0) return;
-			//if (playlistItemIndex < 0 || playlistItemIndex >= Playlist.Count) {
-			//    if (ItemChanged != null) ItemChanged(this, new RoutedEventArgs());
-			//    return;
-			//}
-
-			//we have something to play.
-			currentlyPlayingChapter = 0;
-			currentlyPlayingItem = playlistItemIndex;
-			if (ItemChanged != null) ItemChanged(this, new RoutedEventArgs());
-
-			if (playlistItemIndex < 0 || playlistItemIndex >= Playlist.Count) {
-				return;
-			}
-
-			if (listBoxChapters != null) {
-				listBoxChapters.ItemsSource = Playlist[currentlyPlayingItem].Chapters;
-			}
-
-			if (Playlist[currentlyPlayingItem].DeliveryType == DeliveryTypes.Adaptive) {
-				//hide the download progress bar
-				DownloadProgressControlVisibility = Visibility.Collapsed;
-
-				// Bring adaptive heuristics in..
-				// NOTE: ADAPTIVE IS DISABLED IN THE PUBLIC BUILD, THE DLL MUST BE PROVIDED BY AKAMAI/MICROSOFT
-				if (adaptiveConstructor == null) {
-					if (!adaptiveInit) {
-						adaptiveInit = true;
-						LoadAdaptiveAssembly();
-						return; //get out of here so WC can work..
-					}
-				} else {
-					altMediaStreamSource = adaptiveConstructor.Invoke(new object[] { mediaElement, new Uri(Playlist[currentlyPlayingItem].Url) }) as MediaStreamSource;
-				}
-
-				if (altMediaStreamSource == null) {
-					//TODO - do we crash, or just skip this content?  How do we inform user?
-					throw new Exception("Unable to load adaptive DLL");
-				}
-
-				mediaElement.SetSource(altMediaStreamSource);
-
-			} else {
-				//Assign the source directly from the playlist url
-				mediaElement.Source = new Uri(Playlist[currentlyPlayingItem].Url);
-
-				// Set altMediaStreamSource to null, it is not used for non-adaptive streams
-				altMediaStreamSource = null;
-
-				//show the download progress bar if type is download
-				//TODO: WE DON'T PROPERLY DETECT STREAMING VIA A METAFILE (ASX) YET
-				DownloadProgressControlVisibility = (Playlist[currentlyPlayingItem].DeliveryType == DeliveryTypes.Progressive) ? Visibility.Visible : Visibility.Collapsed;
-			}
-			lastSource = Playlist[currentlyPlayingItem].Url;
-
-			//SetChapterButtonVisibility();
-			if (menuOptions != null) menuOptions.SetEnabled("Chapters", Playlist[currentlyPlayingItem].Chapters.Count > 0);
-
-			if (isPlaying || AutoPlay) {
-				Play();
-			}
-		}
-
-		private void LoadAdaptiveAssembly() {
-			WebClient wc = new WebClient();
-			wc.OpenReadCompleted += OnAssemblyDownloaded;
-			wc.OpenReadAsync(new Uri(HtmlPage.Document.DocumentUri, "AdaptiveStreaming.dll"));
-		}
-
-		void OnAssemblyDownloaded(object sender, OpenReadCompletedEventArgs e) {
-			//TODO - do we crash, or just skip this content?  How do we inform user?
-			if (e.Cancelled) {
-				throw new Exception("Assembly load cancelled");
-			}
-			if (e.Error != null) {
-				throw e.Error;
-			}
-			if (e.Result == null) {
-				throw new Exception("Invalid result from Assembly request");
-			}
-
-			AssemblyPart assemblyPart = new AssemblyPart();
-			Assembly asm = assemblyPart.Load(e.Result);
-			if (asm == null) {
-				throw new Exception("Invalid adaptive dll");
-			}
-
-			Type adapType = asm.GetType("Microsoft.Expression.Encoder.AdaptiveStreaming.AdaptiveStreamingSource");
-			if (adapType == null || !adapType.IsSubclassOf(typeof(MediaStreamSource))) {
-				throw new Exception("Invalid adaptive type");
-			}
-
-			adaptiveConstructor = adapType.GetConstructor(new[] { typeof(MediaElement), typeof(Uri) });
-			if (adaptiveConstructor == null) {
-				throw new Exception("Invalid adaptive constructor");
-			}
-
-			//go back where we left off..
-			SeekToPlaylistItem(currentlyPlayingItem);
-		}
-
-
-		/// <summary>
-		/// Returns the relative chapter index given a postition on the timeline.
-		/// </summary>
-		/// <param name="position">The position on the timeline to reference</param>
-		/// <returns>the relative chapter position</returns>
-		protected int ChapterIndexFromPosition(TimeSpan position) {
-			double seconds = position.TotalSeconds;
-
-			int indexChapter = 0;
-			while (indexChapter < Playlist[currentlyPlayingItem].Chapters.Count && Playlist[currentlyPlayingItem].Chapters[indexChapter].Position < seconds) {
-				indexChapter++;
-			}
-			return indexChapter;
-		}
-
-		/// <summary>
-		/// Attempts to seek to the given chapter index and returns success.
-		/// </summary>
-		/// <param name="chapterIndex">The chapter index of the current item to seek to</param>
-		/// <returns>True if successful</returns>
-		protected bool SeekToChapterPoint(int chapterIndex) {
-			if (chapterIndex >= 0 && chapterIndex < Playlist[currentlyPlayingItem].Chapters.Count) {
-				currentlyPlayingChapter = chapterIndex;
-				listBoxChapters.SelectedIndex = currentlyPlayingChapter;
-				return true;
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Called for fullscreen support to stretch the player out
-		/// </summary>
-		private void PerformResize() {
-
-			if ((Application.Current != null)) {
-				if (Application.Current.Host.Content.IsFullScreen) {
-					//start timer to close controls
-					ShowControls = false;
-					mainGrid.RowDefinitions[1].Height = mainGrid.RowDefinitions[2].Height = new GridLength(0);
-				} else {
-					ShowControls = true;
-					ToolTipService.SetToolTip(buttonFullScreen, "FullScreen");
-					Width = lastSize.Width;
-					Height = lastSize.Height;
-					Margin = lastMargin;
-					HorizontalAlignment = lastHAlighn;
-					VerticalAlignment = lastVAlighn;
-					mainGrid.RowDefinitions[1].Height = mainGrid.RowDefinitions[2].Height = new GridLength(32);
-					//OnControlBoxSizeChanged(this, null);
-				}
-			}
-		}
-
-		private void SetCustomToolTip(Point pt, string text) {
-			CustomToolTipText = text;
-			customToolTip.Visibility = Visibility.Visible;
-
-			customToolTip.SetValue(Canvas.LeftProperty, pt.X - (customToolTip.ActualWidth));//+ 4);
-			customToolTip.SetValue(Canvas.TopProperty, pt.Y - customToolTip.ActualHeight - 4);
-
-			if (customToolTip.Opacity < 1) customToolTip.Opacity = 1;
-		}
-
-		//TODO -seperate an adaptive adapter/interface?
-		private ulong AdaptiveGetBufferSize() {
-			Type source = (altMediaStreamSource != null) ? altMediaStreamSource.GetType() : null;
-			if (source == null) return 0;
-
-			if (methodBufferSize == null) methodBufferSize = source.GetMethod("BufferSize");
-			if (methodBufferSize != null) {
-				return (ulong)methodBufferSize.Invoke(altMediaStreamSource, BindingFlags.Default, null, new object[] { MediaStreamType.Video }, null);
-				
-			}
-			return 0;// AdaptiveBufferLength;
-		}
-
-		private TimeSpan AdaptiveGetBufferLength() {
-			Type source = (altMediaStreamSource != null) ? altMediaStreamSource.GetType() : null;
-			if (source == null) return TimeSpan.Zero;
-
-			if (methodBufferTime == null) methodBufferTime = source.GetMethod("BufferTime");
-			if (methodBufferTime != null) {
-				return (TimeSpan) methodBufferTime.Invoke(altMediaStreamSource, BindingFlags.Default, null, new object[] {MediaStreamType.Video}, null);
-			}
-			return TimeSpan.Zero;
-		}
-
-		private double AdaptiveGetAvailableBandwidth() {
-			Type source = (altMediaStreamSource != null) ? altMediaStreamSource.GetType() : null;
-			if (source == null) return -1;
-
-			if (propCurrentBandwidth == null) propCurrentBandwidth = source.GetProperty("CurrentBandwidth");
-			if (propCurrentBandwidth != null) {
-				return (Double)propCurrentBandwidth.GetValue(altMediaStreamSource, BindingFlags.Default, null, null, null);
-			}
-			return -1.0;
-		}
-
-		private IList<IDictionary<MediaStreamAttributeKeys, string>> AdaptiveGetAttributes() {
-			Type source = (altMediaStreamSource != null) ? altMediaStreamSource.GetType() : null;
-			if (source == null) return null;
-
-			if (methodAttributes == null) methodAttributes = source.GetMethod("StreamAttributes");
-			if (methodAttributes != null) {
-				return methodAttributes.Invoke(altMediaStreamSource, BindingFlags.Default, null, new object[] { MediaStreamType.Video }, null) as IList<IDictionary<MediaStreamAttributeKeys, string>>;
-			}
-			return null;
-		}
-
-		private ulong[] AdaptiveGetAvailableBitrates() {
-			Type source = (altMediaStreamSource != null) ? altMediaStreamSource.GetType() : null;
-			if (source == null) return null;
-
-			if (methodBitrates == null) methodBitrates = source.GetMethod("Bitrates");
-			if (methodBitrates != null) {
-				return (ulong[])methodBitrates.Invoke(altMediaStreamSource, BindingFlags.Default, null, new object[] { MediaStreamType.Video }, null);
-			}
-			return null;
-		}
-
-		private double AdaptiveGetCurrentBitrate() {
-			Type source = (altMediaStreamSource != null) ? altMediaStreamSource.GetType() : null;
-			if (source == null) return -1.0;
-
-			if (propCurrentBitrate == null) propCurrentBitrate = source.GetProperty("CurrentBitrate");
-			if (propCurrentBitrate != null) {
-				return (Double)propCurrentBitrate.GetValue(altMediaStreamSource, BindingFlags.Default, null, null, null);
-			}
-			return -1.0;
-		}
-
-
-		private void AdaptiveSetMaxBitrate(long max) {
-			Type source = (altMediaStreamSource != null) ? altMediaStreamSource.GetType() : null;
-			if (source == null) return;
-			if (methodSetBitrateRange == null) methodSetBitrateRange = source.GetMethod("SetBitrateRange");
-			if (methodSetBitrateRange != null) {
-				methodSetBitrateRange.Invoke(altMediaStreamSource, BindingFlags.Default, null, new object[] { MediaStreamType.Video, 0, max }, null);
-			}
-		}
-
-		#endregion
-
-		#region EventHandlers
-
-		/// <summary>
-		/// Starts up the player.  This is usually the last thing called from inside the host
-		/// application.
-		/// </summary>
-		/// <param name="sender">The object calling the startup event</param>
-		/// <param name="e">The Import parameters to use for loading the player config</param>
-		public void OnStartup(object sender, StartupEventArgs e) {
-			// Register this object to the control so the select methods are available
-			// to javascript
-			HtmlPage.RegisterScriptableObject(PLAYER_CONTROL_NAME, this);
-
-			startupArgs = e;
-
-			//OpenVideoPlayer Loaded
-		}
-
-		void Current_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e) {
-			//Debug.WriteLine("Exception: " + e.ExceptionObject);
-			log.Output(OutputType.Error, "Error: ", e.ExceptionObject);
-			e.Handled = true;
-		}
-
-		private void AdjustForPlaylist() {
-			if (PlayListOverlay == false) {
-				mainBorder.Margin = new Thickness(0, 0, ((borderPlaylist.Visibility == Visibility.Collapsed) ? 0 : listBoxPlaylist.ActualWidth), 0);
-				borderPlaylist.Margin = new Thickness(0, 5, 3, 5);
-			} else {
-				borderPlaylist.Margin = new Thickness(0, 3, 3, 24);
-			}
-		}
-
-		private readonly object timerLock = new object();
-		public void OnThreadTimerTick(object sender) {
-			if (!Monitor.TryEnter(timerLock)) return;
-			try {
-
-				UpdateStatistics();
-
-			} catch (Exception ex) {
-				Debug.WriteLine("Error in timer: " + ex);
-
-				//TODO - make this thread-safe!!
-				//log.Output(OutputType.Error, "Timer Error: ", ex);
-			} finally {
-				Monitor.Exit(timerLock);
-			}
-		}
-
-		private void UpdateStatistics() {
-			//TODO - we shouldn't use reflection if avoidable - Measure performance!
-			//Is there a better way to get these through?  No common referenced assemblies other than SL/.NET framework
-			if (altMediaStreamSource != null) {
-
-				long current = (long)AdaptiveGetCurrentBitrate();
-				if (AdaptiveCurrentBitrate != current) {
-					AdaptiveCurrentBitrate = current;
-					AdaptiveBitrateChanged(this, new EventArgs());
-				}
-
-				if (AdaptiveCurrentBitrate > AdaptivePeakBitrate) AdaptivePeakBitrate = AdaptiveCurrentBitrate;
-
-				for (int x = 0; x < AdaptiveSegments.Length; x++) {
-					AdaptiveSegment seg = AdaptiveSegments[x];
-					if (seg.Bitrate == AdaptiveCurrentBitrate) {
-						VideoResolution = seg.Resolution;
-						break;
-					}
-				}
-
-				AdaptiveAvailableBandwidth = (long)AdaptiveGetAvailableBandwidth();
-
-				AdaptiveBufferLength = AdaptiveGetBufferLength();
-				AdaptiveBufferSize = AdaptiveGetBufferSize();
-
-				if (lastMediaHeight != MediaElementSize.Height) {
-					AdaptiveFigureMaxResolution();
-				}
-			}
-		}
-
-		private void UpdateUIStatistics() {
-			FPSRendered = mediaElement.RenderedFramesPerSecond;
-			FPSDropped = mediaElement.DroppedFramesPerSecond;
-			FPSTotal = FPSDropped + FPSRendered;
-			MediaElementSize = new Size(mediaElement.ActualWidth, mediaElement.ActualHeight);
-		}
-
-		private void UpdateDebugPanel() {
-			if (DateTime.Now - lastDebugUpdate > TimeSpan.FromSeconds(3)) {
-				lastDebugUpdate = DateTime.Now;
-				try {
-
-					//check adaptive rate, right now just put in our rendered fps
-					StringBuilder sb = new StringBuilder();
-					string state = (mediaElement == null) ? "" : " (" + mediaElement.CurrentState + ")";
-					sb.AppendFormat("OpenVideoPlayer v{0}{1}", version, state);
-
-					if (isPlaying) sb.AppendFormat("\n{0}/{1} FPS (Drop/Total), Res: {2}", FPSDropped, FPSTotal, StringTools.SizetoString(VideoResolution));
-
-					if (mediaElement.DownloadProgress > 0 && mediaElement.DownloadProgress < 1) {
-						sb.AppendFormat("\nDownload progress: {0}%", (int)(100 * mediaElement.DownloadProgress));
-					}
-					if (AdaptiveCurrentBitrate > -1) sb.AppendFormat("\nCurrent Bitrate: {0}", StringTools.FriendlyBitsPerSec((int)AdaptiveCurrentBitrate));
-					if (!string.IsNullOrEmpty(bitrateString)) sb.AppendFormat("\n{0} kbps", bitrateString);
-					if (AdaptiveAvailableBandwidth > -1) sb.AppendFormat("\nAvailable bandwidth:  {0}", StringTools.FriendlyBitsPerSec((int)AdaptiveAvailableBandwidth));
-					if (AdaptiveBufferLength >= TimeSpan.Zero) sb.AppendFormat("\nCurrent Buffer: {0}, {1} sec", StringTools.FriendlyBytes((long)AdaptiveBufferSize), Math.Round(AdaptiveBufferLength.TotalSeconds, 1));
-
-					if (qualityGauge != null && AdaptiveSegments != null) {
-						double max = AdaptiveSegments[AdaptiveSegments.Length - 1].Bitrate; // -bitrates[0];
-						double capbr = AdaptiveSegments[AdaptiveSegmentCapIndex].Bitrate;
-						Size capRes = AdaptiveSegments[AdaptiveSegmentCapIndex].Resolution;
-						if (max > 0) qualityGauge.Value = (double)AdaptiveCurrentBitrate / ((capbr > 0 && capbr < max) ? capbr : max);
-						int dropPerc = (FPSTotal > 0) ? (int)Math.Round(100 * (FPSDropped / FPSTotal), 0) : 0;
-						int qualPercent = (int)Math.Round(qualityGauge.Value * 100, 0);
-
-						string maxStr = (capbr > 0 && capbr < max) ? string.Format("Capped at {0} ({1})\n", StringTools.SizetoString(capRes), StringTools.FriendlyBitsPerSec((int)capbr)) : "";
-
-						string tag = string.Format("{0} :: {1}x{2}\n{8}Bitrate: {3} ({4}% of max)\nAvailable bandwidth: {9}\nFramedrop: {5}% ({6}/{7} FPS)",
-												   ((VideoResolution.Height >= 480) ? "High-Definition".ToUpper() : "Standard-Definition".ToUpper()),
-												   VideoResolution.Width, VideoResolution.Height,
-												   StringTools.FriendlyBitsPerSec((int)AdaptiveCurrentBitrate),
-												   qualPercent, dropPerc, FPSDropped, FPSTotal, maxStr, StringTools.FriendlyBitsPerSec((int)AdaptiveAvailableBandwidth));
-
-						qualityGauge.Foreground = ((VideoResolution.Height < 300 && capRes.Height > 300) || dropPerc >= 25) ? bad : (dropPerc >= 14) ? warn : (VideoResolution.Height >= 480 || VideoResolution.Height >= capRes.Height) ? good : std;
-						qualityGauge.Tag = tag;
-
-						//update tooltip in action - hack, shouldn't have to look at content, maybe use tag?
-						if (customToolTip.Visibility == Visibility.Visible && CustomToolTipText != null && CustomToolTipText.ToLower().Contains("definition")) {
-							CustomToolTipText = tag;
-						}
-					}
-
-					BitRateText = sb.ToString();
-				} catch (Exception ex) {
-					log.Output(OutputType.Debug, "Update error", ex);
-				}
-			}
-		}
-
-		public void OnTimerTick(object sender, EventArgs e) {
-			try {
-				if (mediaElement == null) return;
-				timerIsUpdating = true;
-
-				//check controlbox width (event isnt reliable)
-				//HACK - shouldnt be hardcoded value
-				if (controlBox.Visibility== Visibility.Visible && controlBox.ActualWidth != ActualWidth - 4) OnControlBoxSizeChanged(null, null);
-
-				//adjust margin when playlist shown
-				if (mainBorder.Margin.Right != listBoxPlaylist.ActualWidth && PlayListOverlay == false && borderPlaylist.Visibility == Visibility.Visible && mainBorder.Margin.Right == 0) {
-					mainBorder.Margin = new Thickness(0, 0, listBoxPlaylist.ActualWidth, 0);
-				}
-
-				//set scrubber position
-				TimeSpan pos = mediaElement.Position;
-				scrubberBar.IsEnabled = mediaElement.NaturalDuration.TimeSpan != TimeSpan.Zero;
-				PlaybackPosition = pos.TotalSeconds;
-
-				//hack - sometimes gets into a wierd state.  need to look more at this
-				if(PlaybackPosition > scrubberBar.Maximum) {
-					if(mediaElement.RenderedFramesPerSecond == 0) {
-						if (currentlyPlayingItem < Playlist.Count - 1) {
-							SeekToNextItem();
-						} else {
-							mediaElement.Position = TimeSpan.Zero;
-							Pause();
-						}
-					}
-				}
-				TimeSpan dur = mediaElement.NaturalDuration.TimeSpan;
-
-				//set position text
-				PlaybackPositionText = (dur.Hours >= 1) ? string.Format("{0}:{1}:{2}", pos.Hours.ToString("00"), pos.Minutes.ToString("00"), pos.Seconds.ToString("00"))
-					: string.Format("{0}:{1}", pos.Minutes.ToString("00"), pos.Seconds.ToString("00"));
-
-				//make sure playlist is synced
-				if (listBoxChapters != null && currentlyPlayingChapter >= 0 && currentlyPlayingChapter < listBoxChapters.Items.Count && listBoxChapters.SelectedIndex != currentlyPlayingChapter) {
-					// set the currently playing chapter on the list box without triggering our events
-					listBoxChapters.SelectionChanged -= OnChapterListSelectionChanged;
-					listBoxChapters.SelectedIndex = currentlyPlayingChapter;
-					listBoxChapters.SelectionChanged += OnChapterListSelectionChanged;
-
-					// move that into view
-					listBoxChapters.ScrollIntoView(listBoxChapters.Items[currentlyPlayingChapter]);
-				}
-
-				UpdateUIStatistics();
-				UpdateDebugPanel();
-
-				//update download stuff
-				if (updateDownloading) {
-					updateDownloading = false;
-
-					DownloadPercent = mediaElement.DownloadProgress*100;
-					DownloadOffsetPercent = mediaElement.DownloadProgressOffset*100;
-				}
-
-				//update buffering
-				if (updateBuffering) {
-					updateBuffering = false;
-
-					BufferingControlVisibility = (mediaElement.BufferingProgress < 1) ? Visibility.Visible : Visibility.Collapsed;
-					BufferingPercent = mediaElement.BufferingProgress*100;
-				}
-
-				//Catch single clicks for play pause
-				if (waitOnClick && DateTime.Now - lastClick >= TimeSpan.FromMilliseconds(250)) {
-					waitOnClick = false;
-					TogglePlayPause();
-				}
-
-				//hide controls if fullscreeen and mouse stops moving
-				if (ShowControls && Application.Current.Host.Content.IsFullScreen && DateTime.Now - lastMouseMove > TimeSpan.FromSeconds(5)) {
-					ShowControls = false;
-				}
-
-				//check browser size, in case our parent wants to resize us dynamically
-				Size newBrowserSize = new Size(BrowserScreenInfo.ClientWidth, BrowserScreenInfo.ClientHeight);
-				if (newBrowserSize != BrowserSize && BrowserSizeChanged!=null) {
-					BrowserSize = newBrowserSize;
-					BrowserSizeChanged(this, new EventArgs());
-				}
-
-				timerIsUpdating = false;
-
-			}catch(Exception ex) {
-				log.Output(OutputType.Error, "UI Timer Error: ", ex);
-			}
-		}
-
-		void OnClosePlaylist_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			borderPlaylist.Visibility = Visibility.Collapsed;
-			AdjustForPlaylist();
-		}
-
-		void OnCloseLinkEmbed_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			linkEmbedBox.Visibility = Visibility.Collapsed;
-		}
-
-		void OnCloseChapters_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			borderChapters.Visibility = Visibility.Collapsed;
-		}
-
-		public void OnMediaElementCurrentStateChanged(object sender, RoutedEventArgs e) {
-			if (mediaElement.CurrentState == lastMediaState) return;
-			lastMediaState = mediaElement.CurrentState;
-
-			// If we're playing make the play element invisible and the pause element visible, otherwise invert.
-			if (mediaElement.CurrentState == MediaElementState.Playing) {
-				playToggle.Visibility = Visibility.Collapsed;
-				pauseToggle.Visibility = Visibility.Visible;
-
-				//	isPlaying = true;
-				ToolTipService.SetToolTip(buttonPlayPause, "Pause");
-			} else if (mediaElement.CurrentState == MediaElementState.Opening) {
-			} else if (mediaElement.CurrentState == MediaElementState.Closed) {
-			} else {
-				playToggle.Visibility = Visibility.Visible;
-				pauseToggle.Visibility = Visibility.Collapsed;
-
-				//	isPlaying = false;
-				ToolTipService.SetToolTip(buttonPlayPause, "Play");
-			}
-
-			//update button visibility
-			if (buttonNext != null && buttonPrevious != null) {
-				buttonNext.Visibility = buttonPrevious.Visibility = (listBoxPlaylist.Items.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
-			}
-
-			//Debug.WriteLine("State: " + mediaElement.CurrentState);
-			log.Output(OutputType.Debug, "State: " + mediaElement.CurrentState);
-		}
-
-		public void OnMediaElementMediaOpened(object sender, RoutedEventArgs e) {
-			PerformResize();
-
-			//Detect that we opened a streaming link (perhaps through an asx) and hide the download progress bar
-			DownloadProgressControlVisibility = (mediaElement.DownloadProgress == 1) ? Visibility.Collapsed : Visibility.Visible;
-
-			if (mediaElement.NaturalDuration.HasTimeSpan && mediaElement.NaturalDuration.TimeSpan > TimeSpan.Zero) {
-				TimeSpan dur = mediaElement.NaturalDuration.TimeSpan;
-				PlaybackDuration = dur.TotalSeconds;
-
-				PlaybackDurationText = (dur.Hours >= 1) ? string.Format("{0}:{1}:{2}", dur.Hours.ToString("00"), dur.Minutes.ToString("00"), dur.Seconds.ToString("00"))
-					: string.Format("{0}:{1}", dur.Minutes.ToString("00"), dur.Seconds.ToString("00"));
-
-				//controlBox.ColumnDefinitions[1].Width = controlBox.ColumnDefinitions[3].Width = new GridLength((dur.Hours >= 1) ? 60 : 40);
-			} else {
-				PlaybackDurationText = "(Live)";
-			}
-
-			if (isPlaying) {
-				Play();
-			}
-
-			listBoxPlaylist.SelectedIndex = currentlyPlayingItem;
-			messageBox.Visibility = Visibility.Collapsed;
-
-			if (buttonNext != null) {
-				if (listBoxPlaylist.SelectedIndex < listBoxPlaylist.Items.Count - 1) {
-					buttonNext.IsEnabled = true;
-					buttonNext.Opacity = 1.0;
-				} else {
-					buttonNext.IsEnabled = false;
-					buttonNext.Opacity = .5;
-				}
-			}
-			if (buttonPrevious != null) {
-				if (listBoxPlaylist.SelectedIndex > 0) {
-					buttonPrevious.IsEnabled = true;
-					buttonPrevious.Opacity = 1.0;
-				} else {
-					buttonPrevious.IsEnabled = false;
-					buttonPrevious.Opacity = .5;
-				}
-			}
-
-			if (menuOptions != null) menuOptions.SetEnabled("Playlist", Playlist.Count > 0);
-
-			log.Output(OutputType.Info, "Opened: " + currentlyPlayingItem + ", " + CurrentSource);
-
-			VideoResolution = new Size(mediaElement.NaturalVideoWidth, mediaElement.NaturalVideoHeight);
-
-			if (altMediaStreamSource != null) {
-				string brs = "";
-
-				ulong[] bitrates = AdaptiveGetAvailableBitrates();
-				IList<IDictionary<MediaStreamAttributeKeys, string>> attributes = AdaptiveGetAttributes();
-				List<AdaptiveSegment> segments = new List<AdaptiveSegment>();
-				int brIndex = 0;
-				if (bitrates != null) {
-					for (int x = 0; x < bitrates.Length; x++) {
-						long br = (long)bitrates[x];
-						brs += br / 1024 + ",";
-						if (br == AdaptiveCurrentBitrate) brIndex = x;
-						IDictionary<MediaStreamAttributeKeys, string> attr = (attributes!=null && attributes.Count>x) ? attributes[x] : null;
-						segments.Add(new AdaptiveSegment(){
-							Bitrate = (long)br,
-							Codec = (attr!=null) ? attr[MediaStreamAttributeKeys.VideoFourCC] : null,
-							Resolution = (attr!=null) ? StringTools.SizefromString((attr[MediaStreamAttributeKeys.Width]??"0") + "x" + (attr[MediaStreamAttributeKeys.Height]??"0")):Size.Empty
-						});
-					}
-					bitrateString = brs.Substring(0, brs.Length - 1);
-					AdaptiveSegments = segments.ToArray();
-				}
-
-				AdaptiveFigureMaxResolution();
-			}
-
-		}
-
-		private void AdaptiveFigureMaxResolution() {
-			if (AdaptiveSegments != null) {
-				Size max = Size.Empty;
-				long bitrate = 0;
-				int index = -1;
-				double ch = MediaElementSize.Height-10;//slop
-
-				for(int x = 0; x < AdaptiveSegments.Length; x++){
-					AdaptiveSegment seg = AdaptiveSegments[x];
-					int h = (int)seg.Resolution.Height;
-					if ((h > ch && (max.Height < ch)) || (h < ch && h > max.Height)) {
-						max = seg.Resolution;
-						index = x;
-						bitrate = seg.Bitrate;
-					}
-				}
-				AdaptiveSegmentCapIndex = index;
-
-				log.Output(OutputType.Info, string.Format("Max preferred content size is : {0}, at {1} - player is {2}",
-					StringTools.SizetoString(max),
-					StringTools.FriendlyBitsPerSec((int)bitrate),
-					StringTools.SizetoString(MediaElementSize)));
-
-				AdaptiveSetMaxBitrate(bitrate);
-				lastMediaHeight = MediaElementSize.Height;
-			}
-		}
-
-		void OutputLog_StaticOutputEvent(OutputEntry outputEntry) {
-			logList.Add(outputEntry);
-			while (logList.Count > 999) logList.RemoveAt(0);
-		}
-
-		public void OnMediaElementMediaEnded(object sender, RoutedEventArgs e) {
-			SeekToNextItem();
-		}
-
-		public void OnMediaElementMediaFailed(object sender, RoutedEventArgs e) {
-			//Debug.WriteLine("Content Failed! ");
-
-			string error = (e as ExceptionRoutedEventArgs != null) ? "Message: " + ((ExceptionRoutedEventArgs)e).ErrorException.Message : null;
-			MessageText = string.Format("Error opening {0}\n{1}{2}", CurrentSource, (error ?? "(Unknown Error)"), (Playlist.Count > currentlyPlayingItem + 1) ? "\n\nTrying next playlist item..." : "");
-			log.Output(OutputType.Error, MessageText);
-
-			playSymbol.Visibility = Visibility.Collapsed;
-			messageBox.Visibility = Visibility.Visible;
-			messageBoxText.FontSize = 12;
-			messageBox.Opacity = .8;
-			messageBoxText.Foreground = new SolidColorBrush(Colors.Red);
-			messageBox.Height = messageBoxText.ActualHeight + 30;
-			SeekToNextItem();
-		}
-
-		public void OnMediaElementBufferingProgressChanged(object sender, RoutedEventArgs e) {
-			updateBuffering = true;
-		}
-
-		public void OnMediaElementDownloadProgressChanged(object sender, RoutedEventArgs e) {
-			updateDownloading = true;
-		}
-
-		void On_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
-			if (Application.Current.Host.Content.IsFullScreen) {
-				//Debug.WriteLine("Move: " + e.GetPosition(mainBorder) + ", " + mainBorder.ActualHeight);
-				lastMouseMove = DateTime.Now;
-				if (!ShowControls) {
-					if (e.GetPosition(mediaElement).Y > mediaElement.ActualHeight || e.GetPosition(mainBorder).Y > mainBorder.ActualHeight - 25) {
-						ShowControls = true;
-					}
-				} else {
-					if (e.GetPosition(controlBox).Y < controlBox.ActualHeight - 100) {
-						ShowControls = false;
-					}
-				}
-			}
-		}
-
-		public void OnButtonClickPause(object sender, RoutedEventArgs e) {
-			Pause();
-			CollapseMenus();
-		}
-
-		public void OnButtonClickPlay(object sender, RoutedEventArgs e) {
-			Play();
-			CollapseMenus();
-		}
-
-		public void OnButtonClickPlayPause(object sender, RoutedEventArgs e) {
-			TogglePlayPause();
-			CollapseMenus();
-		}
-
-		public void OnButtonClickStop(object sender, RoutedEventArgs e) {
-			Stop();
-		}
-
-		/// <summary>
-		/// Event callback, wraps the Scriptable SeekToPreviousChapter() method
-		/// </summary>
-		/// <param name="sender">The object calling the event</param>
-		/// <param name="e">Args</param>
-		public void OnButtonClickPrevious(object sender, RoutedEventArgs e) {
-			SeekToPreviousChapter();
-		}
-
-		/// <summary>
-		/// Event callback, supports a Next button by seeking to the next chapter or the
-		/// next Item if no further chapters are available.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public void OnButtonClickNext(object sender, RoutedEventArgs e) {
-			if (Playlist[currentlyPlayingItem].Chapters.Count > 1) {
-				SeekToNextChapter();
-			} else {
-				SeekToNextItem();
-			}
-		}
-
-		/// <summary>
-		/// Event callback to update the mediaElement with the volume's current value
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public void OnSliderVolumeChanged(object sender, RoutedEventArgs e) {
-			mediaElement.Volume = sliderVolume.Value;
-			if (!isMuted) lastUsedVolume = sliderVolume.Value;
-			Muted = sliderVolume.Value < LOWER_VOLUME_THRESHOLD;
-			CollapseMenus();
-		}
-
-		/// <summary>
-		/// Event callback, supports a Mute button by storing off the last used volume
-		/// and setting the volume to 0 or vice-versa.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public void OnButtonClickMute(object sender, RoutedEventArgs e) {
-			Muted = !Muted;
-			CollapseMenus();
-		}
-
-		public event RoutedEventHandler FullScreenChanged;
-		/// <summary>
-		/// Event callback, supports fullscreen toggling by wrapping the PerformResize method.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public void OnFullScreenChanged(object sender, EventArgs e) {
-			PerformResize();
-			if (FullScreenChanged != null) FullScreenChanged(this, new RoutedEventArgs());
-		}
-
-		/// <summary>
-		/// Event callback, causes the player to go fullscreen.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public void OnButtonClickFullScreen(object sender, RoutedEventArgs e) {
-			ToggleFullscreen();
-			CollapseMenus();
-		}
-
-		private void CollapseMenus() {
-			if (menuOptions != null) menuOptions.Hide();
-		}
-
-		/// <summary>
-		/// Event callback, fires when the user changes the playlist item
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public void OnItemListSelectionChanged(object sender, RoutedEventArgs e) {
-			SeekToPlaylistItem(listBoxPlaylist.SelectedIndex);
-			if (PlayListOverlay) {
-				//borderPlaylist.Visibility = Visibility.Collapsed; // hides the playlist
-				if (isPlaying) borderPlaylist.Visibility = Visibility.Collapsed; // hides the playlist
-
-				AdjustForPlaylist();
-			}
-			//borderChapters.Visibility = Visibility.Collapsed;
-		}
-
-		/// <summary>
-		/// Event callback, fires when the user changes the current chapter.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public void OnChapterListSelectionChanged(object sender, RoutedEventArgs e) {
-			currentlyPlayingChapter = listBoxChapters.SelectedIndex;
-			if (currentlyPlayingChapter >= 0) {
-				mediaElement.Position = TimeSpan.FromSeconds(Playlist[currentlyPlayingItem].Chapters[currentlyPlayingChapter].Position);
-			}
-		}
-
-		/// <summary>
-		/// Event callback, fires when the mediaElement hits a marker.  Markers may or may not be
-		/// defined for each item in the playlist.
-		/// </summary>
-		/// <param name="sender">Sender</param>
-		/// <param name="e">Param</param>
-		public void OnMediaElementMarkerReached(object sender, TimelineMarkerRoutedEventArgs e) {
-			// Marker types could trigger add points, captions, interactions or chapters
-			switch (MarkerTypeConv.StringToMarkerType(e.Marker.Type)) {
-				case MarkerTypes.Chapter:
-					if (listBoxChapters != null) {
-						currentlyPlayingChapter = ChapterIndexFromPosition(e.Marker.Time);
-					}
-					break;
-
-				case MarkerTypes.Caption:
-					break;
-
-				case MarkerTypes.Interrupt:
-					break;
-
-				case MarkerTypes.Unknown:
-					Debug.WriteLine("Unknown marker type:" + e.Marker.Type);
-					break;
-			}
-		}
-
-		void OnMediaElement_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			//Debug.WriteLine("Click received from : " + sender.GetType());
-
-			if (menuOptions != null && menuOptions.Visibility == Visibility.Visible) {
-				menuOptions.Hide();
-				return;
-			}
-
-			if (DateTime.Now - lastClick < TimeSpan.FromMilliseconds(10)) {
-				//duplicate
-				return;
-			}
-			if (DateTime.Now - lastClick < TimeSpan.FromMilliseconds(250)) {
-				//this means a double click..
-				lastClick = DateTime.MinValue;
-				waitOnClick = false;
-				OnButtonClickFullScreen(this, new RoutedEventArgs());
-			} else {
-				//if there isnt another click, this will get picked up by our dispatcher timer to make a single click
-				waitOnClick = true;
-				lastClick = DateTime.Now;
-			}
-
-		}
-
-		public void OnScrubberChanged(object sender, RoutedEventArgs e) {
-			if (!timerIsUpdating) {
-				mediaElement.Position = TimeSpan.FromSeconds(scrubberBar.Value);
-			}
-		}
-
-		public void OnScrubberChangeRequest(object sender, ScrubberBarValueChangeArgs e) {
-			if (!timerIsUpdating) {
-				mediaElement.Position = TimeSpan.FromSeconds(e.Value);
-			}
-		}
-
-		void OnVolumeChangeRequest(object sender, ScrubberBarValueChangeArgs e) {
-			sliderVolume.Value = e.Value;
-		}
-
-		void OnVolumeMouseOver(object sender, ScrubberBarValueChangeArgs e) {
-			Point pt = e.MouseArgs.GetPosition(this);
-			Double val = (e.Value > 1) ? 1 : e.Value;
-
-			string text = string.Format("Volume: {0}%", (int)(val * 100));
-
-			SetCustomToolTip(pt, text);
-
-			if (e.MousePressed) {
-				sliderVolume.Value = val;
-			}
-		}
-
-		void OnVolumeMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
-			HideTooltip();
-		}
-
-		private void HideTooltip() {
-			if (customToolTip.Opacity > 0) customToolTip.Opacity = 0;
-			customToolTip.Visibility = Visibility.Collapsed;
-		}
-
-		void OnScrubberMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
-			HideTooltip();
-		}
-
-		void qualityGauge_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
-			HideTooltip();
-		}
-
-		void qualityGauge_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
-			if (qualityGauge.Tag == null || qualityGauge.Tag.ToString() == "") qualityGauge.Tag = "Standard-Definition (loading)\n\n\n";
-			SetCustomToolTip(e.GetPosition(this), qualityGauge.Tag.ToString());
-		}
-
-		void OnScrubberMouseOver(object sender, ScrubberBarValueChangeArgs e) {
-			Point pt = e.MouseArgs.GetPosition(this);
-			TimeSpan ts = TimeSpan.FromSeconds(e.Value);
-			string text = "Seek to: " + string.Format("{0}:{1}:{2}", ts.Hours.ToString("00"), ts.Minutes.ToString("00"), ts.Seconds.ToString("00"));
-
-			SetCustomToolTip(pt, text);
-
-			if (e.MousePressed && e.Value < scrubberBar.Maximum && e.Value >= 0) {
-				scrubberBar.Value = e.Value;
+		public Visibility LogVisibility {
+			get { return (Visibility)GetValue(LogVisibilityProperty); }
+			set { 
+				SetValue(LogVisibilityProperty, value);
+				if (value== Visibility.Visible) logViewer.Refresh();
 			}
-		}
-
-		void OnEmbedText_GotFocus(object sender, RoutedEventArgs e) {
-			embedText.SelectAll();
-		}
-
-		void OnLinkText_GotFocus(object sender, RoutedEventArgs e) {
-			linkText.SelectAll();
-		}
-
-		void OnButtonLinkEmbed_Click(object sender, RoutedEventArgs e) {
-			linkEmbedBox.Visibility = (linkEmbedBox.Visibility == Visibility.Collapsed) ? Visibility.Visible : Visibility.Collapsed;
-		}
-
-		public void OnButtonClickMenu(object sender, RoutedEventArgs e) {
-			if (menuOptions == null) return;
-
-			menuOptions.Target = buttonMenu;
-			menuOptions.Toggle();
 		}
+		public static readonly DependencyProperty LogVisibilityProperty = DependencyProperty.Register("LogVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
 		#endregion
 
@@ -1730,6 +559,7 @@ namespace org.OpenVideoPlayer.Controls {
 			lastCommand = command;
 
 			isPlaying = true;
+			AutoPlay = false;
 
 			if (mediaElement != null) {
 				if (Playlist.Count > 0 && currentlyPlayingItem == -1) {
@@ -1759,10 +589,11 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 
 			string command = "Pause";
-			if (command == lastCommand) return;
-			lastCommand = command;
 
 			mediaElement.Pause();
+			//was causing race
+			if (command == lastCommand) return;
+			lastCommand = command;
 
 			log.Output(OutputType.Debug, "Command: " + command);
 			isPlaying = false;
@@ -1911,7 +742,6 @@ namespace org.OpenVideoPlayer.Controls {
 			menuOptions.SetCheckState("Logs", LogVisibility == Visibility.Visible);
 		}
 
-
 		[ScriptableMember]
 		public void ToggleControls() { ShowControls = !ShowControls; }
 
@@ -1947,7 +777,11 @@ namespace org.OpenVideoPlayer.Controls {
 		public string LinkUrl { get; set; }
 
 		[ScriptableMember]
-		public string EmbedUrl { get; set; }
+		public string EmbedTag { get; set; }
+
+		public Version Version {
+			get { return version; }
+		}
 
 		private Size lastSize;
 		private Thickness lastMargin;
@@ -1984,50 +818,961 @@ namespace org.OpenVideoPlayer.Controls {
 			Debug.WriteLine("FS complete, is " + Application.Current.Host.Content.IsFullScreen);
 		}
 
-		[ScriptableMember]
-		public void ToggleChapters() { ShowChapters = !ShowChapters; }
+		#endregion
 
-		[ScriptableMember]
-		public bool ShowChapters {
-			get { return borderChapters.Visibility == Visibility.Visible; }
-			set { borderChapters.Visibility = (value && listBoxChapters.Items.Count > 0) ? Visibility.Visible : Visibility.Collapsed; }
+		#region Player Methods
+
+		/// <summary>
+		/// Moves to the given item in the playlist.  If the item does not exist it does nothing.
+		/// </summary>
+		/// <param name="playlistItemIndex">The item index to seek to</param>
+		public void SeekToPlaylistItem(int playlistItemIndex) {
+			if (playlistItemIndex < 0) return;
+
+			//we have something to play.
+			currentlyPlayingChapter = 0;
+			currentlyPlayingItem = playlistItemIndex;
+			if (ItemChanged != null) ItemChanged(this, new RoutedEventArgs());
+
+			if (playlistItemIndex < 0 || playlistItemIndex >= Playlist.Count) {
+				return;
+			}
+
+			if (chapters != null) {
+				chapters.Source = Playlist[currentlyPlayingItem].Chapters;
+			}
+
+			if (Playlist[currentlyPlayingItem].DeliveryType == DeliveryTypes.Adaptive) {
+				//hide the download progress bar
+				DownloadProgressControlVisibility = Visibility.Collapsed;
+
+				// Bring adaptive heuristics in..
+				// NOTE: ADAPTIVE IS DISABLED IN THE PUBLIC BUILD, THE DLL MUST BE PROVIDED BY AKAMAI/MICROSOFT
+				if(!PluginManager.PluginTypes.ContainsKey("AdaptiveStreamingSource")){
+					if (!adaptiveInit) {
+						adaptiveInit = true; //make sure we only try once
+						PluginManager.LoadPlugin(new Uri(HtmlPage.Document.DocumentUri, "AdaptiveStreaming.dll"), "Microsoft.Expression.Encoder.AdaptiveStreaming.AdaptiveStreamingSource");
+						return; //get out of here so WC can work..
+					}
+				} else {
+					//create new one each time.. - the name of the plugin could eventually be configurable
+					altMediaStreamSource = PluginManager.CreatePlugin("AdaptiveStreamingSource") as MediaStreamSource;
+					AdaptiveSource.Initialize(mediaElement, new Uri(Playlist[currentlyPlayingItem].Url));
+					AdaptiveSource.PlayBitrateChange += AdaptiveSourcePlayBitrateChange;
+				}
+
+				if (altMediaStreamSource == null) {
+					//TODO - do we crash, or just skip this content?  How do we inform user?
+					throw new Exception("Unable to load adaptive DLL");
+				}
+
+				mediaElement.SetSource(altMediaStreamSource);
+
+			} else {
+				//Assign the source directly from the playlist url
+				mediaElement.Source = new Uri(Playlist[currentlyPlayingItem].Url);
+
+				// Set altMediaStreamSource to null, it is not used for non-adaptive streams
+				altMediaStreamSource = null;
+
+				//show the download progress bar if type is download
+				//TODO: WE DON'T PROPERLY DETECT STREAMING VIA A METAFILE (ASX) YET
+				DownloadProgressControlVisibility = (Playlist[currentlyPlayingItem].DeliveryType == DeliveryTypes.Progressive) ? Visibility.Visible : Visibility.Collapsed;
+			}
+			lastSource = Playlist[currentlyPlayingItem].Url;
+
+			if (menuOptions != null) menuOptions.SetEnabled("Chapters", Playlist[currentlyPlayingItem].Chapters.Count > 0);
+
+			if (isPlaying || AutoPlay) {
+				Play();
+			}
 		}
 
-		[ScriptableMember]
-		public void TogglePlaylist() { ShowPlaylist = !ShowPlaylist; }
-
-		[ScriptableMember]
-		public bool ShowPlaylist {
-			get { return borderPlaylist.Visibility == Visibility.Visible; }
-			set { borderPlaylist.Visibility = (value && (Playlist.Count > 1)) ? Visibility.Visible : Visibility.Collapsed; }
+		void AdaptiveSourcePlayBitrateChange(object sender, BitrateChangedEventArgs e) {
+			UpdateAdaptiveSegments();
+			AdjustPlayerSize(ChangeType.Bitrate);
 		}
 
-		public Border MainBorder {
-			get { return mainBorder; }
+		internal void On_PluginLoaded(object sender, PluginEventArgs args) {
+			try {
+				//Special Case//
+				if (args.Plugin as MediaStreamSource != null) {
+					//go back where we left off now that the plugin is loaded
+					SeekToPlaylistItem(currentlyPlayingItem);
+					return;
+				}
+
+				args.Plugin.Player = this;
+
+			} catch (Exception ex) {
+				log.Output(OutputType.Error, "Failed to load plugin " + args.PluginType + ", ", ex);
+			}
 		}
 
-		public Panel LayoutRoot {
-			get { return layoutRoot; }
+		/// <summary>
+		/// Returns the relative chapter index given a postition on the timeline.
+		/// </summary>
+		/// <param name="position">The position on the timeline to reference</param>
+		/// <returns>the relative chapter position</returns>
+		protected int ChapterIndexFromPosition(TimeSpan position) {
+			double seconds = position.TotalSeconds;
+
+			int indexChapter = 0;
+			while (indexChapter < Playlist[currentlyPlayingItem].Chapters.Count && Playlist[currentlyPlayingItem].Chapters[indexChapter].Position < seconds) {
+				indexChapter++;
+			}
+			return indexChapter;
 		}
 
-		public Menu OptionsMenu {
-			get { return menuOptions; }
-			set { menuOptions = value; }
+		/// <summary>
+		/// Attempts to seek to the given chapter index and returns success.
+		/// </summary>
+		/// <param name="chapterIndex">The chapter index of the current item to seek to</param>
+		/// <returns>True if successful</returns>
+		protected bool SeekToChapterPoint(int chapterIndex) {
+			if (chapterIndex >= 0 && chapterIndex < Playlist[currentlyPlayingItem].Chapters.Count) {
+				currentlyPlayingChapter = chapterIndex;
+				chapters.SelectedIndex = currentlyPlayingChapter;
+				return true;
+			}
+			return false;
 		}
 
-		public int CurrentlyPlayingItem {
-			get { return currentlyPlayingItem; }
-			set { currentlyPlayingItem = value; }
+		/// <summary>
+		/// Called for fullscreen support to stretch the player out
+		/// </summary>
+		private void PerformResize() {
+
+			if ((Application.Current != null)) {
+				if (Application.Current.Host.Content.IsFullScreen) {
+					//start timer to close controls
+					ShowControls = false;
+					mainGrid.RowDefinitions[1].Height = mainGrid.RowDefinitions[2].Height = new GridLength(0);
+				} else {
+					ShowControls = true;
+					ToolTipService.SetToolTip(buttonFullScreen, "FullScreen");
+					Width = lastSize.Width;
+					Height = lastSize.Height;
+					Margin = lastMargin;
+					HorizontalAlignment = lastHAlighn;
+					VerticalAlignment = lastVAlighn;
+					mainGrid.RowDefinitions[1].Height = mainGrid.RowDefinitions[2].Height = new GridLength(32);
+					//OnControlBoxSizeChanged(this, null);
+				}
+			}
 		}
 
+		private void SetCustomToolTip(Point pt, string text) {
+			toolTip.Text = text;
+			toolTip.Visibility = Visibility.Visible;
+
+			toolTip.SetValue(Canvas.LeftProperty, pt.X - (toolTip.ActualWidth));//+ 4);
+			toolTip.SetValue(Canvas.TopProperty, pt.Y - toolTip.ActualHeight - 4);
+
+			//if (customToolTip.Opacity < 1) customToolTip.Opacity = 1;
+		}
+
+		Size minSize = new Size(848, 480);
+		bool force16x9 = true;
+		bool adaptiveScaling = true;
+
+		public bool ControlsEnabled {
+			get { return controlBox.Visibility == Visibility.Visible; }
+			set { controlBox.Visibility = ((value) ? Visibility.Visible : Visibility.Collapsed); }
+		}
+
+		void AdjustPlayerSize(ChangeType type) {
+			if (!adaptiveScaling || AdaptiveSource == null || AdaptiveSource.CurrentBitrate <= 0 || AdaptiveSegments == null) return;
+
+			for (int x = AdaptiveSegments.Length - 1; x >= 0; x--) {
+				IAdaptiveSegment seg = AdaptiveSegments[x];
+
+				Size contentRes = seg.Resolution;
+				//force 16x9
+				if (force16x9) contentRes = new Size((int)(seg.Resolution.Height * 1.77777777), seg.Resolution.Height);
+
+				//get new size of player and browser for this stage
+				Size plSize = new Size(contentRes.Width + plMargin.Width, contentRes.Height + plMargin.Height);
+				Size bSize = new Size(plSize.Width + bMargin.Width, plSize.Height + bMargin.Height);
+
+				//force over 480 lines
+				if (contentRes.Height < minSize.Height && x < AdaptiveSegments.Length - 1) {
+					seg = AdaptiveSegments[x + 1];
+					contentRes = new Size(848, 480);
+					plSize = new Size(contentRes.Width + plMargin.Width, contentRes.Height + plMargin.Height);
+					bSize = new Size(plSize.Width + bMargin.Width, plSize.Height + bMargin.Height);
+
+				} else {
+					//only consider HD resolutions, otherwise we force 848x480 for this site
+					if (contentRes.Height > minSize.Height) {
+						//extra needed if sizing upward, to keep from awkward middle spots and flashing between sizes
+						int extra = (plSize.Width > currentPlayerSize.Width) ? 20 : 0;
+						//compare with browser + margin
+						if (BrowserSize.Width < bSize.Width + extra || BrowserSize.Height < bSize.Height + extra) continue;
+						//make sure we've reached the bitrate below this level
+						if (x > 0 && (long) AdaptiveSource.CurrentBitrate < AdaptiveSegments[x - 1].Bitrate) continue;
+						//if it drops through then we need to set our minimum
+					}
+				}
+
+				//make sure we aren't setting the same value again
+				if (plSize == currentPlayerSize) return;
+				//only size upward from bitrate changes, not down.
+				if (type == ChangeType.Bitrate && plSize.Width < currentPlayerSize.Width) return;
+
+				// :: we are officially going to change something :: //
+				Debug.WriteLine("Setting size to: " + plSize + " from " + currentPlayerSize + ", Browser is: " + BrowserSize);
+				currentPlayerSize = plSize;
+
+				Dispatcher.BeginInvoke(delegate {
+					//we're golden, set player size
+					HtmlPage.Plugin.SetStyleAttribute("width", plSize.Width + "px");
+					HtmlPage.Plugin.SetStyleAttribute("height", plSize.Height + "px");
+					//set SL container DIV height
+					HtmlPage.Plugin.Parent.SetStyleAttribute("height", plSize.Height + "px");
+					//and it's container div width (for proper centering)
+
+					//hack for smoothhd background - todo make this, um, less hacky?  Get original dims and don't go below them
+					//it's kind of dependant on the page anyway though.. NB
+					if (bSize.Width < 980) bSize.Width = 980;
+					if (bSize.Height < 870) bSize.Height = 870;
+					HtmlPage.Plugin.Parent.Parent.SetStyleAttribute("width", bSize.Width + "px");
+					HtmlPage.Plugin.Parent.Parent.SetStyleAttribute("height", bSize.Height + "px");
+
+					//go native if we match our resolution
+					if (StretchMode != Stretch.None && plSize.Width > AdaptiveSegments[AdaptiveSegments.Length - 1].Resolution.Width) {
+						lastStretchMode = StretchMode;
+						StretchMode = Stretch.None;
+						Debug.WriteLine("Switched mode to native");
+					} else if (StretchMode == Stretch.None) {
+						StretchMode = lastStretchMode;
+						Debug.WriteLine("Switched mode from native to " + StretchMode);
+					}
+				});
+				return;
+			}
+		}
 
 		#endregion
-	}
 
-	//for now we dont have much reason to care about audio, just get video info
-	public struct AdaptiveSegment {
-		public Size Resolution;
-		public long Bitrate;
-		public string Codec;
+		#region EventHandlers
+
+		/// <summary>
+		/// Starts up the player.  This is usually the last thing called from inside the host
+		/// application.
+		/// </summary>
+		/// <param name="sender">The object calling the startup event</param>
+		/// <param name="e">The Import parameters to use for loading the player config</param>
+		public void OnStartup(object sender, StartupEventArgs e) {
+			// Register this object to the control so the select methods are available
+			// to javascript
+			HtmlPage.RegisterScriptableObject(PLAYER_CONTROL_NAME, this);
+
+			StartupArgs = e;
+		}
+
+		void Current_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e) {
+			//Debug.WriteLine("Exception: " + e.ExceptionObject);
+			log.Output(OutputType.Error, "Error: ", e.ExceptionObject);
+			e.Handled = true;
+		}
+
+		private void AdjustForPlaylist() {
+			if (PlayListOverlay == false) {
+				mainBorder.Margin = new Thickness(0, 0, ((ShowPlaylist) ? 0 : playlist.ActualWidth), 0);
+				playlist.Margin = new Thickness(0, 5, 3, 5);
+			} else {
+				playlist.Margin = new Thickness(0, 3, 3, 24);
+			}
+		}
+
+		private readonly object timerLock = new object();
+		public void OnThreadTimerTick(object sender) {
+			if (!Monitor.TryEnter(timerLock)) return;
+			try {
+
+				UpdateStatistics();
+
+			} catch (Exception ex) {
+				Debug.WriteLine("Error in timer: " + ex);
+
+				//TODO - make this thread-safe!!
+				//log.Output(OutputType.Error, "Timer Error: ", ex);
+			} finally {
+				Monitor.Exit(timerLock);
+			}
+		}
+
+		private void UpdateStatistics() {
+			if (AdaptiveSource != null) {
+				if (lastMediaHeight != MediaElementSize.Height) {
+					AdaptiveFigureMaxResolution();
+				}
+			}
+		}
+
+		private void UpdateUIStatistics() {
+			FPSRendered = mediaElement.RenderedFramesPerSecond;
+			FPSDropped = mediaElement.DroppedFramesPerSecond;
+			FPSTotal = FPSDropped + FPSRendered;
+			MediaElementSize = new Size(mediaElement.ActualWidth, mediaElement.ActualHeight);
+		}
+
+		private void UpdateDebugPanel() {
+			if (DateTime.Now - lastDebugUpdate > TimeSpan.FromSeconds(3)) {
+				lastDebugUpdate = DateTime.Now;
+				try {
+
+					//check adaptive rate, right now just put in our rendered fps
+					StringBuilder sb = new StringBuilder();
+					string state = (mediaElement == null) ? "" : " (" + mediaElement.CurrentState + ")";
+					sb.AppendFormat("OpenVideoPlayer v{0}{1}", version, state);
+
+					if (isPlaying) sb.AppendFormat("\n{0}/{1} FPS (Drop/Total), Res: {2}", FPSDropped, FPSTotal, StringTools.SizetoString(VideoResolution));
+
+					if (mediaElement.DownloadProgress > 0 && mediaElement.DownloadProgress < 1) {
+						sb.AppendFormat("\nDownload progress: {0}%", (int)(100 * mediaElement.DownloadProgress));
+					}
+					if (AdaptiveSource != null) {
+						//if (AdaptiveCurrentBitrate > -1) 
+						sb.AppendFormat("\nCurrent Bitrate: {0}", StringTools.FriendlyBitsPerSec((int)AdaptiveSource.CurrentBitrate));
+
+						if (!string.IsNullOrEmpty(bitrateString)) sb.AppendFormat("\n{0} kbps", bitrateString);
+
+						//if (AdaptiveAvailableBandwidth > -1) 
+						sb.AppendFormat("\nAvailable bandwidth:  {0}", StringTools.FriendlyBitsPerSec((int)AdaptiveSource.CurrentBandwidth));
+						//if (AdaptiveBufferLength >= TimeSpan.Zero) 
+						IBufferInfo buffer = AdaptiveSource.GetBufferInfo(MediaStreamType.Video);
+						sb.AppendFormat("\nCurrent Buffer: {0}, {1} sec", StringTools.FriendlyBytes((long)buffer.Size), Math.Round(buffer.Time.TotalSeconds, 1));
+
+						if (qualityGauge != null && AdaptiveSegments != null) {
+							double max = AdaptiveSegments[AdaptiveSegments.Length - 1].Bitrate; // -bitrates[0];
+							double capbr = AdaptiveSegments[AdaptiveSegmentCapIndex].Bitrate;
+							Size capRes = AdaptiveSegments[AdaptiveSegmentCapIndex].Resolution;
+							if (max > 0) qualityGauge.Value = (double)AdaptiveSource.CurrentBitrate / ((capbr > 0 && capbr < max) ? capbr : max);
+							int dropPerc = (FPSTotal > 0) ? (int)Math.Round(100 * (FPSDropped / FPSTotal), 0) : 0;
+							int qualPercent = (int)Math.Round(qualityGauge.Value * 100, 0);
+
+							string maxStr = (capbr > 0 && capbr < max) ? string.Format("Capped at {0} ({1})\n", StringTools.SizetoString(capRes), StringTools.FriendlyBitsPerSec((int)capbr)) : "";
+
+							string tag = string.Format("{0} :: {1}x{2}\n{8}Bitrate: {3} ({4}% of max)\nAvailable bandwidth: {9}\nFramedrop: {5}% ({6}/{7} FPS)",
+													   ((VideoResolution.Height >= 480) ? "High-Definition".ToUpper() : "Standard-Definition".ToUpper()),
+													   VideoResolution.Width, VideoResolution.Height,
+													   StringTools.FriendlyBitsPerSec((int)AdaptiveSource.CurrentBitrate),
+													   qualPercent, dropPerc, FPSDropped, FPSTotal, maxStr, StringTools.FriendlyBitsPerSec((int)AdaptiveSource.CurrentBandwidth));
+
+							qualityGauge.Foreground = ((VideoResolution.Height < 300 && capRes.Height > 300) || dropPerc >= 25) ? qualityGauge.Red : (dropPerc >= 14) ? qualityGauge.Yellow : (VideoResolution.Height >= 480 || VideoResolution.Height >= capRes.Height) ? qualityGauge.Green : qualityGauge.White;
+							qualityGauge.Tag = tag;
+
+							//update tooltip in action - hack, shouldn't have to look at content, maybe use tag?
+							if (toolTip.Visibility == Visibility.Visible && toolTip.Text != null && toolTip.Text.ToLower().Contains("definition")) {
+								toolTip.Text = tag;
+							}
+						}
+					}
+
+					stats.Text = sb.ToString();
+
+					//log.Output(OutputType.Debug, "Update debug took : " + (DateTime.Now - lastDebugUpdate).TotalMilliseconds + "ms");
+				} catch (Exception ex) {
+					log.Output(OutputType.Debug, "Update error", ex);
+				}
+			}
+		}
+
+		public void OnTimerTick(object sender, EventArgs e) {
+			try {
+				if (mediaElement == null) return;
+				timerIsUpdating = true;
+
+				//check controlbox width (event isnt reliable)
+				//HACK - shouldnt be hardcoded value
+				if (controlBox.Visibility== Visibility.Visible && controlBox.ActualWidth != ActualWidth - 4) OnControlBoxSizeChanged(null, null);
+
+				//adjust margin when playlist shown
+				if (playlist!=null && mainBorder.Margin.Right != playlist.ActualWidth && PlayListOverlay == false && ShowPlaylist && mainBorder.Margin.Right == 0) {
+					mainBorder.Margin = new Thickness(0, 0, playlist.ActualWidth, 0);
+				}
+
+				//set scrubber position
+				TimeSpan pos = mediaElement.Position;
+				scrubberBar.IsEnabled = mediaElement.NaturalDuration.TimeSpan != TimeSpan.Zero;
+				PlaybackPosition = pos.TotalSeconds;
+
+				//hack - sometimes gets into a wierd state.  need to look more at this
+				if(PlaybackPosition > scrubberBar.Maximum) {
+					if(mediaElement.RenderedFramesPerSecond == 0) {
+						if (currentlyPlayingItem < Playlist.Count - 1) {
+							SeekToNextItem();
+						} else {
+							mediaElement.Position = TimeSpan.Zero;
+							Pause();
+						}
+					}
+				}
+				TimeSpan dur = mediaElement.NaturalDuration.TimeSpan;
+
+				//set position text
+				PlaybackPositionText = (dur.Hours >= 1) ? string.Format("{0}:{1}:{2}", pos.Hours.ToString("00"), pos.Minutes.ToString("00"), pos.Seconds.ToString("00"))
+					: string.Format("{0}:{1}", pos.Minutes.ToString("00"), pos.Seconds.ToString("00"));
+
+				//make sure playlist is synced
+				if (chapters != null && currentlyPlayingChapter >= 0 && currentlyPlayingChapter < chapters.Count && chapters.SelectedIndex != currentlyPlayingChapter) {
+					// set the currently playing chapter on the list box without triggering our events
+					chapters.SelectionChanged -= OnListBoxChaptersSelectionChanged;
+					chapters.SelectedIndex = currentlyPlayingChapter;
+					chapters.SelectionChanged += OnListBoxChaptersSelectionChanged;
+
+					// move that into view
+					chapters.ScrollIntoView(Playlist[currentlyPlayingItem].Chapters[currentlyPlayingChapter]);//listBoxChapters.Items[currentlyPlayingChapter]);
+				}
+
+				UpdateUIStatistics();
+				UpdateDebugPanel();
+
+				//update download stuff
+				if (updateDownloading) {
+					updateDownloading = false;
+
+					DownloadPercent = mediaElement.DownloadProgress*100;
+					DownloadOffsetPercent = mediaElement.DownloadProgressOffset*100;
+				}
+
+				//update buffering
+				if (updateBuffering) {
+					updateBuffering = false;
+
+					BufferingControlVisibility = (mediaElement.BufferingProgress < 1) ? Visibility.Visible : Visibility.Collapsed;
+					BufferingPercent = mediaElement.BufferingProgress*100;
+				}
+
+				//Catch single clicks for play pause
+				if (waitOnClick && DateTime.Now - lastClick >= TimeSpan.FromMilliseconds(250)) {
+					waitOnClick = false;
+					TogglePlayPause();
+				}
+
+				//hide controls if fullscreeen and mouse stops moving
+				if (ShowControls && Application.Current.Host.Content.IsFullScreen && DateTime.Now - lastMouseMove > TimeSpan.FromSeconds(5)) {
+					ShowControls = false;
+				}
+
+				//check browser size, in case our parent wants to resize us dynamically
+				Size newBrowserSize = new Size(BrowserScreenInfo.ClientWidth, BrowserScreenInfo.ClientHeight);
+				if (newBrowserSize != BrowserSize) {
+					BrowserSize = newBrowserSize;
+					if(BrowserSizeChanged!=null) BrowserSizeChanged(this, new EventArgs());
+					AdjustPlayerSize(ChangeType.Size);
+				}
+
+				timerIsUpdating = false;
+
+			}catch(Exception ex) {
+				log.Output(OutputType.Error, "UI Timer Error: ", ex);
+			}
+		}
+
+		internal void OnMediaElementCurrentStateChanged(object sender, RoutedEventArgs e) {
+			if (mediaElement.CurrentState == lastMediaState) return;
+			lastMediaState = mediaElement.CurrentState;
+
+			// If we're playing make the play element invisible and the pause element visible, otherwise invert.
+			if (mediaElement.CurrentState == MediaElementState.Playing) {
+				playToggle.Visibility = Visibility.Collapsed;
+				pauseToggle.Visibility = Visibility.Visible;
+
+				//	isPlaying = true;
+				ToolTipService.SetToolTip(buttonPlayPause, "Pause");
+			} else if (mediaElement.CurrentState == MediaElementState.Opening) {
+			} else if (mediaElement.CurrentState == MediaElementState.Closed) {
+			} else {
+				playToggle.Visibility = Visibility.Visible;
+				pauseToggle.Visibility = Visibility.Collapsed;
+
+				//	isPlaying = false;
+				ToolTipService.SetToolTip(buttonPlayPause, "Play");
+			}
+
+			//update button visibility
+			if (buttonNext != null && buttonPrevious != null) {
+				buttonNext.Visibility = buttonPrevious.Visibility = (playlist.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+			}
+
+			//Debug.WriteLine("State: " + mediaElement.CurrentState);
+			log.Output(OutputType.Debug, "State: " + mediaElement.CurrentState);
+		}
+
+		internal void OnMediaElementMediaOpened(object sender, RoutedEventArgs e) {
+			if (isPlaying) {
+				Play();
+			} else {
+				Pause();//race condition?
+				return;
+			}
+
+			PerformResize();
+
+			//Detect that we opened a streaming link (perhaps through an asx) and hide the download progress bar
+			DownloadProgressControlVisibility = (mediaElement.DownloadProgress == 1) ? Visibility.Collapsed : Visibility.Visible;
+
+			if (mediaElement.NaturalDuration.HasTimeSpan && mediaElement.NaturalDuration.TimeSpan > TimeSpan.Zero) {
+				TimeSpan dur = mediaElement.NaturalDuration.TimeSpan;
+				PlaybackDuration = dur.TotalSeconds;
+
+				PlaybackDurationText = (dur.Hours >= 1) ? string.Format("{0}:{1}:{2}", dur.Hours.ToString("00"), dur.Minutes.ToString("00"), dur.Seconds.ToString("00"))
+					: string.Format("{0}:{1}", dur.Minutes.ToString("00"), dur.Seconds.ToString("00"));
+
+				//controlBox.ColumnDefinitions[1].Width = controlBox.ColumnDefinitions[3].Width = new GridLength((dur.Hours >= 1) ? 60 : 40);
+			} else {
+				PlaybackDurationText = "(Live)";
+			}
+
+			//if (isPlaying) {
+			//    Play();
+			//} else {
+			//    Pause();//race condition?
+			//    return;
+			//}
+
+			playlist.SelectedIndex = currentlyPlayingItem;
+			messageBox.Visibility = Visibility.Collapsed;
+
+			if (buttonNext != null) {
+				if (playlist.SelectedIndex < playlist.Count - 1) {
+					buttonNext.IsEnabled = true;
+					buttonNext.Opacity = 1.0;
+				} else {
+					buttonNext.IsEnabled = false;
+					buttonNext.Opacity = .5;
+				}
+			}
+			if (buttonPrevious != null) {
+				if (playlist.SelectedIndex > 0) {
+					buttonPrevious.IsEnabled = true;
+					buttonPrevious.Opacity = 1.0;
+				} else {
+					buttonPrevious.IsEnabled = false;
+					buttonPrevious.Opacity = .5;
+				}
+			}
+
+			if (menuOptions != null) menuOptions.SetEnabled("Playlist", Playlist.Count > 0);
+
+			log.Output(OutputType.Info, "Opened: " + currentlyPlayingItem + ", " + CurrentSource);
+
+			VideoResolution = new Size(mediaElement.NaturalVideoWidth, mediaElement.NaturalVideoHeight);
+
+			if (AdaptiveSource != null) {
+				UpdateAdaptiveSegments();
+				AdaptiveFigureMaxResolution();
+			}
+		}
+
+		internal void OnMediaElementSizeChanged(object sender, SizeChangedEventArgs e) { 
+		}
+
+		private void UpdateAdaptiveSegments() {
+			string brs = "";
+			AdaptiveSegments = AdaptiveSource.GetAvailableSegments(MediaStreamType.Video);
+			foreach (IAdaptiveSegment seg in AdaptiveSegments) {
+				brs += seg.Bitrate / 1024 + ",";
+				if (seg.Selected = (seg.Bitrate == (long)AdaptiveSource.CurrentBitrate)) {
+					VideoResolution = seg.Resolution;
+				}
+			}
+			if(brs.Length > 1) bitrateString = brs.Substring(0, brs.Length - 1);
+		}
+
+		private void AdaptiveFigureMaxResolution() {
+			if (AdaptiveSegments != null) {
+				Size max = Size.Empty;
+				long bitrate = 0;
+				int index = -1;
+				double ch = MediaElementSize.Height-10;//slop
+
+				for(int x = 0; x < AdaptiveSegments.Length; x++){
+					IAdaptiveSegment seg = AdaptiveSegments[x];
+					int h = (int)seg.Resolution.Height;
+					if ((h > ch && (max.Height < ch)) || (h < ch && h > max.Height)) {
+						max = seg.Resolution;
+						index = x;
+						bitrate = seg.Bitrate;
+					}
+				}
+				AdaptiveSegmentCapIndex = index;
+
+				log.Output(OutputType.Info, string.Format("Max preferred content size is : {0}, at {1} - player is {2}",
+					StringTools.SizetoString(max),
+					StringTools.FriendlyBitsPerSec((int)bitrate),
+					StringTools.SizetoString(MediaElementSize)));
+
+				AdaptiveSource.SetBitrateRange(MediaStreamType.Video, 0,bitrate);
+				lastMediaHeight = MediaElementSize.Height;
+			}
+		}
+
+		void OutputLog_StaticOutputEvent(OutputEntry outputEntry) {
+			logList.Add(outputEntry);
+			while (logList.Count > 999) logList.RemoveAt(0);
+		}
+
+		internal void OnMediaElementMediaEnded(object sender, RoutedEventArgs e) {
+			SeekToNextItem();
+		}
+
+		internal void OnMediaElementMediaFailed(object sender, ExceptionRoutedEventArgs e){//RoutedEventArgs e) {
+			//Debug.WriteLine("Content Failed! ");
+
+			string error = (e as ExceptionRoutedEventArgs != null) ? "Message: " + ((ExceptionRoutedEventArgs)e).ErrorException.Message : null;
+			MessageText = string.Format("Error opening {0}\n{1}{2}", CurrentSource, (error ?? "(Unknown Error)"), (Playlist.Count > currentlyPlayingItem + 1) ? "\n\nTrying next playlist item..." : "");
+			log.Output(OutputType.Error, MessageText);
+
+			playSymbol.Visibility = Visibility.Collapsed;
+			messageBox.Visibility = Visibility.Visible;
+			messageBoxText.FontSize = 12;
+			messageBox.Opacity = .8;
+			messageBoxText.Foreground = new SolidColorBrush(Colors.Red);
+			messageBox.Height = messageBoxText.ActualHeight + 30;
+			SeekToNextItem();
+		}
+
+		internal void OnMediaElementBufferingProgressChanged(object sender, RoutedEventArgs e) {
+			updateBuffering = true;
+		}
+
+		internal void OnMediaElementDownloadProgressChanged(object sender, RoutedEventArgs e) {
+			updateDownloading = true;
+		}
+
+		internal void On_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
+			if (Application.Current.Host.Content.IsFullScreen) {
+				//Debug.WriteLine("Move: " + e.GetPosition(mainBorder) + ", " + mainBorder.ActualHeight);
+				lastMouseMove = DateTime.Now;
+				if (!ShowControls) {
+					if (e.GetPosition(mediaElement).Y > mediaElement.ActualHeight || e.GetPosition(mainBorder).Y > mainBorder.ActualHeight - 25) {
+						ShowControls = true;
+					}
+				} else {
+					if (e.GetPosition(controlBox).Y < controlBox.ActualHeight - 100) {
+						ShowControls = false;
+					}
+				}
+			}
+		}
+
+		internal void OnButtonClickPause(object sender, RoutedEventArgs e) {
+			Pause();
+			CollapseMenus();
+		}
+
+		internal void OnButtonClickPlay(object sender, RoutedEventArgs e) {
+			Play();
+			CollapseMenus();
+		}
+
+		internal void OnButtonPlayPauseClick(object sender, RoutedEventArgs e) {
+			TogglePlayPause();
+			CollapseMenus();
+		}
+
+		internal void OnButtonStopClick(object sender, RoutedEventArgs e) {
+			Stop();
+		}
+
+		/// <summary>
+		/// Event callback, wraps the Scriptable SeekToPreviousChapter() method
+		/// </summary>
+		/// <param name="sender">The object calling the event</param>
+		/// <param name="e">Args</param>
+		internal void OnButtonPreviousClick(object sender, RoutedEventArgs e) {
+			SeekToPreviousChapter();
+		}
+
+		/// <summary>
+		/// Event callback, supports a Next button by seeking to the next chapter or the
+		/// next Item if no further chapters are available.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		internal void OnButtonNextClick(object sender, RoutedEventArgs e) {
+			if (Playlist[currentlyPlayingItem].Chapters.Count > 1) {
+				SeekToNextChapter();
+			} else {
+				SeekToNextItem();
+			}
+		}
+
+		/// <summary>
+		/// Event callback to update the mediaElement with the volume's current value
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		internal void OnSliderVolumeValueChanged(object sender, RoutedPropertyChangedEventArgs<Double> e) {
+			mediaElement.Volume = sliderVolume.Value;
+			if (!isMuted) lastUsedVolume = sliderVolume.Value;
+			Muted = sliderVolume.Value < LOWER_VOLUME_THRESHOLD;
+			CollapseMenus();
+		}
+
+		/// <summary>
+		/// Event callback, supports a Mute button by storing off the last used volume
+		/// and setting the volume to 0 or vice-versa.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		internal void OnButtonMuteClick(object sender, RoutedEventArgs e) {
+			Muted = !Muted;
+			CollapseMenus();
+		}
+
+		public event RoutedEventHandler FullScreenChanged;
+		/// <summary>
+		/// Event callback, supports fullscreen toggling by wrapping the PerformResize method.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		internal void OnFullScreenChanged(object sender, EventArgs e) {
+			PerformResize();
+			if (FullScreenChanged != null) FullScreenChanged(this, new RoutedEventArgs());
+			if (Application.Current.Host.Content.IsFullScreen) {
+				if (StretchMode == Stretch.None && StretchMode != lastStretchMode) {
+					StretchMode = lastStretchMode;
+					lastStretchMode = Stretch.None;
+					Debug.WriteLine("Switched mode from native to " + StretchMode + " for FS");
+				}
+			} else {
+				if (StretchMode != Stretch.None && lastStretchMode == Stretch.None) {
+					lastStretchMode = StretchMode;
+					StretchMode = Stretch.None;
+					Debug.WriteLine("Switched mode back to native");
+				}
+			}
+		}
+
+		/// <summary>
+		/// Event callback, causes the player to go fullscreen.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		internal void OnButtonFullScreenClick(object sender, RoutedEventArgs e) {
+			ToggleFullscreen();
+			CollapseMenus();
+		}
+
+		private void CollapseMenus() {
+			if (menuOptions != null) menuOptions.Hide();
+		}
+
+		/// <summary>
+		/// Event callback, fires when the user changes the playlist item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		internal void OnListBoxPlaylistSelectionChanged(object sender, SelectionChangedEventArgs e) {
+			SeekToPlaylistItem(playlist.SelectedIndex);
+			if (PlayListOverlay) {
+				//borderPlaylist.Visibility = Visibility.Collapsed; // hides the playlist
+				if (isPlaying) ShowPlaylist = false; // hides the playlist
+
+				AdjustForPlaylist();
+			}
+			//borderChapters.Visibility = Visibility.Collapsed;
+		}
+
+		/// <summary>
+		/// Event callback, fires when the user changes the current chapter.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		internal void OnListBoxChaptersSelectionChanged(object sender, SelectionChangedEventArgs e) {
+			currentlyPlayingChapter = chapters.SelectedIndex;
+			if (currentlyPlayingChapter >= 0) {
+				mediaElement.Position = TimeSpan.FromSeconds(Playlist[currentlyPlayingItem].Chapters[currentlyPlayingChapter].Position);
+			}
+		}
+
+		/// <summary>
+		/// Event callback, fires when the mediaElement hits a marker.  Markers may or may not be
+		/// defined for each item in the playlist.
+		/// </summary>
+		/// <param name="sender">Sender</param>
+		/// <param name="e">Param</param>
+		internal void OnMediaElementMarkerReached(object sender, TimelineMarkerRoutedEventArgs e) {
+			// Marker types could trigger add points, captions, interactions or chapters
+			switch (MarkerTypeConv.StringToMarkerType(e.Marker.Type)) {
+				case MarkerTypes.Chapter:
+					if (chapters != null) {
+						currentlyPlayingChapter = ChapterIndexFromPosition(e.Marker.Time);
+					}
+					break;
+
+				case MarkerTypes.Caption:
+					break;
+
+				case MarkerTypes.Interrupt:
+					break;
+
+				case MarkerTypes.Unknown:
+					Debug.WriteLine("Unknown marker type:" + e.Marker.Type);
+					break;
+			}
+
+		}
+
+		void Playlist_LoadComplete(object sender, RoutedEventArgs e) {
+			StartAutoPlay();
+		}
+
+		internal void OnControlBoxMouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
+			lastMouseMove = DateTime.Now;
+		}
+
+		internal void OnControlBoxSizeChanged(object sender, SizeChangedEventArgs e) {
+			Double sum = 0;
+			foreach (FrameworkElement fe in controlBox.Children) {
+				if (fe != null && fe.Name != "scrubberBar" && fe.Visibility == Visibility.Visible) sum += fe.ActualWidth + fe.Margin.Left + fe.Margin.Right;
+			}
+			if (scrubberBar != null) scrubberBar.Width = ActualWidth - sum - scrubberBar.Margin.Right - scrubberBar.Margin.Right - 4;
+
+		}
+
+
+		internal void On_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+			CollapseMenus();
+		}
+
+		internal void OnMenuOptionsItemCheckedChanged(object sender, RoutedEventArgs e) {
+			MenuItem m = sender as MenuItem;
+
+			if (m == null) return;
+			MenuItem t = (m.Menu.Target != null) ? m.Menu.Target as MenuItem : null;
+			Debug.WriteLine("Item changed: " + m.Text + ", " + m.Checked);
+
+			if (m.Checked) {
+				if (t != null && t.Text == "Scaling") {
+					StretchMode = (Stretch)Enum.Parse(typeof(Stretch), m.Tag.ToString(), true);
+				}
+			}
+
+			if (m.Text == "Statistics") StatVisibility = (m.Checked) ? Visibility.Visible : Visibility.Collapsed;
+			if (m.Text == "Logs") LogVisibility = (m.Checked) ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		internal void OnMenuOptionsItemClick(object sender, RoutedEventArgs e) {
+			MenuItem m = sender as MenuItem;
+			if (m == null) return;
+
+			if (m.Text == "Playlist") TogglePlaylist();
+			if (m.Text == "Chapters") ToggleChapters();
+		}
+
+		internal void OnMessageBoxMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+			SurfaceClick();
+		}
+
+		internal void OnMediaElementMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+			SurfaceClick();
+		}
+
+		private void SurfaceClick() {
+			//Debug.WriteLine("Click received from : " + sender.GetType());
+
+			if (menuOptions != null && menuOptions.Visibility == Visibility.Visible) {
+				menuOptions.Hide();
+				return;
+			}
+
+			if (DateTime.Now - lastClick < TimeSpan.FromMilliseconds(10)) {
+				//duplicate
+				return;
+			}
+			if (DateTime.Now - lastClick < TimeSpan.FromMilliseconds(250)) {
+				//this means a double click..
+				lastClick = DateTime.MinValue;
+				waitOnClick = false;
+				OnButtonFullScreenClick(this, new RoutedEventArgs());
+			} else {
+				//if there isnt another click, this will get picked up by our dispatcher timer to make a single click
+				waitOnClick = true;
+				lastClick = DateTime.Now;
+			}
+		}
+
+		internal void OnScrubberBarValueChanged(object sender, RoutedPropertyChangedEventArgs<Double> e) {
+			if (!timerIsUpdating) {
+				mediaElement.Position = TimeSpan.FromSeconds(scrubberBar.Value);
+			}
+		}
+
+		internal void OnScrubberBarValueChangeRequest(object sender, ScrubberBarValueChangeArgs e) {
+			if (!timerIsUpdating) {
+				mediaElement.Position = TimeSpan.FromSeconds(e.Value);
+			}
+		}
+
+		internal void OnSliderVolumeValueChangeRequest(object sender, ScrubberBarValueChangeArgs e) {
+			sliderVolume.Value = e.Value;
+		}
+
+		internal void OnSliderVolumeMouseOver(object sender, ScrubberBarValueChangeArgs e) {
+			Point pt = e.MouseArgs.GetPosition(this);
+			Double val = (e.Value > 1) ? 1 : e.Value;
+
+			string text = string.Format("Volume: {0}%", (int)(val * 100));
+
+			SetCustomToolTip(pt, text);
+
+			if (e.MousePressed) {
+				sliderVolume.Value = val;
+			}
+		}
+
+		internal void OnSliderVolumeMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
+			HideTooltip();
+		}
+
+		private void HideTooltip() {
+			//if (customToolTip.Opacity > 0) customToolTip.Opacity = 0;
+			toolTip.Visibility = Visibility.Collapsed;
+		}
+
+		internal void OnScrubberBarMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
+			HideTooltip();
+		}
+
+		internal void OnQualityGaugeMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) {
+			HideTooltip();
+		}
+
+		internal void OnQualityGaugeMouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
+			if (qualityGauge.Tag == null || qualityGauge.Tag.ToString() == "") qualityGauge.Tag = "Standard-Definition (loading)\n\n\n";
+			SetCustomToolTip(e.GetPosition(this), qualityGauge.Tag.ToString());
+		}
+
+		internal void OnScrubberBarMouseOver(object sender, ScrubberBarValueChangeArgs e) {
+			Point pt = e.MouseArgs.GetPosition(this);
+			TimeSpan ts = TimeSpan.FromSeconds(e.Value);
+			string text = "Seek to: " + string.Format("{0}:{1}:{2}", ts.Hours.ToString("00"), ts.Minutes.ToString("00"), ts.Seconds.ToString("00"));
+
+			SetCustomToolTip(pt, text);
+
+			if (e.MousePressed && e.Value < scrubberBar.Maximum && e.Value >= 0) {
+				scrubberBar.Value = e.Value;
+			}
+		}
+
+		internal void OnButtonLinkEmbed_Click(object sender, RoutedEventArgs e) {
+			FrameworkElement fe = linkEmbed.Parent as FrameworkElement;
+			if(fe!=null) fe.Visibility = (fe.Visibility == Visibility.Collapsed) ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		internal void OnButtonMenuClick(object sender, RoutedEventArgs e) {
+			if (menuOptions == null) return;
+
+			menuOptions.Target = buttonMenu;
+			menuOptions.Toggle();
+		}
+
+		#endregion
 	}
 }

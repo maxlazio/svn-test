@@ -56,53 +56,32 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connections\DefaultConnection.cs" />
-    <Compile Include="Controls\IMediaControl.cs" />
-    <Compile Include="Controls\LogViewer.xaml.cs">
-      <DependentUpon>LogViewer.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Controls\ControlBase.cs" />
     <Compile Include="Controls\Menu.cs" />
     <Compile Include="Controls\MenuItem.cs" />
+    <Compile Include="Controls\Visuals\Box.cs" />
     <Compile Include="Controls\Visuals\ContentControls.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\OpenVideoPlayerControl.cs" />
+    <Compile Include="Controls\Visuals\ContentLinkEmbedBox.cs" />
+    <Compile Include="Controls\Visuals\IElementList.cs" />
+    <Compile Include="Controls\Visuals\LogViewer.cs" />
+    <Compile Include="Controls\Visuals\PlayList.cs" />
     <Compile Include="Controls\Visuals\ProgressBar.cs" />
     <Compile Include="Controls\Visuals\QualityGauge.cs" />
-    <Compile Include="Controls\Visuals\Screen.cs" />
+    <Compile Include="Controls\Visuals\ScrollableListBox.cs" />
     <Compile Include="Controls\Visuals\ScrubberBar.cs" />
-    <Compile Include="Controls\Visuals\ScrubberBarValueChangeArgs.cs" />
     <Compile Include="Controls\Visuals\Thumbnail.cs" />
-    <Compile Include="EventHandlers\ConnectionEvents.cs" />
-    <Compile Include="EventHandlers\EventDispatcher.cs" />
-    <Compile Include="Connections\IConnection.cs" />
-    <Compile Include="EventHandlers\MarkerTypeConv.cs" />
-    <Compile Include="EventHandlers\MarkerTypes.cs" />
-    <Compile Include="Media\ChapterItem.cs" />
-    <Compile Include="Media\ContentObject.cs" />
-    <Compile Include="Media\DeliveryTypes.cs" />
-    <Compile Include="Media\IChapterItem.cs" />
-    <Compile Include="Media\IMediaItem.cs" />
-    <Compile Include="Media\MediaTypes.cs" />
-    <Compile Include="Media\PlaylistCollection.cs" />
-    <Compile Include="Media\Thumbnail.cs" />
-    <Compile Include="Media\VideoItem.cs" />
     <Compile Include="Parsers\BossFactory.cs" />
     <Compile Include="Parsers\MediaRssParser.cs" />
     <Compile Include="Parsers\MSPlaylistFactory.cs" />
     <Compile Include="Parsers\MSPlaylistParser.cs" />
     <Compile Include="Parsers\ParserManager.cs" />
     <Compile Include="Parsers\PlayerInitParameterParser.cs" />
-    <Compile Include="Parsers\IPlaylistParser.cs" />
-    <Compile Include="Parsers\IPlaylistParserFactory.cs" />
     <Compile Include="Parsers\RssFactory.cs" />
     <Compile Include="Parsers\WMetafileParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\BrowserScreenInfo.cs" />
-    <Compile Include="Util\Conversion.cs" />
-    <Compile Include="Util\OutputEntry.cs" />
-    <Compile Include="Util\OutputLog.cs" />
-    <Compile Include="Util\ControlHelper.cs" />
-    <Compile Include="Util\StringTools.cs" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="themes\generic.xaml">
@@ -111,13 +90,10 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\LogViewer.xaml">
-      <Generator>MSBuild:MarkupCompilePass1</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Controls\Visuals\TestStyles.txt" />
+    <ProjectReference Include="..\OVPDefinitions\OVPDefinitions.csproj">
+      <Project>{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}</Project>
+      <Name>OVPDefinitions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
