@@ -21,6 +21,7 @@ body {
 	font-size: x-small;
 	color: #808080;
 }
+img { -ms-interpolation-mode:bicubic; }
 </style>
 <script type="text/javascript">
     	function onSilverlightError(sender, args) {
@@ -69,65 +70,55 @@ body {
 
 <body style="background-color: #000000">
 
-<!-- Runtime errors from Silverlight will be displayed here.
+<!-- Runtime errors from Silverlight will be displayed here.background: Black; 
 	This will contain debugging information and should be removed or hidden when debugging is completed -->
 <div id="errorLocation" style="font-size: small; color: Gray;">
 </div>
 <center>
-<div id="mainDiv" align="center" style="border-color: Red; border-style: none; border-width: 1px; text-align: center; background: Black; margin: 0px; width: 980px; height: 870px; background-image: url('bg.jpg'); background-repeat: no-repeat; background-position: center;">
+	<div id="mainDiv" align="center" style="width: 980px; height: 870px; background-image: url('content/smoothhd/bg-top.jpg'); background-repeat: no-repeat; background-position: center; border-color: Red; border-style: none; border-width: 1px; text-align: center; margin: 0px;">
 	<center>
 	<!--  background-color: #000000"background: Black;width: 1050px; height: 900px; background-image:url('bg.jpg');-->
-	<div style="background-image: url('content/smoothhd-bg-top.jpg'); background-repeat: no-repeat; vertical-align: top; height: 100px; width: 978px;
-	 border-style: none; border-color: purple; text-decoration: none; border-width: 1px;">
+	<div style="background-image: url('content/smoothhd/bg-top.jpg'); background-repeat: no-repeat; vertical-align: top; height: 100px; width: 978px;
+	 border-style: none; text-decoration: none; border-width: 1px;">
 		<div style="height: 40px; width: 978px; border-color: blue; text-decoration: none; border-style: none; border-width: 1px;">
-			<a href="http://www.akamai.com/smoothhd" target="_blank">
-			<div class="style1" style="border-color: orange; text-decoration: none; border-style: none; border-width: 2px; height: 16px; left: 395px; float: right; margin-right: 50px; cursor: hand; margin-top: 8px;">
+			<a href="http://www.akamai.com/smoothhd" target="_blank" style="text-decoration: none;">
+			<div class="style1" style="text-decoration: none; border-style: none; border-width: 2px; height: 16px; left: 395px; float: right; margin-right: 50px; cursor: hand; margin-top: 8px;">
 				About SmoothHD</div>
 			</a>
-			<div class="style1" style="border-color: orange; border-style: none; border-width: 2px; text-decoration: none; width: 100px; height: 16px; float: right; margin-right: 300px; margin-top: 8px;">
+			<div class="style1" style="border-style: none; border-width: 2px; text-decoration: none; width: 100px; height: 16px; float: right; margin-right: 300px; margin-top: 8px;">
 				Tech Preview</div>
 		</div>
-		<div style="vertical-align: top; height: 40px; width: 978px; border-color: pink; text-decoration: none; border-style: none; border-width: 1px;">
+		<div style="vertical-align: top; height: 40px; width: 978px; text-decoration: none; border-style: none; border-width: 1px;">
 			<a href="http://www.akamai.com" target="_blank">
-			<div style="border-style: none; border-color: orange; border-width: 2px; width: 87px; height: 30px; float: right; margin-right: 40px; margin-top: 10px; cursor: hand;">
+			<div style="border-style: none;  border-width: 2px; width: 87px; height: 30px; float: right; margin-right: 40px; margin-top: 10px; cursor: hand;">
 			</div>
 			</a><a href="http://www.microsoft.com/windowsserver2008" target="_blank">
-			<div style="border-color: orange; border-style: none; border-width: 2px; width: 182px; height: 36px; float: right; margin-right: 20px; cursor: hand;">
+			<div style=" border-style: none; border-width: 2px; width: 182px; height: 36px; float: right; margin-right: 20px; cursor: hand;">
 			</div>
 			</a></div>
 	</div>
 	</center>
-	<div id="silverlightControlHost" style=" vertical-align: top; border-color: orange; border-style: none; border-width: 1px; margin: 00px 0px 0px 0px; padding: 0px; height: 680px;">
+	<div id="silverlightControlHost" style=" vertical-align: top;  border-style: none; border-width: 1px; margin: 00px 0px 0px 0px; padding: 0px; height: 680px;">
 		<object id="slp" data="data:application/x-silverlight-2," height="674" style="margin: 0px; padding: 0px" type="application/x-silverlight-2" width="862">
 			<param name="source" value="OVP.xap" />
 			<param name="minRuntimeVersion" value="2.0.30923.0" />
 			<param name="onerror" value="onSilverlightError" />
 			<param name="MaxFrameRate" value="30" />
 			<param name="background" value="black" />
-			<param name="initparams" value="showstats=false, autoplay=true, muted=false, theme=OVPImplementation;component/themes/SmoothHD.xaml, playlistoverlay=true, stretchmode=Fit, masterplaylist=content/smoothhd-feeds.txt" />
-			<br />
-			
-		    <br />
-			
+			<param name="initparams" value="showstats=false, type=SmoothHdPage, autoplay=true, muted=false, plugins=content/uif/UIFAdPlugin.xap, UIFAdManager:TagsUri=content/uif/adtags.xml, theme=OVPImplementation;component/themes/SmoothHD.xaml, playlistoverlay=true, stretchmode=Fit, masterplaylist=content/smoothhd/feeds.txt" />
+			<br /> <br />
+			<center>
 			    <a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">
-			<div class="style1" style="border-style: solid; border-color: gray; width: 600px; border-width: 1px; font-size: small;">
-			
-			   <br />
-			
-			<br />
-			
+			<div class="style1" style="cursor:hand; border-style: solid; border-color: gray; width: 600px; border-width: 1px; font-size: small; text-decoration:none;">
+				<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">
+			   <br /><br />
 			    Microsoft Silverlight is required to view SmoothHD.  Please click here to install.
-			    <br />
-			
-				<br />
-			
+			    <br /><br />
        				 <img alt="Get Microsoft Silverlight" src="http://go.microsoft.com/fwlink/?LinkId=108181" style="border-style: none" />
-			
-			 <br />
-			
-			<br />
-			
+			 <br /><br />
+			</a>
 			<div style="text-align: left; width: 550px;">
+				<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">
 			
        				 		For the best experience, Microsoft recommends the following 
 			minimum system requirements:<br />
@@ -140,50 +131,63 @@ body {
             &nbsp;&nbsp; - Hardware: 3.2 GHz Pentium 4 with 1 GB RAM or Intel-based Macintosh<br />
             Machine and network conditions may vary during playback and affect the 
 			end-user experience.
+			</a>
 			</div>
-			
-			
-			
-			
-  		    <br />
-			
-			
-			<br />
-			
-			
-			
+			<br /><br />
 			 </div>
-			
-			
-			
-			
  		    </a>
+			</center>
 		</object>
 	</div>
-	<div align="center" style="width: 100%; height: 96px; border-color: green; border-style: none; border-width: 1px; background-image: url('content/smoothhd-bg-bottom.jpg'); background-position: center; background-repeat: no-repeat;">
+	<div align="center" style="width: 100%; height: 96px; border-color: green; border-style: none; border-width: 1px; background-image: url('content/smoothhd/bg-bottom.jpg'); background-position: center; background-repeat: no-repeat;">
 		<div align="center" style="width: 980px; margin-top: 0px;">
+		
+		<div id="ads1" style="visibility:hidden;">
+			<a href="http://www.continental.com/web/en-US/default.aspx?POS=US" target="_blank" style="float: left; margin-left: 60px;">
+				<!--<div style="border-style: none; border-color: inherit; border-width: 2px; width: 116px; height: 25px; float: left; margin-left: 10px; cursor: hand;">
+				</div>-->
+				<img id="cont" src="content/uif/cont18.png" style="border-style: none; -ms-interpolation-mode: bicubic; margin-top: 12px;" />
+			</a>
+			<a href="http://olay.com/boutique/regenerist/" target="_blank" style="float: left; margin-left: 20px;">
+				<img id="olay" src="content/uif/olay18.png" style="border-style: none; -ms-interpolation-mode: bicubic; margin-top: 12px;" />
+			</a>
+			<a href="http://style-seeker.tresemme.com/" target="_blank" style="float: left; margin-left: 16px;">
+			<img id="tres" src="content/uif/tres18.png" style="border-style: none; -ms-interpolation-mode: bicubic; margin-top: 12px;" />
+			</a>
+		</div>
+		
 			<a href="http://www.silverlight.net" target="_blank">
-			<div style="border-style: none; border-color: orange; border-color: inherit; border-width: 2px; width: 116px; height: 25px; float: right; margin-right: 60px; cursor: hand;">
+			<div style="border-style: none;  border-color: inherit; border-width: 2px; width: 116px; height: 25px; float: right; margin-right: 60px; cursor: hand;">
 			</div>
 			</a><a href="http://www.openvideoplayer.com" target="_blank">
-			<div style="border-color: orange; border-style: none; border-color: inherit; border-width: 2px; width: 124px; height: 25px; float: right; margin-right: 20px; cursor: hand;">
+			<div style=" border-style: none; border-color: inherit; border-width: 2px; width: 124px; height: 25px; float: right; margin-right: 20px; cursor: hand;">
+			</div></a>
+			
+			<div id="ads2" style="visibility: hidden;">
+				<a href="http://htrick.com/" target="_blank" style="float: right; margin-right: 110px;">
+					<img id="htrick" src="content/uif/htrick.png" style="border-style: none; -ms-interpolation-mode: bicubic; margin-top: 10px;" />
+				</a>
 			</div>
-			</a><a href="#">
-			<div onclick="Toggle();" style="border-color: orange; border-style: none; border-color: inherit; border-width: 2px; width: 258px; height: 20px; float: left; margin-right: 20px; margin-top: 30px; margin-left: 50px; cursor: hand;">
-			</div>
-			</a>
-			<div id="experience" style="float: left; display: none; height: 90px; padding: 8px; border-width: 1px; border-style: solid; border-color: gray; width: 460px; text-align: left; font-family: Arial, Helvetica, sans-serif; font-size: x-small; color: gray;">
+			
+			<div id="experience" style="float: left; display: none; background-color: Black; height: 90px; padding: 8px; border-width: 1px; border-style: solid; border-color: gray; width: 460px; text-align: left; font-family: Arial, Helvetica, sans-serif; font-size: x-small; color: gray;">
 				<a href="#">
 				<div class="style1" onclick="Toggle();" style="float: right; border-width: 1px; padding: 2px; text-align: center; text-decoration: none; vertical-align: middle; border-style: solid; border-color: #333333; width: 12px; height: 12px; cursor: hand;">
-					<b>X</b></div>
+					<b>X</b>
+				</div>
 				</a>For the best experience, Microsoft recommends the following minimum system requirements:<br />
 &nbsp;&nbsp; - Video is supported on following browsers:<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Internet Explorer 6, 7 for Windows (2003, XP SP2 or greater, and Vista)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Firefox 1.5, 2, 3 on Windows (2003, XP SP2 or greater, and Vista)<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Safari 2, 3 for Macintosh (Intel only)<br />
 &nbsp;&nbsp; - Hardware: 3.2 GHz Pentium 4 with 1 GB RAM or Intel-based Macintosh<br />
-				Machine and network conditions may vary during playback and affect the end-user experience. </div>
-		</div>
+				Machine and network conditions may vary during playback and affect the end-user experience. 
+			</div>
+		
+		<a href="#">
+			<div onclick="Toggle();" style="border-style: none; border-color: inherit; border-width: 2px; width: 258px; height: 20px; float: left; margin-top: 5px; margin-left: 60px; cursor: hand;">
+			</div>
+		</a>
+		</div>		
 	</div>
 </div>
 </center>

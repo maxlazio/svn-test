@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace OVPImplementation {
 	public partial class App : Application {
@@ -12,7 +14,26 @@ namespace OVPImplementation {
 		}
 
 		private void Application_Startup(object sender, StartupEventArgs e) {
-			RootVisual = new Page(sender, e);
+
+			if (e.InitParams.ContainsKey("type")) {
+				try {
+					string t = e.InitParams["type"];
+					if (!t.Contains(".")) t = "OVPImplementation." + t;
+					Type type = this.GetType().Assembly.GetType(t);
+					ConstructorInfo c = type.GetConstructor(new Type[] { typeof(object), typeof(StartupEventArgs) });
+					if (c != null) {
+						RootVisual = c.Invoke(new object[] { sender, e }) as FrameworkElement;
+					} else {
+						RootVisual = Activator.CreateInstance(type) as FrameworkElement;
+					}
+				} catch (Exception ex) {
+					Debug.WriteLine("Couldn't load custom page type: " + e.InitParams["type"]);
+				}
+			}
+
+			if (RootVisual == null) {
+				RootVisual = new Page(sender, e);
+			}
 		}
 
 		private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e) {

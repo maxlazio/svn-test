@@ -59,9 +59,19 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="clientaccesspolicy.xml" />
+    <Content Include="content\uif\cont.png" />
+    <Content Include="content\uif\cont18.png" />
+    <Content Include="content\uif\htrick.png" />
+    <Content Include="content\uif\olay.png" />
+    <Content Include="content\uif\olay18.png" />
+    <Content Include="content\smoothhd\bg-bottom.jpg" />
+    <Content Include="content\smoothhd\bg-top.jpg" />
+    <Content Include="content\smoothhd\feeds.txt" />
+    <Content Include="content\uif\tres.png" />
+    <Content Include="content\uif\tres18.png" />
+    <Content Include="content\uif\adtags.xml" />
     <Content Include="crossdomain.xml" />
     <Content Include="smoothhd.html" />
-    <Content Include="feeds.html" />
     <Content Include="index.html" />
     <Content Include="example.html" />
     <Content Include="OVP.xap" />
