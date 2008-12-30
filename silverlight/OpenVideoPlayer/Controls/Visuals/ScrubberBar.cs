@@ -89,21 +89,27 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 			mouseIsDown = false;
 		}
 
-		protected override void OnMouseMove(MouseEventArgs args) {
-			//try {
-			//    if (MouseOver != null) {
-			//        Point pt = args.GetPosition(this);
-			//        double time = GetTimeValue(pt);
-			//        MouseOver(this, new ScrubberBarValueChangeArgs(time, args, mouseIsDown));
-			//    }
-			//}
-			//catch (Exception ex) {
-			//    Console.WriteLine("Mousemove issue " + ex);
-			//}
-		}
-
 		private double GetTimeValue(Point mousePosition) {
 			return (((mousePosition.X - (horizontalThumb.ActualWidth/2))/(ActualWidth - horizontalThumb.ActualWidth)*(Maximum - Minimum)) + Minimum);
 		}
+	}
+
+	public class ScrubberBarValueChangeArgs : EventArgs {
+		public ScrubberBarValueChangeArgs(Double dblValue, MouseEventArgs args)// Point mousePosition)
+			: base() {
+			Value = dblValue;
+			MouseArgs = args;
+		}
+
+		public ScrubberBarValueChangeArgs(Double dblValue, MouseEventArgs args, bool pressed)// Point mousePosition)
+			: base() {
+			Value = dblValue;
+			MouseArgs = args;
+			MousePressed = pressed;
+		}
+
+		public Double Value { get; private set; }
+		public MouseEventArgs MouseArgs { get; private set; }
+		public bool MousePressed { get; private set; }
 	}
 }

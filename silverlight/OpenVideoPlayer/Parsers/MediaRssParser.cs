@@ -135,7 +135,7 @@ namespace org.OpenVideoPlayer.Parsers {
 		/// <param name="input">The input stream to parse</param>
 		/// <remarks>NOTE: There is a lot of low-hanging fruit in here</remarks>
 		public void load(Stream input) {
-			System.Diagnostics.Debug.WriteLine("Load complete. parsing");
+			//System.Diagnostics.Debug.WriteLine("Load complete. parsing");
 			XmlReader reader = XmlReader.Create(input);
 
 			//loading data to items List
@@ -337,6 +337,9 @@ namespace org.OpenVideoPlayer.Parsers {
 								break;
 							case "author":
 								vi.Author = reader.Value;
+								break;
+							case "comments":
+								vi.Comments = reader.Value;
 								break;
 							case "category":
 								vi.AddMeta("category", reader.Value);
