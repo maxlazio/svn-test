@@ -89,11 +89,12 @@ package org.openvideoplayer.net
 	 * NetStream.netStatus events, the end of the stream. <p>
 	 * Deprecated in favor of <code>OvpEvent.COMPLETE</code>
 	 * when communicating with a FMS server. For progressive delivery
-	 * of streams however, this event is the only reliable indication provided that the stream
+	 * of streams however, this event is the only reliable indication that the stream
 	 * has ended. 
 	 * 
 	 * @see org.openvideoplayer.events.OvpEvent#COMPLETE
-	 */
+	 * @see org.openvideoplayer.events.OvpEvent#END_OF_STREAM
+  	 */
 	[Event (name="end", type="org.openvideoplayer.events.OvpEvent")]
  	/**
 	 * Dispatched repeatedly at the <code>progressInterval</code> once the class begins playing a stream. 
@@ -109,7 +110,8 @@ package org.openvideoplayer.net
 	 * should be used instead, in order to detect when the stream has finished playing. 
 	 * 
 	 * @see org.openvideoplayer.events.OvpEvent#END_OF_STREAM
-	 */
+	 * @see org.openvideoplayer.events.OvpEvent#COMPLETE
+ 	 */
 	[Event (name="complete", type="org.openvideoplayer.events.OvpEvent")]
  	/**
 	 * Dispatched when the class receives information about ID3 data embedded in an MP3 file.
@@ -186,6 +188,10 @@ package org.openvideoplayer.net
 		 * @private
 		 */
 		protected var _streamTimeout:uint;
+		/**
+		 * @private
+		 */
+		protected var _streamLength:Number;
 		
 		// Declare private constants
 		private const DEFAULT_PROGRESS_INTERVAL:Number = 100;
@@ -227,6 +233,7 @@ package org.openvideoplayer.net
 			_watchForBufferFailure = false;
 			_volume = 1;
 			_panning = 0;
+			_streamLength = 0;
 			
 			// So we know when the connection closes
 			_nc.addEventListener(NetStatusEvent.NET_STATUS, connectionStatus);
@@ -420,6 +427,25 @@ package org.openvideoplayer.net
 			_streamTimer.delay = _streamTimeout;
 		}
 		
+		/**
+		 * The stream length for a progressive download. The value is obtained in the onMetaData event handler,
+		 * which is called when the Flash Player receives descriptive information embedded in the FLV file being
+		 * played.  Therefore, this property will return 0 until the onMetaData event handler is called.
+		 * <br />
+		 * For streaming video, the stream length must be requested via the requestStreamLength method
+		 * on the OvpConnection class.
+		 * <br />
+		 * Note the onMetaData event handler in this class will dispatch an OvpEvent.STREAM_LENGTH event, just as the 
+		 * OvpConnection class does on a requestStreamLength method call on the OvpConnection class.
+		 * 
+		 * @see OvpConnection#requestStreamLength()
+		 * @see org.openvideoplayer.events.OvpEvent#STREAM_LENGTH
+		 * 
+		 */
+		 public function get streamLength():Number {
+		 	return _streamLength;	
+		 }
+		 
 		//-------------------------------------------------------------------
 		//
 		// Public methods
@@ -574,7 +600,8 @@ package org.openvideoplayer.net
 			dispatchEvent(new OvpEvent(OvpEvent.NETSTREAM_METADATA, info));
 			if (_isProgressive && !isNaN(info["duration"])) {
 				var data:Object = new Object();
-				data.streamLength = Number(info["duration"]);;
+				data.streamLength = Number(info["duration"]);
+				_streamLength = data.streamLength;
 				dispatchEvent(new OvpEvent(OvpEvent.STREAM_LENGTH, data));
 			}
 		}

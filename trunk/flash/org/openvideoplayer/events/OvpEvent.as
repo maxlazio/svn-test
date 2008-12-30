@@ -78,20 +78,27 @@ package org.openvideoplayer.events
   			 			
   		/** 
 		 * The OvpEvent.END_OF_STREAM constant defines the value of the OvpEvent's
-		 * <code>type</code> property, which indicates that the end of the stream has been reached. Note that determination
-		 * of this end is based upon an analysis of the NetStream events  (specifically NetStream.Play.Stop
+		 * <code>type</code> property, which indicates that the end of the stream has been reached. 
+		 * <br />
+		 * This event can be used for progressive download or streaming. Note that determination
+		 * of this end value is based upon an analysis of the NetStream events (specifically NetStream.Play.Stop
 		 * followed by NetStream.Buffer.Empty). This method is used, and this event provided, in order for the class
 		 * to be compatible with FCS 1.7x servers, which do not issue the NetStream.onPlayStatus.Complete event, as well as
-		 * for progressive delivery of streams. For streaming delivery from FMS 2.5 or higher, the OvpEvent.COMPLETE
-		 * should be used. This event is a more robust indicator that end of stream has been reached.
+		 * for progressive delivery of streams. 
+		 * <br />
+		 * For streaming delivery from FMS 2.5 or higher, the OvpEvent.COMPLETE
+		 * should be used, which is a more robust indicator that end of stream has been reached.
 		 * 
 		 */
   		public static const END_OF_STREAM:String = "end";
   			
   		/** 
 		 * The OvpEvent.COMPLETE constant defines the value of the OvpEvent's
-		 * <code>type</code> property, which indicates that the end of the stream has been reached. This event is dispatched
-		 * whenever the <code>onPlayStatus</code> callback function of the underlying NetStream issues a <code>NetStream.Play.Complete</code> code.
+		 * <code>type</code> property, which indicates that the end of the stream has been reached. 
+		 * <br />
+		 * This event can only be used for streaming and (not progressive downloads) and is dispatched
+		 * whenever the <code>onPlayStatus</code> callback function of the NetStream object 
+		 * issues a <code>NetStream.Play.Complete</code> code.
 		 * 
 		 */
   		public static const COMPLETE:String = "complete";
