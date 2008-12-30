@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using org.OpenVideoPlayer.Player;
+using org.OpenVideoPlayer.Controls;
+using org.OpenVideoPlayer;
+//using org.OpenVideoPlayer.Player;
 
 namespace MediaFrameworkTests.Player
 {
