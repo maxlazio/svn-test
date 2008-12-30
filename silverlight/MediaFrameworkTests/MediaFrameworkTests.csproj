@@ -60,6 +60,13 @@
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
     <Reference Include="system" />
+    <Page Include="UserControl1.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="UserControl1.xaml.cs">
+      <DependentUpon>UserControl1.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -99,6 +106,10 @@
     <ProjectReference Include="..\OpenVideoPlayer\OpenVideoPlayer.csproj">
       <Project>{C2F1DE86-68A2-4336-9E69-1E816BA906C2}</Project>
       <Name>OpenVideoPlayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OVPDefinitions\OVPDefinitions.csproj">
+      <Project>{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}</Project>
+      <Name>OVPDefinitions</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
