@@ -52,7 +52,7 @@ namespace org.OpenVideoPlayer.Controls {
 			isMuted = false;
 
 			version = ReflectionHelper.GetAssemblyVersion();
-			BindFields = BindEvents = true;
+			ControlBinding = ControlBindingFlags.BindFields | ControlBindingFlags.BindEvents;
 		}
 
 		public event RoutedEventHandler ItemChanged;
@@ -851,7 +851,7 @@ namespace org.OpenVideoPlayer.Controls {
 				if(!PluginManager.PluginTypes.ContainsKey("AdaptiveStreamingSource")){
 					if (!adaptiveInit) {
 						adaptiveInit = true; //make sure we only try once
-						PluginManager.LoadPlugin(new Uri(HtmlPage.Document.DocumentUri, "AdaptiveStreaming.dll"), "Microsoft.Expression.Encoder.AdaptiveStreaming.AdaptiveStreamingSource");
+						PluginManager.LoadPlugin(new Uri(HtmlPage.Document.DocumentUri, "plugins/AdaptiveStreaming.dll"), "Microsoft.Expression.Encoder.AdaptiveStreaming.AdaptiveStreamingSource");
 						return; //get out of here so WC can work..
 					}
 				} else {

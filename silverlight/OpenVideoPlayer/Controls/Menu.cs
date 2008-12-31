@@ -9,31 +9,37 @@ using System.Reflection;
 
 namespace org.OpenVideoPlayer.Controls {
 
+	/// <summary>
+	/// The menu is an extensible menu that hold menuitems, each of which can have their own menu as well, 
+	/// or be 'checkable' or radio button style.  The menu can be created 100% through xaml.
+	/// </summary>
 	public class Menu : ControlBase {
 
-		public Menu() {
-			//DefaultStyleKey = GetType();
-			//InitializeComponent();
-		}
+		public Menu() {}
 
+		/// <summary>
+		/// Fired when any of this menu's menu items (recursive through submenus) is checked or unchecked.
+		/// </summary>
 		public event RoutedEventHandler ItemCheckedChanged;
+		/// <summary>
+		/// Fired when any menuitems in the tree are clicked
+		/// </summary>
 		public event RoutedEventHandler ItemClick;
 
 		internal ListBox listBox;
 		internal Panel layoutRoot;
 
 		public override void OnApplyTemplate() {
-			BindFields = false;
 			base.OnApplyTemplate();
+			//maunally bind - it's faster ad we only have a couple items
 			listBox = GetTemplateChild("listBox") as ListBox;
 			layoutRoot = GetTemplateChild("layoutRoot") as Panel;
-
-			//BindTemplate(this, GetTemplateChild);
 
 			menuItems.CollectionChanged += OnMenuItemsCollectionChanged;
 			listBox.SelectionChanged += OnListBoxSelectionChanged;
 			listBox.SizeChanged += OnListBoxSizeChanged;
 
+			//attach to all menuitems
 			foreach(MenuItem mi in menuItems) {
 				mi.ApplyTemplate();
 				mi.Menu = this;
@@ -44,28 +50,41 @@ namespace org.OpenVideoPlayer.Controls {
 		}
 
 		#region Properties
+		/// <summary>
+		/// The direction that menuitems and submenus expand from the target
+		/// </summary>
 		public MenuExpandModes MenuExpandMode { get; set; }
 		public static readonly DependencyProperty ExpandModeProperty = DependencyProperty.Register("ExpandMode", typeof(MenuExpandModes), typeof(Menu), new PropertyMetadata(null));
 
+		/// <summary>
+		/// Use radiobutton mode for the checkable menuitems on this node
+		/// </summary>
 		public bool RadioMode { get; set; }
 		public static readonly DependencyProperty RadioModeProperty = DependencyProperty.Register("RadioMode", typeof(bool), typeof(Menu), new PropertyMetadata(null));
 
-		private ObservableCollection<MenuItem> menuItems = new ObservableCollection<MenuItem>();
+		/// <summary>
+		/// The menuitems of the next level on the menu tree
+		/// </summary>
 		public ObservableCollection<MenuItem> Items {
 			get { return menuItems; }
 			set { menuItems = value; }
 		}
+		private ObservableCollection<MenuItem> menuItems = new ObservableCollection<MenuItem>();
 		public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register("Items", typeof(ObservableCollection<MenuItem>), typeof(Menu), new PropertyMetadata(null));
 
-		private Control target;
+		/// <summary>
+		/// The control we are targetted toward for positioning
+		/// </summary>
 		public Control Target {
 			get { return target; }
-			set {
-				target = value;
-			}
+			set {target = value;}
 		}
+		private Control target;
 		public static readonly DependencyProperty TargetProperty = DependencyProperty.Register("Target", typeof(Control), typeof(Menu), new PropertyMetadata(null));
 
+		/// <summary>
+		/// The Menu at the base of our tree
+		/// </summary>
 		private Menu Root {
 			get {
 				Menu root = this;
@@ -76,11 +95,13 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
-		//public Panel LayoutRoot { get { return layoutRoot; } }
 		public ListBox ListBox { get { return listBox; } }
 		#endregion
 
 		#region Menu Methods
+		/// <summary>
+		/// Shows this menu
+		/// </summary>
 		public void Show() {
 			if (Visibility != Visibility.Collapsed) return;
 
@@ -108,6 +129,9 @@ namespace org.OpenVideoPlayer.Controls {
 			PositionListbox();
 		}
 
+		/// <summary>
+		/// Hide this portion of the menu
+		/// </summary>
 		public void Hide() {
 			if (Visibility != Visibility.Visible) return;
 
@@ -128,6 +152,9 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
+		/// <summary>
+		/// Toggles hide/show of the portion of the menu
+		/// </summary>
 		public void Toggle() {
 			if (Visibility == Visibility.Collapsed) {
 				Show();
@@ -136,14 +163,46 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
+		/// <summary>
+		/// Sets the check state of a menu item by name
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="check"></param>
+		/// <returns></returns>
 		public bool SetCheckState(string text, bool check) { return SetState(null, text, check, MenuItemStateType.Checked); }
 
+		/// <summary>
+		/// Sets checkstate of a menuitem by it's tag
+		/// </summary>
+		/// <param name="tag"></param>
+		/// <param name="check"></param>
+		/// <returns></returns>
 		public bool SetCheckState(object tag, bool check) { return SetState(tag, null, check, MenuItemStateType.Checked); }
 
+		/// <summary>
+		/// Sets the enabled value of a menuitem by name
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="enabled"></param>
+		/// <returns></returns>
 		public bool SetEnabled(string text, bool enabled) { return SetState(null, text, enabled, MenuItemStateType.Enabled); }
 
+		/// <summary>
+		/// Sets the enabled value of a menuitem by tag
+		/// </summary>
+		/// <param name="tag"></param>
+		/// <param name="enabled"></param>
+		/// <returns></returns>
 		public bool SetEnabled(object tag, bool enabled) { return SetState(tag, null, enabled, MenuItemStateType.Enabled); }
 
+		/// <summary>
+		/// A base method for use by all of the setcheckstate and setenabled methods
+		/// </summary>
+		/// <param name="tag"></param>
+		/// <param name="text"></param>
+		/// <param name="state"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		protected bool SetState(object tag, string text, bool state, MenuItemStateType type) {
 			if (menuItems == null) return false;
 
@@ -161,6 +220,9 @@ namespace org.OpenVideoPlayer.Controls {
 			return false;
 		}
 
+		/// <summary>
+		/// only needed internally for the setstate method
+		/// </summary>
 		protected enum MenuItemStateType {
 			Enabled,
 			Checked
@@ -170,6 +232,9 @@ namespace org.OpenVideoPlayer.Controls {
 
 		#region Positioning
 
+		/// <summary>
+		/// Gets height of items to left of our parent item for positioning
+		/// </summary>
 		private Double LeftLevel {
 			get {
 				Double d = listBox.ActualWidth;
@@ -183,9 +248,11 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
-		private double TopLevel {
+		/// <summary>
+		/// Gets height of items higher than our parent item for positioning
+		/// </summary>
+		protected double TopLevel {
 			get {
-				//get height of items higher than our parent item
 				double top = 0;
 				foreach (MenuItem mi in ((MenuItem)Target).Menu.Items) {
 					if (mi == Target) break;
@@ -195,7 +262,10 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
-		private void PositionListbox() {
+		/// <summary>
+		/// The trickiest part of the menu, figuring how to position ourselves, in relation to our parent
+		/// </summary>
+		protected void PositionListbox() {
 			try {
 				//Get the coordinates of the Root target (button, etc)
 				Point p = Root.Target.TransformToVisual(Root).Transform(new Point(0, 0));
@@ -246,6 +316,11 @@ namespace org.OpenVideoPlayer.Controls {
 
 		#region Event Handlers
 
+		/// <summary>
+		/// Make sure we keep in sync if items are changed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void OnMenuItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
 			//sync our colelction with our listbox's items
 			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace) {
@@ -266,10 +341,18 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
+		/// <summary>
+		/// Route the menuitem events back through, so consumers don't need to attach to individual items
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void mi_CheckedChanged(object sender, RoutedEventArgs e) {
 			if (ItemCheckedChanged != null) ItemCheckedChanged(sender, e);
 		}
 
+		/// <summary>
+		/// Route the menuitem events back through, so consumers don't need to attach to individual items
+		/// </summary>
 		void mi_Click(object sender, RoutedEventArgs e) {
 			if (ItemClick != null) ItemClick(sender, e);
 		}
@@ -306,31 +389,11 @@ namespace org.OpenVideoPlayer.Controls {
 			PositionListbox();
 		}
 		#endregion
-
-		/// <summary>
-		/// Binds all the protected properties of the object into the template
-		/// </summary>
-		//public static void BindTemplate(Control sender, org.OpenVideoPlayer.Util.ControlHelper.GetChildDlg dlg) {
-		//    //use reflection to eliminate all that biolerplate binding code.
-		//    //NOTE - field names must match element names in the xaml for binding to work!
-		//    FieldInfo[] fields = sender.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-
-		//    foreach (FieldInfo fi in fields) {
-		//        if ((fi.FieldType.Equals(typeof(FrameworkElement)) || fi.FieldType.IsSubclassOf(typeof(FrameworkElement))) && fi.GetValue(sender) == null) {
-		//            //object o = sender.GetTemplateChild(fi.Name);
-		//            object o = dlg(fi.Name);
-		//            if (o != null && (o.GetType().Equals(fi.FieldType) || o.GetType().IsSubclassOf(fi.FieldType))) {
-		//                fi.SetValue(sender, o);
-		//            } else {
-		//                Debug.WriteLine(string.Format("No template match for: {0}, {1}", fi.Name, fi.FieldType));
-		//            }
-		//        }
-		//    }
-		//}
-
 	}
 
-
+	/// <summary>
+	/// The direction to expand new nodes of the menu
+	/// </summary>
 	[Flags]
 	public enum MenuExpandModes {
 		Unknown,

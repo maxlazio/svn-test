@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="clientaccesspolicy.xml" />
+    <Content Include="content\adaptive-playlist.xml" />
     <Content Include="content\uif\cont.png" />
     <Content Include="content\uif\cont18.png" />
     <Content Include="content\uif\htrick.png" />
@@ -80,6 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="plugins\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />

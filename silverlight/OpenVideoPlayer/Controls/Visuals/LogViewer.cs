@@ -7,6 +7,10 @@ using System.Windows.Media;
 using org.OpenVideoPlayer.Util;
 
 namespace org.OpenVideoPlayer.Controls.Visuals {
+
+	/// <summary>
+	/// Our logviewer, currently implemented with a custom textbox, and uses the IElementList interface
+	/// </summary>
 	public partial class LogViewer : ControlBase, IElementList {
 		IEnumerable source;
 		protected internal TextScrollBox text;
@@ -33,7 +37,6 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		#endregion
 
 		public override void OnApplyTemplate() {
-			BindFields = false;
 			base.OnApplyTemplate();
 			text = GetTemplateChild("text") as TextScrollBox;
 			text.GotFocus += OnTextGotFocus;
@@ -59,10 +62,18 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 			if (text != null) text.AutoSelect = (bool)autoScroll.IsChecked;
 		}
 
+		/// <summary>
+		/// Autoselect all text to make it easier for someone to copy the text - siolverlight doesn't give access to the clipboard
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		protected internal void OnTextGotFocus(object sender, RoutedEventArgs e) {
 			text.SelectAll();
 		}
 
+		/// <summary>
+		/// the source for our items.  It is expected to be a LogCollection in this case.
+		/// </summary>
 		public IEnumerable Source {
 			get { return source; }
 			set {
@@ -74,6 +85,7 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 				}
 			}
 		}
+
 
 		void LogViewer_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
 			if (text == null) return;

@@ -42,6 +42,7 @@ namespace org.OpenVideoPlayer {
 		}
 
 		static void OnAssemblyDownloaded(object sender, OpenReadCompletedEventArgs e) {
+			DownloadInfo dl = e.UserState as DownloadInfo;
 			try {
 				//TODO - do we crash, or just skip this content?  How do we inform user?
 				if (e.Cancelled) {
@@ -54,7 +55,6 @@ namespace org.OpenVideoPlayer {
 					throw new Exception("Invalid result from Assembly request");
 				}
 
-				DownloadInfo dl = e.UserState as DownloadInfo;
 				if(dl!=null && dl.Uri.ToString().ToLower().Contains(".dll")){
 					LoadDLL(e.Result, dl);
 				}else{
@@ -62,7 +62,7 @@ namespace org.OpenVideoPlayer {
 				}
 
 			} catch (Exception ex) {
-				log.Output(OutputType.Error, "Error loading plugin: ", ex);
+				log.Output(OutputType.Error, "Error loading plugin: " + ((dl!=null)?dl.Uri.ToString():"NULL"), ex);
 			}
 		}
 
