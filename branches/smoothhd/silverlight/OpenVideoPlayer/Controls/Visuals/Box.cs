@@ -10,10 +10,12 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace org.OpenVideoPlayer.Controls.Visuals {
+	/// <summary>
+	/// A container control, used like a border - but with an optional title and close button
+	/// </summary>
 	public class Box : ControlBase{
 
 		public override void OnApplyTemplate() {
-			base.BindFields = false;
 			base.OnApplyTemplate();
 			text = GetTemplateChild("text") as TextBlock;
 			close = GetTemplateChild("close") as Border;
@@ -26,10 +28,11 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		internal TextBlock text;
 		public Panel LayoutRoot { get { return GetTemplateChild("grid") as Panel; } }
 
+		/// <summary>
+		/// Gets or sets the text of the title
+		/// </summary>
 		public string Text { 
-			get {
-				return (text != null) ? text.Text : GetValue(Box.TextProperty) as string;
-			}
+			get {return (text != null) ? text.Text : GetValue(Box.TextProperty) as string;}
 			set { 
 				if(text!=null) text.Text = value;
 				SetValue(Box.TextProperty, value);

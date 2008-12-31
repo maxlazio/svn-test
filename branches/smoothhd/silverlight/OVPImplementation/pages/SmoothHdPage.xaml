@@ -331,7 +331,7 @@
                     </ListBox.ItemTemplate>
                 </Visuals:ScrollableListBox>
                 
-                <Button x:Name="scrollRight" IsEnabled="False" Visibility="Collapsed" Height="148" Cursor="Hand" Width="16" Margin="4,0,0,0" Background="#FF6DBDD1" Click="scrollRight_Click">
+                <Button x:Name="scrollRight" IsEnabled="False" Visibility="Collapsed" Height="148" Cursor="Hand" Width="16" Margin="4,0,0,0" Background="#FF6DBDD1" Click="scrollRight_Click" >
                     <Path Width="8.3333" Height="14.33333" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" StrokeThickness="3" StrokeLineJoin="Miter" Stroke="#FFFFFFFF" Data="M -14.3385,5.97916L -8.33854,11.9551L -14.6719,18.3125" />
                 </Button>
             </StackPanel>

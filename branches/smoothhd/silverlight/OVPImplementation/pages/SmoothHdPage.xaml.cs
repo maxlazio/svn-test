@@ -199,11 +199,14 @@ namespace OVPImplementation {
 				    }
 				}
 
+				//handle the extra logos at bottom when rogan channel is displayed
 				bool rogan = (vi.ThumbSource.ToLower().Contains("rogan"));
 				HtmlElement ads1 = HtmlPage.Document.GetElementById("ads1");
 				HtmlElement ads2 = HtmlPage.Document.GetElementById("ads2");
 				if (ads1 != null) ads1.SetStyleAttribute("visibility", ((rogan) ? "visible" : "hidden"));
 				if (ads2 != null) ads2.SetStyleAttribute("visibility", ((rogan) ? "visible" : "hidden"));
+
+				HideBugs();
 			} catch (Exception ex) {
 				log.Output(OutputType.Error, "Error on change", ex);
 			}
@@ -241,20 +244,34 @@ namespace OVPImplementation {
 
 		private void scrollUp_Click(object sender, RoutedEventArgs e) {
 			groupPlaylist.VerticalOffset -= gliHeight;
-			if (groupPlaylist.VerticalOffset <= gliHeight +2) scrollUp.IsEnabled = false;
+			if (groupPlaylist.VerticalOffset <= gliHeight + 2 || groupPlaylist.VerticalOffset < (gliHeight / 2)) {
+				scrollUp.IsEnabled = false;
+				groupPlaylist.VerticalOffset = 0;
+			}
 			scrollDown.IsEnabled = true;
 		}
 
 		private void scrollLeft_Click(object sender, RoutedEventArgs e) {
 			listBoxPlaylist.HorizontalOffset -= pliWidth;
-			if (listBoxPlaylist.HorizontalOffset <= pliWidth) scrollLeft.IsEnabled = false;
+			if (listBoxPlaylist.HorizontalOffset <= pliWidth || listBoxPlaylist.HorizontalOffset < pliWidth + (pliWidth / 2)) {
+				listBoxPlaylist.HorizontalOffset = 0;
+				scrollLeft.IsEnabled = false;
+			}
 			scrollRight.IsEnabled = true;
+
+			HideBugs();
 		}
 
 		private void scrollRight_Click(object sender, RoutedEventArgs e) {
 			listBoxPlaylist.HorizontalOffset += pliWidth;
-			if (listBoxPlaylist.HorizontalOffset >= listBoxPlaylist.MaxHorizontalOffset - listBoxPlaylist.ActualWidth - pliWidth - 2) scrollRight.IsEnabled = false;
+			if (listBoxPlaylist.HorizontalOffset >= listBoxPlaylist.MaxHorizontalOffset - listBoxPlaylist.ActualWidth - pliWidth - 2 ||
+				listBoxPlaylist.HorizontalOffset > ((pliWidth * (listBoxPlaylist.Items.Count - 1)) - pliWidth / 2) - listBoxPlaylist.ActualWidth) {
+				listBoxPlaylist.HorizontalOffset = listBoxPlaylist.MaxHorizontalOffset;
+				scrollRight.IsEnabled = false;
+			}
 			scrollLeft.IsEnabled = true;
+
+			HideBugs();
 		}
 
 		#endregion
@@ -420,14 +437,20 @@ namespace OVPImplementation {
 					Player.SetValue(Canvas.ZIndexProperty, 99);
 					double x = 0, y = 0, w = 0, h = 0;
 
-					if (type.ToLower().Contains("bug")) {
+					if (type.Contains("bug")) {
 						double iMargin = 9;
 						w = pliWidth;
 						y = Player.ActualHeight - 3;
-						x = Math.Abs(((MatrixTransform)Player.LayoutRoot.TransformToVisual(images[Player.Playlist[Player.CurrentItem].Title])).Matrix.OffsetX) -6;
+						x = -(((MatrixTransform)Player.LayoutRoot.TransformToVisual(images[Player.Playlist[Player.CurrentItem].Title])).Matrix.OffsetX) -6;
+						if (x < 230 || x > Player.ActualWidth - 550) {
+							foreach (VideoItem vi in Player.Playlist) {
+								x = -(((MatrixTransform)Player.LayoutRoot.TransformToVisual(images[vi.Title])).Matrix.OffsetX) -6;
+								if (x >= 230) break;
+							}
+						}
 						h = listBoxPlaylist.ActualHeight;
 
-					} else if (type.ToLower().Contains("ticker")) {
+					} else if (type.Contains("ticker")) {
 						//position along bottom of player.  
 						x = 2;
 						h = (Double)ReflectionHelper.GetValue(args, "Ad.Args.Height");
@@ -444,6 +467,7 @@ namespace OVPImplementation {
 					// adjust position when player changes.  Set actual canvas, in case it is already there.
 					FrameworkElement fe = ReflectionHelper.GetValue(args, "Ad.Args.UIElementToReturn") as FrameworkElement;
 					if (fe != null) {
+						fe.Visibility = Visibility.Visible;
 						fe.SetValue(Canvas.LeftProperty, x);
 						fe.SetValue(Canvas.TopProperty, y);
 						fe.Width = w;
@@ -453,6 +477,16 @@ namespace OVPImplementation {
 
 			} catch (Exception ex) {
 				log.Output(OutputType.Error, "Couldn't set ad position", ex);
+			}
+		}
+
+		private void HideBugs() {
+			foreach (object o in ads.Values) {
+				string type = ReflectionHelper.GetValue(o, "Ad.Tag.type") as string;
+				if (type.ToLower().Contains("bug")) {
+					FrameworkElement fe = ReflectionHelper.GetValue(o, "Ad.Args.UIElementToReturn") as FrameworkElement;
+					fe.Visibility = Visibility.Collapsed;
+				}
 			}
 		}
 		#endregion

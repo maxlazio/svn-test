@@ -13,7 +13,6 @@ using System.Collections;
 namespace org.OpenVideoPlayer.Controls.Visuals {
 	public class Playlist : ControlBase, IElementList {
 		public override void OnApplyTemplate() {
-			BindFields = false;
 			base.OnApplyTemplate();
 			listBox = GetTemplateChild("listBox") as ListBox;
 			listBox.SelectionChanged += OnListBoxSelectionChanged;

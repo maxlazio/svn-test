@@ -9,7 +9,10 @@ using System.Diagnostics;
 using System.Text;
 
 namespace org.OpenVideoPlayer.Controls.Visuals {
-
+	/// <summary>
+	/// A base class used for the content classes for our buttons, etc.  We use different classes for each one, 
+	/// because we can override styles per type as needed, but if we set them by name they can't be overridden
+	/// </summary>
 	public class ContentOverrideControl : ContentControl {
 		public ContentOverrideControl() { DefaultStyleKey = this.GetType(); }
 	}
@@ -31,17 +34,4 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		}
 	}
 
-	public class CustomToolTip : ControlBase {
-		internal TextBlock textBox;
-
-		public override void OnApplyTemplate() {
-			base.OnApplyTemplate();
-			textBox = GetTemplateChild("textBox") as TextBlock;
-		}
-
-		public string Text {
-			get { return textBox.Text; }
-			set { textBox.Text = value; }
-		}
-	}
 }

@@ -24,7 +24,6 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		}
 
 		public override void OnApplyTemplate() {
-			BindFields = false;
 			base.OnApplyTemplate();
 			linkText = GetTemplateChild("linkText") as TextBox;
 			embedText = GetTemplateChild("embedText") as TextBox;

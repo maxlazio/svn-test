@@ -27,9 +27,10 @@
   <adtag type="postrolltres4" url="http://cdn1.eyewonder.com/200125/755545/1024194/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
 
   <!--Episode 5: Corresponding RSS comments field should be "postroll=continental5"-->
-  <adtag type="postrollcontinental5" url="http://cdn1.eyewonder.com/200125/755545/1022646/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
-
-  <!--Episode 6: Corresponding RSS comments field should be "bug=olay6;postroll=tres6"-->
+  <adtag type="postrollcontinental5" url="http://cdn1.eyewonder.com/200125/755545/1022645/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+	<!--url="http://cdn1.eyewonder.com/200125/755545/1022646/tag.xml" Took this one out - wasnt working right/.-->
+	
+	<!--Episode 6: Corresponding RSS comments field should be "bug=olay6;postroll=tres6"-->
   <adtag type="bugolay6" url="http://cdn1.eyewonder.com/200125/755545/1024198/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="41" durationSeconds="15" active="true" targetContainerName="AdOuterRegionRight"/>
   <adtag type="postrolltres6" url="http://cdn1.eyewonder.com/200125/755545/1024196/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
 
