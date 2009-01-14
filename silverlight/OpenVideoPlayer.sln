@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OVPWeb", "OVPWeb\OVPWeb.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{3AEA2F9B-39D3-4D49-8105-091CD7DE6C37}"
 	ProjectSection(SolutionItems) = preProject
+		AdConnectors.txt = AdConnectors.txt
 		ChangeLog.txt = ChangeLog.txt
 		Deployment.txt = Deployment.txt
 		Implementation.txt = Implementation.txt

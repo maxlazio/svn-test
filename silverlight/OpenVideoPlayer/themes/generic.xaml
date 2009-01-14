@@ -34,7 +34,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ContentControl">
-                    <Border CornerRadius="1.75" BorderThickness="1" Width="20" Height="20" BorderBrush="#FF666666" Visibility="{TemplateBinding Visibility}">
+                    <Border CornerRadius="1.75" BorderThickness="1"  Width="20" Height="20" BorderBrush="#FF666666" Visibility="{TemplateBinding Visibility}">
                         <Border.Background>
                             <LinearGradientBrush EndPoint="0.4,2" StartPoint="0.0,0">
                                 <GradientStop Color="#FF52585c" Offset="0" />
@@ -241,7 +241,6 @@
         </Setter>
     </Style>
 
-
     <Style TargetType="Visuals:TextScrollBox">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="#FF000000" />
@@ -402,6 +401,7 @@
 
     <Style TargetType="Player:MenuItem">
         <Setter Property="Foreground" Value="#FFCCCCCC" />
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
@@ -554,169 +554,182 @@
         </Setter>
     </Style>
 
-
+    <Style TargetType="Visuals:Screen">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Visuals:Screen">
+                    <Border x:Name="ChildBorder" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style TargetType="Player:OpenVideoPlayerControl">
         <Setter Property="Background" Value="{StaticResource Background}" />
         <Setter Property="Highlight" Value="{StaticResource Highlight}" />
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+        <Setter Property="MinWidth" Value="200" />
+        <Setter Property="MinHeight" Value="180" />
         <Setter Property="Padding" Value="8" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Player:OpenVideoPlayerControl">
-                    <Grid Height="Auto" x:Name="layoutRoot" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="500" MinHeight="400" Width="Auto">
+                    <Visuals:Screen HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto">
+                        <Grid Height="Auto" x:Name="layoutRoot" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="500" MinHeight="400" Width="Auto">
 
-                        <Border x:Name="mainBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding Background}" BorderThickness="3,3,3,3" Grid.ColumnSpan="1">
-                            <Grid x:Name="mainGrid" Height="Auto" Margin="0,0,0,0" Width="Auto">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" MinHeight="250" />
-                                    <RowDefinition Height="32" />
-                                    <RowDefinition Height="32" />
-                                </Grid.RowDefinitions>
+                            <Border x:Name="mainBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding Background}" BorderThickness="3,3,3,3" Grid.ColumnSpan="1">
+                                <Grid x:Name="mainGrid" Height="Auto" Margin="0,0,0,0" Width="Auto">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" MinHeight="250" />
+                                        <RowDefinition Height="32" />
+                                        <RowDefinition Height="32" />
+                                    </Grid.RowDefinitions>
 
-                                <Rectangle Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Fill="Black" Stroke="{TemplateBinding Highlight}" StrokeThickness="3" Grid.RowSpan="2" Margin="0,0,0,2" />
+                                    <Rectangle x:Name="highlightBorder" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Fill="Black" Stroke="{TemplateBinding Highlight}" StrokeThickness="3" Grid.RowSpan="2" Margin="0,0,0,2" />
 
-                                <!-- THIS IS THE MAIN MEDIA ELEMENT -->
-                                <MediaElement Height="Auto" Margin="{TemplateBinding Padding}" Cursor="Hand" x:Name="mediaElement" Width="Auto" Grid.Row="0" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="2" />
+                                    <!-- THIS IS THE MAIN MEDIA ELEMENT -->
+                                    <MediaElement Height="Auto" Margin="{TemplateBinding Padding}" Cursor="Hand" x:Name="mediaElement" Width="Auto" Grid.Row="0" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="2" />
 
-                                <!-- Closed Captioning Box-->
-                                <TextBlock x:Name="textBlockCaption" Grid.Row="1" Grid.RowSpan="1" Margin="2,2,2,2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="Auto" MaxWidth="320" FontSize="24" Foreground="Gray" TextAlignment="Center" TextWrapping="Wrap" Text="{TemplateBinding CaptionText}" />
+                                    <!-- Closed Captioning Box-->
+                                    <TextBlock x:Name="textBlockCaption" Grid.Row="1" Grid.RowSpan="1" Margin="2,2,2,2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="Auto" MaxWidth="320" FontSize="24" Foreground="Gray" TextAlignment="Center" TextWrapping="Wrap" Text="{TemplateBinding CaptionText}" />
 
-                                <Grid Margin="4,10,10,6" Grid.RowSpan="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition MinWidth="200" />
-                                        <ColumnDefinition Width="10" />
-                                        <ColumnDefinition MinWidth="200" />
-                                    </Grid.ColumnDefinitions>
+                                    <Grid Margin="4,10,10,6" Grid.RowSpan="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition MinWidth="200" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition MinWidth="200" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <!-- Log Info Box-->
-                                    <Visuals:Box Text="Player Logs (Ctrl+C to Copy)" Visibility="{TemplateBinding LogVisibility}" Opacity=".6" VerticalAlignment="Top">
-                                        <Visuals:LogViewer x:Name="logViewer" Width="Auto" Height="Auto" Margin="2,20,4,4" />
-                                    </Visuals:Box>
+                                        <!-- Log Info Box-->
+                                        <Visuals:Box Text="Player Logs (Ctrl+C to Copy)" Visibility="Collapsed" Opacity=".6" VerticalAlignment="Top">
+                                            <Visuals:LogViewer x:Name="logViewer" Width="Auto" Height="Auto" Margin="2,20,4,4" />
+                                        </Visuals:Box>
 
-                                    <Visuals:Box Grid.Column="2" Visibility="{TemplateBinding StatVisibility}" Opacity=".6" VerticalAlignment="Top">
-                                        <TextBlock x:Name="stats" Width="300" Margin="10,5,22,5" HorizontalAlignment="Right" VerticalAlignment="Top" Height="Auto" FontSize="12" Foreground="White" TextAlignment="Right" FontFamily="Courier New" FontWeight="Bold" Text="" />
-                                    </Visuals:Box>
-                                </Grid>
+                                        <Visuals:Box Grid.Column="2" Visibility="Collapsed" Opacity=".6" VerticalAlignment="Top">
+                                            <TextBlock x:Name="stats" Width="300" Margin="10,5,22,5" HorizontalAlignment="Right" VerticalAlignment="Top" Height="Auto" FontSize="12" Foreground="White" TextAlignment="Right" FontFamily="Courier New" FontWeight="Bold" Text="" />
+                                        </Visuals:Box>
+                                    </Grid>
 
-                                <!---Control BoxHorizontalAlignment="Stretch"-->
-                                <StackPanel x:Name="controlBox" Height="36" Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="2" Background="{TemplateBinding Highlight}">
-                                    <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" x:Name="buttonPrevious" ToolTipService.ToolTip="Previous">
-                                        <Visuals:ContentButtonPrevious />
-                                    </Button>
-                                    <Button ToolTipService.ToolTip="Play/Pause" x:Name="buttonPlayPause" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Grid>
-                                            <Visuals:ContentButtonPlay x:Name="playToggle" />
-                                            <Visuals:ContentButtonPause x:Name="pauseToggle" />
-                                        </Grid>
-                                    </Button>
-                                    <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2" x:Name="buttonNext" ToolTipService.ToolTip="Next">
-                                        <Visuals:ContentButtonNext />
-                                    </Button>
-                                    <TextBlock x:Name="textBlockPosition" Text="{TemplateBinding PlaybackPositionText}" Margin="6,2,1,2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10" Foreground="White" />
+                                    <!---Control BoxHorizontalAlignment="Stretch"-->
+                                    <StackPanel x:Name="controlBox" Height="36" Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="2" Background="{TemplateBinding Highlight}">
+                                        <Button VerticalAlignment="Center" Cursor="Hand" HorizontalAlignment="Center" Margin="2" x:Name="buttonPrevious" ToolTipService.ToolTip="Previous">
+                                            <Visuals:ContentButtonPrevious />
+                                        </Button>
+                                        <Button ToolTipService.ToolTip="Play/Pause" Cursor="Hand" x:Name="buttonPlayPause" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Grid>
+                                                <Visuals:ContentButtonPlay x:Name="playToggle" />
+                                                <Visuals:ContentButtonPause x:Name="pauseToggle" />
+                                            </Grid>
+                                        </Button>
+                                        <Button VerticalAlignment="Center" Cursor="Hand" HorizontalAlignment="Center" Margin="2" x:Name="buttonNext" ToolTipService.ToolTip="Next">
+                                            <Visuals:ContentButtonNext />
+                                        </Button>
+                                        <TextBlock x:Name="textBlockPosition" Text="{TemplateBinding PlaybackPositionText}" Margin="6,2,1,2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10" Foreground="White" />
 
-                                    <!-- PROGRESS/BUFFERING/SCRUBBING BARS-->
-                                    <!--HorizontalAlignment="Stretch" -->
-                                    <Visuals:ScrubberBar x:Name="scrubberBar" Background="{TemplateBinding Highlight}" Margin="2" Value="{TemplateBinding PlaybackPosition}" MinWidth="120" VerticalAlignment="Center" Height="24" Maximum="{TemplateBinding PlaybackDuration}" />
-                                    <TextBlock x:Name="textBlockDuration" Text="{TemplateBinding PlaybackDurationText}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="1,2,6,2" FontSize="10" Foreground="White" />
-                                    <!--<Visuals:ProgressBar x:Name="progressBarDownloading" Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" Margin="4,21,2,10" Value="{TemplateBinding DownloadPercent}" DownloadOffset="{TemplateBinding DownloadOffsetPercent}" Height="4" Visibility="{TemplateBinding DownloadProgressControlVisibility}" />-->
+                                        <!-- PROGRESS/BUFFERING/SCRUBBING BARS-->
+                                        <!--HorizontalAlignment="Stretch" -->
+                                        <Visuals:ScrubberBar x:Name="scrubberBar" Background="{TemplateBinding Highlight}" Margin="2" MinWidth="100" VerticalAlignment="Center" Height="24" />
+                                        <TextBlock x:Name="textBlockDuration" Text="{TemplateBinding PlaybackDurationText}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="1,2,6,2" FontSize="10" Foreground="White" />
+                                        <!--<Visuals:ProgressBar x:Name="progressBarDownloading" Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" Margin="4,21,2,10" Value="{TemplateBinding DownloadPercent}" Maximum="{TemplateBinding PlaybackDuration}"Value="{TemplateBinding PlaybackPosition}" DownloadOffset="{TemplateBinding DownloadOffsetPercent}" Height="4" Visibility="{TemplateBinding DownloadProgressControlVisibility}" />-->
 
-                                    <!-- BUFFERING -->
-                                    <!--<Grid Grid.Row="0" Grid.RowSpan="1" Visibility="{TemplateBinding BufferingControlVisibility}">
+                                        <!-- BUFFERING -->
+                                        <!--<Grid Grid.Row="0" Grid.RowSpan="1" Visibility="{TemplateBinding BufferingControlVisibility}">
                                             <Visuals:Thumbnail Width="360" Height="360" Margin="0,0,0,0" Source="{TemplateBinding BufferingImageSource}" />
                                         </Grid>-->
 
-                                    <Button VerticalAlignment="Center" Margin="2" HorizontalAlignment="Center" x:Name="buttonMute" ToolTipService.ToolTip="Mute">
-                                        <Visuals:ContentButtonMute />
-                                    </Button>
+                                        <Button VerticalAlignment="Center" Cursor="Hand" Margin="2" HorizontalAlignment="Center" x:Name="buttonMute" ToolTipService.ToolTip="Mute">
+                                            <Visuals:ContentButtonMute />
+                                        </Button>
 
-                                    <Visuals:ScrubberBar Height="24" Margin="2" Background="{TemplateBinding Highlight}" x:Name="sliderVolume" Width="72" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                        <Visuals:ScrubberBar Height="24" Margin="2" Background="{TemplateBinding Highlight}" x:Name="sliderVolume" Width="72" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
-                                    <Button ToolTipService.ToolTip="FullScreen" Margin="2" x:Name="buttonFullScreen" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Visuals:ContentButtonFullScreen />
-                                    </Button>
+                                        <Button ToolTipService.ToolTip="FullScreen" Cursor="Hand" Margin="2" x:Name="buttonFullScreen" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Visuals:ContentButtonFullScreen />
+                                        </Button>
 
-                                    <Button ToolTipService.ToolTip="Link/Embed" Margin="2" x:Name="buttonLinkEmbed" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Visuals:ContentButtonLinkEmbed />
-                                    </Button>
+                                        <Button ToolTipService.ToolTip="Link/Embed" Cursor="Hand" Margin="2" x:Name="buttonLinkEmbed" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Visuals:ContentButtonLinkEmbed />
+                                        </Button>
 
-                                    <!--<Visuals:QualityGauge Width="26" Height="24" Padding="2" Levels="6" Vertical="False" x:Name="qualityGauge" />-->
+                                        <!--<Visuals:QualityGauge Width="26" Height="24" Padding="2" Levels="6" Vertical="False" x:Name="qualityGauge" />-->
 
-                                    <Button x:Name="buttonMenu" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                        <!--<Visuals:ContentButtonOptions />-->
-                                        <!--ToolTipService.ToolTip="Options"-->
-                                        <Visuals:QualityGauge Width="34" Height="18" Padding="0" GridThickness="4" Thickness="3" Levels="8" Vertical="False" x:Name="qualityGauge" />
-                                    </Button>
+                                        <Button x:Name="buttonMenu" Margin="2" Cursor="Hand" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                            <!--<Visuals:ContentButtonOptions />-->
+                                            <!--ToolTipService.ToolTip="Options"-->
+                                            <Visuals:QualityGauge Width="34" Height="18" Padding="0" GridThickness="4" Thickness="3" Levels="8" Vertical="False" x:Name="qualityGauge" />
+                                        </Button>
 
-                                </StackPanel>
+                                    </StackPanel>
 
-                                <!-- CHAPTERS PANEL -->
-                                <Visuals:Box Visibility="Collapsed" Text="Chapters">
-                                    <Visuals:Chapters x:Name="chapters" />
-                                </Visuals:Box>
+                                    <!-- CHAPTERS PANEL -->
+                                    <Visuals:Box Visibility="Collapsed" Text="Chapters">
+                                        <Visuals:Chapters x:Name="chapters" />
+                                    </Visuals:Box>
 
-                            </Grid>
-                        </Border>
+                                </Grid>
+                            </Border>
 
-                        <!-- PLAYLIST ITEMS PANEL-->
-                        <Visuals:Box Visibility="Collapsed" Text="Playlist">
-                            <Visuals:Playlist x:Name="playlist" />
-                        </Visuals:Box>
+                            <!-- PLAYLIST ITEMS PANEL-->
+                            <Visuals:Box Visibility="Collapsed" Text="Playlist">
+                                <Visuals:Playlist x:Name="playlist" />
+                            </Visuals:Box>
 
-                        <!-- Paused / Message Box -->
-                        <Border x:Name="messageBox" Cursor="Hand" Margin="1,1,1,1" MinHeight="100" MinWidth="200" Visibility="Collapsed" BorderThickness="2" BorderBrush="#FFcccccc" CornerRadius="10,10,10,10" Background="Black" Opacity="0.5" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid>
-                                <TextBlock x:Name="messageBoxText" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="10,10,10,10" VerticalAlignment="Center" Height="Auto" Opacity="0.5" FontSize="18" Foreground="White" FontWeight="Bold" Text="{TemplateBinding MessageText}" />
-                                <Visuals:ContentButtonPlay Width="50" Height="50" x:Name="playSymbol" />
-                            </Grid>
-                        </Border>
+                            <!-- Paused / Message Box -->
+                            <Border x:Name="messageBox" Cursor="Hand" Margin="1,1,1,1" MinHeight="100" 
+                                    MinWidth="200" Visibility="Collapsed" BorderThickness="2" BorderBrush="#FFcccccc" 
+                                    CornerRadius="10,10,10,10" Background="Black" Opacity="0.5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Grid>
+                                    <TextBlock x:Name="messageBoxText" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="10,10,10,10" VerticalAlignment="Center" Height="Auto" Opacity="0.5" FontSize="18" Foreground="White" FontWeight="Bold" Text="{TemplateBinding MessageText}" />
+                                    <Visuals:ContentButtonPlay Foreground="White" Width="50" Height="50" x:Name="playSymbol" />
+                                </Grid>
+                            </Border>
 
-                        <!--Link/Embed Box-->
-                        <Visuals:Box Visibility="Collapsed">
-                            <Visuals:ContentLinkEmbedBox x:Name="linkEmbed" />
-                        </Visuals:Box>
+                            <!--Link/Embed Box-->
+                            <Visuals:Box Visibility="Collapsed">
+                                <Visuals:ContentLinkEmbedBox x:Name="linkEmbed" />
+                            </Visuals:Box>
 
-                        <!--Menu -->
-                        <Player:Menu x:Name="menuOptions" Visibility="Collapsed" MenuExpandMode="LeftUp">
-                            <Player:Menu.Items>
+                            <!--Menu -->
+                            <Player:Menu x:Name="menuOptions" Visibility="Collapsed" MenuExpandMode="LeftUp">
+                                <Player:Menu.Items>
 
-                                <Player:MenuItem Text="Debug">
-                                    <Player:MenuItem.Items>
-                                        <Player:MenuItem Text="Statistics" CheckOnClick="True" />
-                                        <Player:MenuItem Text="Logs" CheckOnClick="True" />
-                                    </Player:MenuItem.Items>
-                                </Player:MenuItem>
+                                    <Player:MenuItem Text="Debug">
+                                        <Player:MenuItem.Items>
+                                            <Player:MenuItem Text="Statistics" CheckOnClick="True" />
+                                            <Player:MenuItem Text="Logs" CheckOnClick="True" />
+                                        </Player:MenuItem.Items>
+                                    </Player:MenuItem>
 
-                                <Player:MenuItem Text="Scaling" RadioMode="True">
-                                    <Player:MenuItem.Items>
-                                        <Player:MenuItem Text="Fit" Tag="Uniform" />
-                                        <Player:MenuItem Text="Fill" Tag="UniformToFill" />
-                                        <Player:MenuItem Text="Stretch" Tag="Fill" />
-                                        <Player:MenuItem Text="Native" Tag="None" />
-                                    </Player:MenuItem.Items>
-                                </Player:MenuItem>
+                                    <Player:MenuItem Text="Scaling" RadioMode="True">
+                                        <Player:MenuItem.Items>
+                                            <Player:MenuItem Text="Fit" Tag="Uniform" />
+                                            <Player:MenuItem Text="Fill" Tag="UniformToFill" />
+                                            <Player:MenuItem Text="Stretch" Tag="Fill" />
+                                            <Player:MenuItem Text="Native" Tag="None" />
+                                        </Player:MenuItem.Items>
+                                    </Player:MenuItem>
 
-                                <Player:MenuItem Text="Chapters">
-                                    <Player:MenuItem.Button>
-                                        <Visuals:ContentButtonChapters />
-                                    </Player:MenuItem.Button>
-                                </Player:MenuItem>
+                                    <Player:MenuItem Text="Chapters">
+                                        <Player:MenuItem.Button>
+                                            <Visuals:ContentButtonChapters />
+                                        </Player:MenuItem.Button>
+                                    </Player:MenuItem>
 
-                                <Player:MenuItem Text="Playlist">
-                                    <Player:MenuItem.Button>
-                                        <Visuals:ContentButtonPlaylist />
-                                    </Player:MenuItem.Button>
-                                </Player:MenuItem>
+                                    <Player:MenuItem Text="Playlist">
+                                        <Player:MenuItem.Button>
+                                            <Visuals:ContentButtonPlaylist />
+                                        </Player:MenuItem.Button>
+                                    </Player:MenuItem>
 
-                            </Player:Menu.Items>
-                        </Player:Menu>
+                                </Player:Menu.Items>
+                            </Player:Menu>
 
-                        <!--Custom Tooltip-->
-                        <Canvas Canvas.ZIndex="999" Height="Auto" Canvas.Top="0" Canvas.Left="0" Width="Auto">
-                            <Visuals:CustomToolTip x:Name="toolTip" Visibility="Collapsed" />
-                        </Canvas>
-                    </Grid>
-
+                            <!--Custom Tooltip-->
+                            <Canvas Canvas.ZIndex="999" Height="Auto" Canvas.Top="0" Canvas.Left="0" Width="Auto">
+                                <Visuals:CustomToolTip x:Name="toolTip" Visibility="Collapsed" />
+                            </Canvas>
+                        </Grid>
+                    </Visuals:Screen>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

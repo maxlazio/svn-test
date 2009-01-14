@@ -19,6 +19,8 @@ namespace org.OpenVideoPlayer.Media {
 		protected int height;
 		protected int width;
 		protected bool skippable;
+		private string comments;
+
 		protected MediaTypes mediaType;
 		protected DeliveryTypes deliveryType;
 		private List<Thumbnail> _mediaThumbnails = new List<Thumbnail>();
@@ -52,7 +54,6 @@ namespace org.OpenVideoPlayer.Media {
 			}
 		}
 
-		private string comments;
 		public string Comments {
 			get { return comments; }
 			set {

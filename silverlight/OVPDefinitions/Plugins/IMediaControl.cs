@@ -2,6 +2,7 @@
 using org.OpenVideoPlayer.Media;
 using System.Windows;
 using System.Windows.Controls;
+using System.Collections.Generic;
 namespace org.OpenVideoPlayer {
 	/// <summary>
 	/// Defines the methods that an IMediaControl object must export.  This
@@ -54,16 +55,16 @@ namespace org.OpenVideoPlayer {
 		///<summary>
 		/// Shows or hides the debug panel
 		/// </summary>
-		void ToggleStatPanel();
+		//void ToggleStatPanel();
 
-		bool InAd { get; set; }
+		//bool InAd { get; set; }
 
 		TimeSpan Position { get; set; }
 
 		TimeSpan Duration { get; }
 
 		PlaylistCollection Playlist { get; set; }
-		int CurrentItem { get; set; }
+		int CurrentIndex { get; set; }
 
 		StartupEventArgs StartupArgs { get; }
 
@@ -71,10 +72,12 @@ namespace org.OpenVideoPlayer {
 
 		event RoutedEventHandler ItemChanged;
 		event EventHandler BrowserSizeChanged;
-		event EventHandler AdaptiveBitrateChanged;
+		event SizeChangedEventHandler SizeChanged;
 
 		MediaElement MediaElement{get;}
 
 		bool ControlsEnabled { get; set; }
+
+		IDictionary<string, FrameworkElement> Containers { get; set; }
 	}
 }

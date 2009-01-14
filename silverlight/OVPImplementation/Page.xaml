@@ -4,11 +4,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:Controls="clr-namespace:org.OpenVideoPlayer.Controls;assembly=OpenVideoPlayer" 
+    xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"
 
     mc:Ignorable="d"
     Width="Auto" 
     Height="Auto">
     <Grid x:Name="LayoutRoot" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Visible" Height="Auto" Width="Auto">
-        <Controls:OpenVideoPlayerControl Margin="0,0,0,0" x:Name="Player"/>
+        <Controls:OpenVideoPlayerControl Margin="0,0,0,0"   x:Name="Player"/><!--MinHeight="400" MinWidth="600"MinWidth="862" MinHeight="534"-->
     </Grid>
 </UserControl>

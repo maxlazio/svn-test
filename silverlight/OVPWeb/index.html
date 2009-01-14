@@ -58,14 +58,18 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			height: 27px;
 			font-weight: bold;
 		}
+		.style10 {
+		text-align: left;
+		font-family: Arial, Verdana;
+	}
 		</style>
 
 	<script type="text/javascript">
 		var pl = new Array(
 			'http://rss.streamos.com/streamos/rss/genfeed.php?feedid=426&groupname=products',
-			'',
-			'content/adaptive-playlist.xml',
-			'',
+			'http://products.edgeboss.net/wmedia/products/content/demo/video/wms/globe_tahiti_700k.wvx',
+			'http://products.edgeboss.net/download/products/content/test/adaptive_playlists/smoothhd/group2/akamai_asp_cutdown_adaptive_playlist.xml',
+			'http://products.edgeboss.net/download/products/content/demo/video/wms/moby_hybrid_700k.wmv',
 			'<playList><playListItems><playListItem title="Adaptive Demo" description="A%20short%20demo" mediaSource="http://video.smoothhd.com/Media/AD_Streaming/Coral_Reefs.ism\Manifest" adaptiveStreaming="True" thumbSource="http://video.smoothhd.com/Media/AD_Streaming/Silverlight_2008_LAGS_720p24_2ch_Thumb.jpg" ></playListItem></playList>');
 
 		var lastSourceType = -1;
@@ -76,15 +80,19 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 				if (lastSourceType < 0 || document.getElementById('source').value == pl[lastSourceType]
 				|| document.getElementById('source').value == "") {
 					document.getElementById('source').value = pl[st.selectedIndex];
+				
 				} else {
 					//alert(document.getElementById('source').value + '\n' + pl[lastSourceType]);
 				}
 				lastSourceType = st.selectedIndex;
 			}
-			
+
 			var sm = document.getElementById('stretchMode');
+			var tm = document.getElementById('theme');
+			
 			document.getElementById('sourceDesc').innerHTML = st.value;
 			document.getElementById('stretchDesc').innerHTML = sm.value;
+			document.getElementById('themeDesc').innerHTML = tm.value;
 
 			var playerXAP = 'OVP.xap';
 			
@@ -93,20 +101,36 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			var isdebug = document.getElementById('showStats').value;
 			var mystretchmode = sm.options[sm.selectedIndex].text;
 
-			
-			
 			var source = document.getElementById('source').value;
 			var sourceType = st.options[st.selectedIndex].text.toLowerCase();
+			
+			var themetag = tm.options[tm.selectedIndex].text;
+			if (themetag.toLowerCase() != 'none') {
+				themetag = ', theme=themes/' + themetag;
+			} else {
+				themetag = '';
+			}
 
 			var h = document.getElementById('pHeight').value;
 			var w = document.getElementById('pWidth').value;
 			
 			var linkUrl = document.getElementById('linkText').value;
 			if (linkUrl.length > 0) linkUrl = ', linkurl=' + linkUrl;
+			
 			var embedUrl = document.getElementById('embedText').value;
 			if (embedUrl.length > 0) embedUrl = ', embedurl=' + embedUrl;
 			
+			var pluginlink = document.getElementById('pluginlinks').value;
+			if (pluginlink.length > 0){
+				 pluginlink = ', plugins=' + pluginlink;			
+			}else if (sourceType=="playlistsource"){
+			 	document.getElementById('pluginlinks').value = 'plugins/AdaptiveEdge.xap';
+				pluginlink = ', plugins=plugins/AdaptiveEdge.xap';	
+			}
+			
 			var ploverlay = document.getElementById('plOverlay').value;
+			
+			var bg = document.getElementById('bgcolor').value;
 			
 			//TODO - not yet fully supported by SL control
 			//var playlist = document.getElementById('showPlaylist').value;
@@ -116,7 +140,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 				+ ', playlistoverlay=' + ploverlay
 			//	+ ', showplaylist=' + playlist 
 			//	+ ', showchapters=' + chapters
-				+ linkUrl + embedUrl + ', stretchmode=' + mystretchmode + ', ' + sourceType + '=' + escape(source);
+				+ themetag + pluginlink + linkUrl + embedUrl + ', stretchmode=' + mystretchmode + ', ' + sourceType + '=' + escape(source);
 
 			var tag = '<object data="data:application/x-silverlight-2," type="application/x-silverlight-2"'
 			+ ' width="' + w + '" height="' + h
@@ -125,6 +149,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			tag += '<param name="minRuntimeVersion" value="2.0.30923.0" />';
 			//if (document.getElementById('showErrors').value == "true") 
 			tag += '<param name="onerror" value="onSilverlightError" />';
+			if(bg.length > 0) tag+= '<param name="background" value="' + bg + '" />';
 			tag += '<param name="MaxFrameRate" value="30" />';
 			tag += '\n<param name="initparams" value=\'' + initparams + '\' />';
 			tag += '\n<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">';
@@ -136,7 +161,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 		}
 		
 		function previewPlayer(){
-			var tag = escape(OnChange());
+			var tag = escape(document.getElementById('htmlEmbed').value);
 			var h = document.getElementById('pHeight').value;
 			var w = document.getElementById('pWidth').value;
 			var ww = (w.indexOf("%")>-1) ? 700 : w;
@@ -145,7 +170,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			window.open('preview.html?tag=' + tag  ,'OpenVideoPlayer_Preview','width=' + ww + ',height='+ wh + ',directories=no,location=no,menubar=no,scrollbars=no,status=yes,toolbar=no,resizable=yes');
 		}
 
-		var version = 'v2.1.030.21'; //auto version
+  var version = 'v2.1.42.41'; //auto version
 
 		function BodyLoad() {
 			OnChange();
@@ -157,7 +182,6 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 <body style="background: #323232;" onload="BodyLoad();">
 	<div id="Config" align="left" style="position: relative; left: 0px; top: 0px; height: 99%;">
 
-					
 					<table border="0" style="border-style: none; border-color: inherit; border-width: medium; margin-left: 25px; margin-top: 10px; text-align: left; width: 665px;">
 						<tr>
 							<td style="font-family: verdana,arial; font-size: 12pt; border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: bottom;" class="style9">
@@ -238,6 +262,34 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					<span id="sourceDesc2" class="newStyle1">True to initially show the statistics 
 					panel</span></td>
 			</tr>
+			
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; vertical-align: middle; height: 18px;" class="style10">
+					XAML Theme:
+				</td>
+				<td  style="border-color: #0395d3; width:22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 18px;" colspan="1">
+					<select id="theme" onchange="OnChange();" class="bordered" style="width: 120px" name="theme">
+						<option value="No theme, default Silverlight look">None</option>
+						<option value="Original blue theme (default)" selected="selected">Default.xaml</option>
+						<option value="Theme used on SmoothHD.com">SmoothHd.xaml</option>
+						<option value="ExpressionDark theme from Microsoft toolkit">ExpressionDark.xaml</option>
+												<option value="ExpressionLight theme from Microsoft toolkit">ExpressionLight.xaml</option>
+						<option value="ShinyBlue theme from Microsoft toolkit">ShinyBlue.xaml</option>
+<option value="ShinyRed theme from Microsoft toolkit">ShinyRed.xaml</option>
+						<option value="ShinyDarkGreen theme, based on toolkit themes">ShinyDarkGreen.xaml</option>
+						<option value="BureauBlack theme from Microsoft toolkit">BureauBlack.xaml</option>
+						<option value="BureauBlue theme from Microsoft toolkit">BureauBlue.xaml</option>
+						<option value="WhistlerBlue theme from Microsoft toolkit">WhistlerBlue.xaml</option>
+<option value="RainierOrange theme from Microsoft toolkit">RainierOrange.xaml</option>
+<option value="RainierPurple theme from Microsoft toolkit">RainierPurple.xaml</option>
+
+					</select>
+				</td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 18px;" class="style3" colspan="2">
+					<span id="themeDesc" class="newStyle1">...</span>
+				</td>
+			</tr>
+
 			<!--<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 11px;" class="style3">
 					ShowPlaylist:</td>
@@ -284,6 +336,16 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					<span id="sourceDesc7" class="newStyle1">The initial size of 
 					the player object, including frame and controls</span></td>
 			</tr>
+							<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 31px;" class="style3">
+					Background Color:</td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 31px;" class="style3" colspan="1">
+					&nbsp;
+					<input id="bgcolor" value="black" style="width: 120px" type="text" onchange="OnChange();" />&nbsp;
+				</td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 33px;" class="style3" colspan="2">
+					<span id="bgDesc" class="newStyle1">The background color of the silverlight object that hosts the player.</span></td>
+							</tr>
 			<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 31px;" class="style3">
 					Link URL:</td>
@@ -294,10 +356,26 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			</tr>
 			<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 32px;" class="style3">
-					Embed URL:</td>
+					Embed Tag:</td>
 				<td valign="middle"  style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 32px;" class="style3" colspan="3">
 					&nbsp;
 					<input id="embedText" style="width: 475px" type="text" onchange="OnChange();" /></td>
+			</tr>
+							<tr>
+				<td style="border-color: #0395d3; width: 19%; vertical-align: middle; height: 32px;" class="style10">
+					Plug-in URLs:</td>
+				<td valign="middle"  style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 32px;" class="style3" colspan="3">
+					&nbsp;
+					<input id="pluginlinks" style="width: 475px" type="text" onchange="OnChange();" /></td>
+			</tr>
+			
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style6">
+					&nbsp;</td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style2">
+				&nbsp;</td>
+				<td colspan="2" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3;   vertical-align: bottom; height: 15px;" class="style3">
+				&nbsp;</td>
 			</tr>
 			<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style6">
@@ -343,7 +421,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			</tr>
 			<tr>
 				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; " valign="top" class="style2">
-					&nbsp;<textarea id="htmlEmbed" cols="69" rows ="6" name="S1" readonly="readonly"></textarea></td>
+					&nbsp;<textarea id="htmlEmbed" cols="69" rows ="6" name="S1"></textarea></td>
 			</tr>
 			<tr>
 				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; " valign="top" class="style1">

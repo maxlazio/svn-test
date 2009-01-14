@@ -15,8 +15,10 @@ using org.OpenVideoPlayer;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Windows.Shapes;
+using org.OpenVideoPlayer.Controls.Visuals;
 
 namespace OVPImplementation {
+	[ScriptableType]
 	public partial class SmoothHdPage : UserControl {
 		#region Members and constructor
 		private PlaylistCollection groups = new PlaylistCollection();
@@ -30,6 +32,7 @@ namespace OVPImplementation {
 		string lastSource = null;
 		int element = 0;
 		DateTime start = DateTime.Now;
+		Box creditsBox = null;
 		OutputLog log = new OutputLog("smoothhd");
 		private Dictionary<string, object> ads = new Dictionary<string, object>();
 
@@ -47,7 +50,16 @@ namespace OVPImplementation {
 			}
 
 			InitializeComponent();
+			HtmlPage.RegisterScriptableObject("page", this);
 
+			//auto scaling settings
+			Player.AutoScaling =  OpenVideoPlayerControl.AutoScalingType.ScaleObjectTag; 
+			Player.AutoScalingPlayerMargin = new Size(16, 200); //need extra at bottom for playlist
+			Player.AutoScalingBrowserMargin = new Size(60, 120);
+			Player.AutoScalingForcedAspect = new Size(16, 9);
+			Player.AutoScalingMinimumSize = new Size(848, 480);
+
+			//events
 			Player.FullScreenChanged += new RoutedEventHandler(Player_FullScreenChanged);
 			Player.ItemChanged += new RoutedEventHandler(Player_ItemChanged);
 			Player.SizeChanged += new SizeChangedEventHandler(Player_SizeChanged);
@@ -61,14 +73,37 @@ namespace OVPImplementation {
 			groupPlaylist.SelectionChanged += groupPlaylist_SelectionChanged;
 			listBoxPlaylist.SelectionChanged += listBoxPlaylist_SelectionChanged;
 
+			//Ad containers//
+			Screen s = new Screen() { Name = "screen" };
+			Player.LayoutRoot.Children.Add(s);
+			Player.Containers.Combine("PlayerFill", s);//Player.LayoutRoot);
+			Player.Containers.Combine("PlaylistBug", BugContainer);
+			Player.Containers.Combine("LowerBanner", BannerContainer);
+
 			//hide the playlist and chapters menuitems
 			foreach (MenuItem mi in Player.OptionsMenu.Items) {
 				if (mi.Text == "Chapters" || mi.Text == "Playlist") {
 					mi.Visibility = Visibility.Collapsed;
 				}
 			}
-
 		}
+
+		[ScriptableMember]
+		public void Credits() {
+			if (creditsBox == null) {
+				Image credits = new Image() { Source = new BitmapImage(new Uri(HtmlPage.Document.DocumentUri, "content/uif/credits.png")) };
+				ScrollViewer sv = new ScrollViewer() { Content = credits, Margin = new Thickness(0, 20, 0, 20) };
+				creditsBox = new Box() { Content = sv, VerticalAlignment = VerticalAlignment.Stretch, HorizontalAlignment = HorizontalAlignment.Center };
+				LayoutRoot.Children.Add(creditsBox);
+			} else {
+				creditsBox.Visibility = (creditsBox.Visibility == Visibility.Visible) ? Visibility.Collapsed : Visibility.Visible;
+			}
+
+			if (creditsBox.Visibility == Visibility.Visible) {
+				Player.Pause();
+			}
+		}
+
 		#endregion
 
 		#region Player Events
@@ -83,10 +118,13 @@ namespace OVPImplementation {
 				playlistStackPanel.Visibility = Visibility.Visible;
 				Player.SetValue(Grid.RowSpanProperty, 1);
 			}
+
+			PositionAdCanvas();
+			//HideBugs();
 		}
 
 		void Player_ItemChanged(object sender, RoutedEventArgs e) {
-			if (Player.CurrentItem >= Player.Playlist.Count) {
+			if (Player.CurrentIndex >= Player.Playlist.Count) {
 				needAutoPlay = true;
 				if (groupPlaylist.SelectedIndex < groupPlaylist.Items.Count - 1) {
 					groupPlaylist.SelectedIndex++;
@@ -94,15 +132,28 @@ namespace OVPImplementation {
 					groupPlaylist.SelectedIndex = 0;
 				}
 			} else {
-				listBoxPlaylist.SelectedIndex = Player.CurrentItem;
+				listBoxPlaylist.SelectedIndex = Player.CurrentIndex;
 			}
 		}
 
 		void Player_SizeChanged(object sender, SizeChangedEventArgs e) {
-			foreach (object o in ads.Values) {
-				PositionAd(o);
-			}
+
 			AdjustPlaylistSize();
+			AdjustPageElementSize();
+			PositionAdCanvas();
+		}
+
+		private void AdjustPageElementSize() {
+			if (Player.AutoScalingCalculatedPlayerSize.Sum() == 0) return;
+			//set SL container DIV height
+			HtmlPage.Plugin.Parent.SetStyleAttribute("height", Player.AutoScalingCalculatedPlayerSize.Height + "px");
+
+			//and it's container div width (for proper centering)
+			Size bSize = Player.AutoScalingCalculatedPlayerSize.Scale(Player.AutoScalingBrowserMargin);
+			if (bSize.Width < 980) bSize.Width = 980;
+			if (bSize.Height < 870) bSize.Height = 870;
+			HtmlPage.Plugin.Parent.Parent.SetStyleAttribute("width", bSize.Width + "px");
+			HtmlPage.Plugin.Parent.Parent.SetStyleAttribute("height", bSize.Height + "px");
 		}
 		#endregion
 
@@ -140,8 +191,8 @@ namespace OVPImplementation {
 			int x; for (x = 0; x < playlists.Count; x++) if (pl == playlists[x]) break;
 			
 			groups[x] = new VideoItem { Author = pl.Author, Title = pl.Title, 
-				Thumbnails = new List<Thumbnail> { 
-					new Thumbnail(pl.ImageURL +((pl == playlists[0])?"_1.jpg" : "_3.jpg")) 
+				Thumbnails = new List<org.OpenVideoPlayer.Media.Thumbnail> { 
+					new org.OpenVideoPlayer.Media.Thumbnail(pl.ImageURL +((pl == playlists[0])?"_1.jpg" : "_3.jpg")) 
 				},
 			Url = pl.SourceURI };
 
@@ -184,8 +235,8 @@ namespace OVPImplementation {
 					needAutoPlay = false;
 					listBoxPlaylist.SelectedIndex = 0;
 				} else {
-					if (pl.Count > Player.CurrentItem && Player.CurrentSource == pl[Player.CurrentItem].Url) {
-						listBoxPlaylist.SelectedIndex = Player.CurrentItem;
+					if (pl.Count > Player.CurrentIndex && Player.CurrentSource == pl[Player.CurrentIndex].Url) {
+						listBoxPlaylist.SelectedIndex = Player.CurrentIndex;
 					}
 				}
 
@@ -207,13 +258,15 @@ namespace OVPImplementation {
 				if (ads2 != null) ads2.SetStyleAttribute("visibility", ((rogan) ? "visible" : "hidden"));
 
 				HideBugs();
+				PositionAdCanvas();
+
 			} catch (Exception ex) {
 				log.Output(OutputType.Error, "Error on change", ex);
 			}
 		}
 
 		private void AdjustPlaylistSize() {
-			double plWidth = Player.ActualWidth - FullControlSize(groupPlaylist).Width;
+			double plWidth = Player.ActualWidth - groupPlaylist.FullSize().Width;
 			scrollLeft.Visibility = scrollRight.Visibility = Visibility.Collapsed;
 			if ((plWidth < listBoxPlaylist.Items.Count * pliWidth)) {
 				scrollLeft.Visibility = scrollRight.Visibility = Visibility.Visible;
@@ -225,15 +278,13 @@ namespace OVPImplementation {
 			}
 		}
 
-		private Size FullControlSize(Control c) {
-			return new Size(c.ActualWidth + c.Margin.Left + c.Margin.Right, c.ActualHeight + c.Margin.Top + c.Margin.Bottom);
-		}
-
 		void listBoxPlaylist_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-			if (listBoxPlaylist.SelectedIndex >=0 && (listBoxPlaylist.SelectedIndex != Player.CurrentItem
+			if (listBoxPlaylist.SelectedIndex >=0 && (listBoxPlaylist.SelectedIndex != Player.CurrentIndex
 				|| ((VideoItem)listBoxPlaylist.SelectedItem).Url != Player.CurrentSource)) {
 				Player.SeekToPlaylistItem(listBoxPlaylist.SelectedIndex);
 			}
+
+			PositionAdCanvas();
 		}
 
 		private void scrollDown_Click(object sender, RoutedEventArgs e) {
@@ -259,7 +310,8 @@ namespace OVPImplementation {
 			}
 			scrollRight.IsEnabled = true;
 
-			HideBugs();
+			PositionAdCanvas();
+			//HideBugs();
 		}
 
 		private void scrollRight_Click(object sender, RoutedEventArgs e) {
@@ -271,7 +323,8 @@ namespace OVPImplementation {
 			}
 			scrollLeft.IsEnabled = true;
 
-			HideBugs();
+			PositionAdCanvas();
+			//HideBugs();
 		}
 
 		#endregion
@@ -373,11 +426,16 @@ namespace OVPImplementation {
 		#region Ad Handling
 		void PluginManager_PluginLoaded(object sender, PluginEventArgs args) {
 			try {
-				if (args.PluginType.ToString().Contains("UIFAdManager")) {
+				if (args.PluginType.ToString().Contains("UIFAdConnector")) {
 					//hack in to the ad loading event so we can position the bug
 					ReflectionHelper.AttachEvent(args.Plugin, "AdLoading", this, "OnUifAdLoading");
 					ReflectionHelper.AttachEvent(args.Plugin, "AdUnLoading", this, "OnUifAdUnLoading");
 				}
+
+				if (args.PluginType.ToString().Contains("AdaptiveEdge")) {
+					ReflectionHelper.SetValue(args.Plugin, "SetInitialBitrate", new object[] { MediaStreamType.Video, 800*1024 });
+				}
+
 			} catch (Exception ex) {
 				log.Output(OutputType.Error, "Couldn't attach to adload event", ex);
 			}
@@ -390,13 +448,35 @@ namespace OVPImplementation {
 			if (!ads.ContainsKey(url)) ads.Add(url, args); else ads[url] = args;
 			type = type.ToLower();
 
-			PositionAd(args);
+			//if (type.Contains("postroll")) {
+			//    groupPlaylist.IsEnabled = false;
+			//    listBoxPlaylist.IsEnabled = false;
+			//}
 
-			if (type.Contains("postroll")) {
-				groupPlaylist.IsEnabled = false;
-				listBoxPlaylist.IsEnabled = false;
+			//This is a dirty dirty hack, not sure how else to handle this with UIF
+			if (type.Contains("bug")) {
+				FrameworkElement fe = ReflectionHelper.GetValue(args, "Ad.Args.UIElementToReturn.VideoContainer") as FrameworkElement;
+				if (fe != null) {
+					try {
+						if (fe.Parent is Panel) (fe.Parent as Panel).Children.Remove(fe);
+
+						Player.LayoutRoot.Children.Add(fe);
+
+						fe.VerticalAlignment = VerticalAlignment.Stretch;
+						fe.HorizontalAlignment = HorizontalAlignment.Stretch;
+						fe.Height = fe.Width = double.NaN;
+						fe.Margin = new Thickness(0);
+					//	fe.SetValue(Canvas.LeftProperty, 0.0);
+						//fe.SetValue(Canvas.TopProperty, 0.0);
+
+						
+					} catch (Exception ex) {
+						log.Output(OutputType.Debug, "error placing bug output", ex);
+					}
+				}
 			}
 
+			//force change of ad banners at bottom
 			HtmlElement e = (type.Contains("olay"))
 				? HtmlPage.Document.GetElementById("olay") : (type.Contains("tres"))
 				? HtmlPage.Document.GetElementById("tres") : (type.Contains("cont"))
@@ -406,6 +486,8 @@ namespace OVPImplementation {
 				e.SetStyleAttribute("margin-top", "9px");
 				e.SetProperty("src", "content/uif/" + e.Id + ".png");
 			}
+
+			PositionAdCanvas();
 		}
 
 		public void OnUifAdUnLoading(object sender, RoutedEventArgs args) {
@@ -415,11 +497,17 @@ namespace OVPImplementation {
 			if (!ads.ContainsKey(url)) ads.Remove(url);
 			type = type.ToLower();
 
-			if (type.Contains("postroll")) {
-				groupPlaylist.IsEnabled = true;
-				listBoxPlaylist.IsEnabled = true;
+			//if (type.Contains("postroll")) {
+			//    groupPlaylist.IsEnabled = true;
+			//    listBoxPlaylist.IsEnabled = true;
+			//}
+
+			if (type.Contains("bug")) {
+				FrameworkElement fe = ReflectionHelper.GetValue(args, "Ad.Args.UIElementToReturn.VideoContainer") as FrameworkElement;
+				if (fe != null) if (fe.Parent is Panel) (fe.Parent as Panel).Children.Remove(fe);
 			}
 
+			//force change of ad banners at bottom
 			HtmlElement e = (type.Contains("olay")) ? HtmlPage.Document.GetElementById("olay") : (type.Contains("tres")) ? HtmlPage.Document.GetElementById("tres") : (type.Contains("cont")) ? HtmlPage.Document.GetElementById("cont") : null;
 			if (e != null) {
 				e.SetStyleAttribute("margin-top", "13px");
@@ -427,52 +515,40 @@ namespace OVPImplementation {
 			}
 		}
 
-		private void PositionAd(object args) {
+		private void PositionAdCanvas() {
 			try {
-				string type = ReflectionHelper.GetValue(args, "Ad.Tag.type") as string;
+				if (Player.CurrentItem == null || !images.ContainsKey(Player.CurrentItem.Title)) return;
+				double x = 0, y = 0, w = 0, h = 0;
+				double iMargin = 9;
+				w = pliWidth;
+				y = Player.ActualHeight - 3;
 
-				if (type == null) return;
-				type = type.ToLower();
-				if (type.Contains("bug") || type.Contains("ticker")) {
-					Player.SetValue(Canvas.ZIndexProperty, 99);
-					double x = 0, y = 0, w = 0, h = 0;
-
-					if (type.Contains("bug")) {
-						double iMargin = 9;
-						w = pliWidth;
-						y = Player.ActualHeight - 3;
-						x = -(((MatrixTransform)Player.LayoutRoot.TransformToVisual(images[Player.Playlist[Player.CurrentItem].Title])).Matrix.OffsetX) -6;
-						if (x < 230 || x > Player.ActualWidth - 550) {
-							foreach (VideoItem vi in Player.Playlist) {
-								x = -(((MatrixTransform)Player.LayoutRoot.TransformToVisual(images[vi.Title])).Matrix.OffsetX) -6;
-								if (x >= 230) break;
-							}
-						}
-						h = listBoxPlaylist.ActualHeight;
-
-					} else if (type.Contains("ticker")) {
-						//position along bottom of player.  
-						x = 2;
-						h = (Double)ReflectionHelper.GetValue(args, "Ad.Args.Height");
-						y = Player.ActualHeight - h - 64;
-						w = Player.ActualWidth - 16;
+				x = -(((MatrixTransform)Player.LayoutRoot.TransformToVisual(images[Player.CurrentItem.Title])).Matrix.OffsetX) - 6;
+				if (x < w || x > Player.ActualWidth - w) {
+					foreach (VideoItem vi in Player.Playlist) {
+						if (!images.ContainsKey(vi.Title)) continue;
+						x = -(((MatrixTransform)Player.LayoutRoot.TransformToVisual(images[vi.Title])).Matrix.OffsetX) - 6;
+						if (x >= w) break;
 					}
+				}
+				h = listBoxPlaylist.ActualHeight;
 
-					//set arguments
-					ReflectionHelper.SetValue(args, "Ad.Args.PositionX", x);
-					ReflectionHelper.SetValue(args, "Ad.Args.PositionY", y);
-					ReflectionHelper.SetValue(args, "Ad.Args.Width", w);
-					ReflectionHelper.SetValue(args, "Ad.Args.Height", h);
+				if (BugContainer.Visibility == Visibility.Visible) {
+					BugContainer.SetValue(Canvas.LeftProperty, x);
+					BugContainer.SetValue(Canvas.TopProperty, y);
+					BugContainer.Width = w;
+					BugContainer.Height = h;
+				}
 
-					// adjust position when player changes.  Set actual canvas, in case it is already there.
-					FrameworkElement fe = ReflectionHelper.GetValue(args, "Ad.Args.UIElementToReturn") as FrameworkElement;
-					if (fe != null) {
-						fe.Visibility = Visibility.Visible;
-						fe.SetValue(Canvas.LeftProperty, x);
-						fe.SetValue(Canvas.TopProperty, y);
-						fe.Width = w;
-						fe.Height = h;
-					}
+				MatrixTransform m = (MatrixTransform)Player.LayoutRoot.TransformToVisual(Player.MediaElement);
+				x = -m.Matrix.OffsetX;
+				y = -m.Matrix.OffsetY;
+
+				if (BannerContainer.Visibility == Visibility.Visible) {
+					BannerContainer.Width = Player.MediaElement.ActualWidth;
+					BannerContainer.Height = 74; //hack
+					BannerContainer.SetValue(Canvas.LeftProperty, x);
+					BannerContainer.SetValue(Canvas.TopProperty, y + Player.MediaElement.ActualHeight - BannerContainer.ActualHeight);
 				}
 
 			} catch (Exception ex) {

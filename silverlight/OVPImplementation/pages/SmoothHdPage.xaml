@@ -1,4 +1,8 @@
-﻿<UserControl x:Class="OVPImplementation.SmoothHdPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Player="clr-namespace:org.OpenVideoPlayer.Controls;assembly=OpenVideoPlayer" xmlns:Visuals="clr-namespace:org.OpenVideoPlayer.Controls.Visuals;assembly=OpenVideoPlayer" xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows" xmlns:OVPImplementation="clr-namespace:OVPImplementation" mc:Ignorable="d" Width="Auto" Height="Auto" Background="Black">
+﻿<UserControl x:Class="OVPImplementation.SmoothHdPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Player="clr-namespace:org.OpenVideoPlayer.Controls;assembly=OpenVideoPlayer" 
+             xmlns:Visuals="clr-namespace:org.OpenVideoPlayer.Controls.Visuals;assembly=OpenVideoPlayer" xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows" 
+             xmlns:OVPImplementation="clr-namespace:OVPImplementation" mc:Ignorable="d" Width="Auto" Height="Auto" VerticalAlignment="Top" Background="Black">
 
     <UserControl.Resources>
 
@@ -28,15 +32,17 @@
         </Style>
 
     </UserControl.Resources>
-    <Grid x:Name="LayoutRoot" Background="Transparent" Visibility="Visible">
+    <Grid x:Name="LayoutRoot" Background="Transparent" Visibility="Visible" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="148" />
         </Grid.RowDefinitions>
         
-        <Player:OpenVideoPlayerControl MinWidth="862" MinHeight="530" Margin="0,0,0,0" Padding="5" VerticalAlignment="Top" HorizontalAlignment="Center" x:Name="Player" />
-     
-        <StackPanel x:Name="playlistStackPanel" Grid.Row="1" Opacity="0" HorizontalAlignment="Stretch" Orientation="Horizontal" Width="Auto" Margin="0,-4,0,4">
+        <!--<Canvas Grid.Row="0" Name="PlayerCanvas">-->
+            <Player:OpenVideoPlayerControl Grid.Row="0"  MinWidth="869" MinHeight="534" Margin="0,0,0,0" Padding="4" VerticalAlignment="Top" HorizontalAlignment="Center" x:Name="Player" />
+        <!--</Canvas>-->
+        
+        <StackPanel x:Name="playlistStackPanel" Grid.Row="1" Opacity="0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Orientation="Horizontal" Width="Auto" Margin="0,0,0,0">
             <!---Groupbox-->
             <StackPanel Margin="4,0,0,0">
                 <Button x:Name="scrollUp" IsEnabled="False" Height="16" Cursor="Hand" Width="222" Margin="0,0,0,1" Background="#FF0F2A3D" Click="scrollUp_Click">
@@ -337,5 +343,13 @@
             </StackPanel>
 
         </StackPanel>
+
+        <Canvas><!--These will be dynamically placed as page layout changes-->
+            <Canvas Name="BugContainer"/>
+            <!--<Border Name="BannerContainer" Background="Black" Opacity=".7"  HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" />-->
+            <!--<Grid Name="BannerContainer" Visibility="Collapsed" Background="Black" Opacity=".7">BorderBrush="Blue" BorderThickness="1"-->
+                <!--<Rectangle Fill="Black" Opacity=".7" />-->
+            <Grid Name="BannerContainer" HorizontalAlignment="Center" />
+        </Canvas>
     </Grid>
 </UserControl>

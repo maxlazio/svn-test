@@ -39,8 +39,10 @@ namespace org.OpenVideoPlayer.Util {
 			if (mi != null && mi.Length > 0) {
 				if (mi[0].MemberType == MemberTypes.Property) {
 					value = ((PropertyInfo)mi[0]).GetValue(target, null);
+
 				} else if (mi[0].MemberType == MemberTypes.Field) {
 					value = ((FieldInfo)mi[0]).GetValue(target);
+
 				} else if (mi[0].MemberType == MemberTypes.Method) {
 					value = ((MethodInfo)mi[0]).Invoke(target, null);
 				}
@@ -53,10 +55,17 @@ namespace org.OpenVideoPlayer.Util {
 			if (mi != null && mi.Length > 0) {
 				if (mi[0].MemberType == MemberTypes.Property) {
 					((PropertyInfo)mi[0]).SetValue(target, value, null);
+
 				} else if (mi[0].MemberType == MemberTypes.Field) {
 					((FieldInfo)mi[0]).SetValue(target, value);
+
 				} else if (mi[0].MemberType == MemberTypes.Method) {
-					((MethodInfo)mi[0]).Invoke(target, new object[] { value });
+					if (value is object[]) {
+						((MethodInfo)mi[0]).Invoke(target, value as object[]);
+					} else {
+						((MethodInfo) mi[0]).Invoke(target, new object[] {value});
+					}
+
 				}
 			}
 		}

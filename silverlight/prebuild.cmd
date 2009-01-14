@@ -16,16 +16,17 @@ if ERRORLEVEL 1 goto skipVer
   for /f "skip=1" %%i in (%projectpath%..\Version.txt) do set ver=%%i
   for /f "delims=Revision: " %%i in ('svn.exe info %projectpath%..\Version.txt ^| find "Revision:"') do echo %%i&set rev=%%i
   set ver=%ver%.%rev%
-  echo Version: %ver%
+  echo %projname% Version: %ver% 
   
 set sfile="%projectpath%properties\AssemblyInfo.cs"
 
 %projectpath%..\ReplaceLine.exe %sfile% AssemblyVersion "[assembly: AssemblyVersion("""%ver%""")]" 
 %projectpath%..\ReplaceLine.exe %sfile% AssemblyFileVersion "[assembly: AssemblyFileVersion("""%ver%""")]"  
 
+set ifile="%projectpath%index.html"
+
 if %projname%==OVPWeb (
-   set sfile="%projectpath%index.html"
-   %projectpath%..\ReplaceLine.exe %sfile% //auto "		var version = 'v%ver%'; //auto version"
+   %projectpath%..\ReplaceLine.exe %ifile% //auto "  var version = 'v%ver%'; //auto version"
    rem if exist %projectpath%..\..\packages.cmd %projectpath%..\..\packages.cmd
 )
 

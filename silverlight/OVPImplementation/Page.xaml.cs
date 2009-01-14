@@ -17,6 +17,7 @@ namespace OVPImplementation {
 			//object o = XamlReader.Load(sr.ReadToEnd()); 
 
 			Player.OnStartup(sender, e);
+			Player.ApplyTemplate();
 		}
 	}
 }

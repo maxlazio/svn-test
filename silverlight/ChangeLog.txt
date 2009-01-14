@@ -1,9 +1,88 @@
-*** Version 2.1.000 ***
-2008-12-14	Nick Brookins <nbrookin at akamai d0t com>
+*** Version 2.1.42 (In Progress) ***
+2009-01-13	Nick Brookins <nbrookin at akamai d0t com>
 
-- Completed work on template/skinning system for OVP v2.1 
-   > No player code changes needed for styling
-   > look and feel is handled by a xaml template outside of the player dll 
+- Work towards new official release
+	> Theme specify on config page
+	> Allow themes to be loaded from remote xaml, instead of only embedded resources
+	> 200% increase in template load speed by caching resource dictionaries
+
+
+//TODO - ////Incomplete Items////
+
+- Initial work on new Ad strategy
+	> Allow Global Ad Tags to be specified in InitParams - affect all items, also good for single file playback
+	> For per-feed-item control, two options: 
+		- specify field to overload in InitParams
+		- filter tags by item field
+	
+// - fix download progress bar / buffer control
+// - close credits on change of channel for rogan content
+// - gear icon on standard (not adaptive) content instead of quality meter
+
+//TODO - ////Incomplete Items////
+
+
+
+*** Version 2.1.30 ***
+2009-01-13	Nick Brookins <nbrookin at akamai d0t com>
+
+- Many updates to Adaptive implementation
+	> Refined Adaptive code into new AdaptiveEdge plugin that wraps the Microsoft and Akamai Heuristics
+		- Changed IAdaptiveSource to IAlternateSource and generalized usage
+		- Future possibility of a plugin for new container format, protocol, etc..
+		- More loosely connected with player, now implemented as XAP, named AdaptiveEdge.xap		
+		- Now uses one instance of plugin, as opposed to reloading it for every content item
+	> Now support InitialBitrate, allowing a rate higher than the lowest to be used initially
+		- Enables carrying current bitrate between playlist items, instead of resetting to lowest each time
+	> Player no longer automatically tries to load adaptive code autmatically, must specify
+		- specify in InitParam as: plugins=plugins/AdaptiveEdge.xap 
+
+
+*** Version 2.1.20 ***
+2008-12-30	Nick Brookins <nbrookin at akamai d0t com>
+
+- Overhauled PluginManager with many new capabilities
+	> Now supports xap or dll assemblies
+	> Allows name-spaced initparams to be passed into loaded plugins (eg. UIFAdConnector:GlobalAdTags=... )
+	> New InitParam to control plugin loading, syntax: plugins=<path to plugin1> <path to plugin2> etc
+  
+- Added EyeWonder UIF Advertisement integration plugin (not yet in sourceforge, waiting on permission)
+    > implemented Rogan content into smoothhd
+    > used UIF for ad integration with Rogan channel as demonstration
+    > specify in InitParam as: plugins=plugins/UIFAdConnector.xap 
+	> Currently uses overloaded playlist item comments to control ad loading from an initial doc, specified in initparams
+	
+- Updates to dynamic scaling
+	> All options are configurable, including minimum size, margin, etc
+	> Now allows forcing aspect ratio
+	> Now fully implemented in player, not a page (smmothhd.com) specific implementation
+
+
+*** Version 2.1.10 ***
+2008-12-15	Nick Brookins <nbrookin at akamai d0t com>
+  
+- SmoothHD Specific Update
+
+- Reskinned OVP v2.1 to emulate look and feel of existing SmoothHD 
+    > SmoothHD will now inherits features such as draggable slider, controls in Fullscreen,
+       click video to pause, dbl-click FS, etc.. - this in itself should take care of the major UI complaints 
+    > Playlists and manifests are now feeds from StreamOS (previously hardcoded xml), the content hasn't moved 
+    > Fit player into background more cleanly, and added click spots for all logos, like IIS and Akamai 
+	> The inital usercontrol to load in the silverlight app is controlled by InitParam: type=SmoothHdPage
+		- Allows us to put multiple page implementations in the app and control them from HTML, 
+			as opposed to needing a new project or commenting things out, etc.
+   
+- improved install experience: page is now html other than player and playlist 
+    > If SL not installed, page and links are intact, but player area has an install link, and requirements text.
+    > previously was all silverlight, would show nothing but install button if not installed 
+
+
+*** Version 2.1.00 ***
+2008-12-10	Nick Brookins <nbrookin at akamai d0t com>
+
+- Completed intiial work on template/skinning system for OVP v2.1 
+    > No player code changes needed for styling
+    > look and feel is handled by a xaml template outside of the player dll 
    
 - Added Quality Meter 
    > The number of bars indicates how close to the full bitrate you are receiving 
@@ -18,29 +97,13 @@
 
 - Dynamic player scaling
     > When bitrate-in-use or browser size changes, an algorithm determines the best size of the player 
-    > It will only choose from HD resolutions, 480p or greater, leaving the minimum still at 848x480  
+    > It will only choose from HD resolutions, 480p or greater, leaving the minimum still at 848x480
     > The client must have the bandwidth capability, CPU, and browser real-estate to justify upsizing
     > Fullscreen still works as before, and will fill the screen regardless of the content being received
 
 - New ControlBase class provides a base class that will automatically bind template to fields and events
 - New custom controls for logviewer, playlist, chapters box, stat box, tooltip, and others
-   
-SmoothHD Specific
-- Reskinned OVP v2.1 to emulate look and feel of existing SmoothHD 
-   > SmoothHD will now inherits features such as draggable slider, controls in Fullscreen,
-       click video to pause, dbl-click FS, etc.. - this in itself should take care of the major UI complaints 
-   > Playlists and manifests are now feeds from StreamOS (previously hardcoded xml), the content hasn't moved 
-   > Fit player into background more cleanly, and added click spots for all logos, like IIS and Akamai 
-   
-- improved install experience: page is now html other than player and playlist 
-   > If SL not installed, page and links are intact, but player area has an install link, and requirements text.
-   > previously was all silverlight, would show nothing but install button if not installed 
-   
-- Added EyeWonder UIF Advertisement integration plugin (not yet in sourceforge, waiting on permission)
-   > implemented Rogan content into smoothhd
-   > used UIF for ad integration with Rogan channel as demonstration
-   
-
+  
 
 *** Version 2.0.60 ***
 2008-12-02	Nick Brookins <nbrookin at akamai d0t com>

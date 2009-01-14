@@ -59,13 +59,24 @@ img { -ms-interpolation-mode:bicubic; }
     	function Link(url, name){
     		window.open(url, name,'directories=no,location=yes,menubar=yes,scrollbars=yes,status=yes,toolbar=yes,resizable=yes');
     	}
+
+    	function Credits() {
+    		var slApp = document.getElementById('slp');
+    		if (slApp) {
+    			//alert(slApp);
+    			if (slApp.content) {
+    				//alert(slApp.content);
+    				slApp.content.page.Credits();
+    			}
+    		}
+    	}
     	
     	function Toggle(){
     		var exp = document.getElementById('experience');
 //    		alert(exp.style.display);
     		exp.style.display= (exp.style.display=='none')? 'block':'none';
     	}
-	</script>
+</script>
 </head>
 
 <body style="background-color: #000000">
@@ -99,13 +110,13 @@ img { -ms-interpolation-mode:bicubic; }
 	</div>
 	</center>
 	<div id="silverlightControlHost" style=" vertical-align: top;  border-style: none; border-width: 1px; margin: 00px 0px 0px 0px; padding: 0px; height: 680px;">
-		<object id="slp" data="data:application/x-silverlight-2," height="674" style="margin: 0px; padding: 0px" type="application/x-silverlight-2" width="862">
+		<object id="slp" data="data:application/x-silverlight-2," height="680" style="vertical-align: top; margin: 0px; padding: 0px" type="application/x-silverlight-2" width="862">
 			<param name="source" value="OVP.xap" />
 			<param name="minRuntimeVersion" value="2.0.30923.0" />
 			<param name="onerror" value="onSilverlightError" />
 			<param name="MaxFrameRate" value="30" />
 			<param name="background" value="black" />
-			<param name="initparams" value="showstats=false, type=SmoothHdPage, autoplay=true, muted=false, plugins=plugins/UIFAdPlugin.xap plugins/AdaptiveStreaming.dll, UIFAdManager:TagsUri=content/uif/adtags.xml, theme=OVPImplementation;component/themes/SmoothHD.xaml, playlistoverlay=true, stretchmode=Fit, masterplaylist=content/smoothhd/feeds.txt" />
+			<param name="initparams" value="showstats=false, type=SmoothHdPage, autoplay=true, muted=false, plugins=plugins/UIFAdConnector.xap plugins/AdaptiveEdge.xap, UIFAdConnector:TagsUri=content/uif/adtags.xml, theme=themes/SmoothHD.xaml, playlistoverlay=true, stretchmode=Fit, masterplaylist=content/smoothhd/feeds.txt" />
 			<br /> <br />
 			<center>
 			    <a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">
@@ -163,10 +174,13 @@ img { -ms-interpolation-mode:bicubic; }
 			<div style=" border-style: none; border-color: inherit; border-width: 2px; width: 124px; height: 25px; float: right; margin-right: 20px; cursor: hand;">
 			</div></a>
 			
-			<div id="ads2" style="visibility: hidden;">
-				<a href="http://htrick.com/" target="_blank" style="float: right; margin-right: 110px;">
+			<div id="ads2" class="style1" style="text-decoration: none; visibility: hidden;">
+				<a href="#" onclick="Credits();" class="style1" style=" font-size:small; text-decoration: none; float: right; margin-right: 80px; margin-top: 20px;">Credits</a>
+				
+				<a href="http://htrick.com/" target="_blank" style="float: right; margin-right: 25px;">
 					<img id="htrick" src="content/uif/htrick.png" style="border-style: none; -ms-interpolation-mode: bicubic; margin-top: 10px;" />
 				</a>
+				
 			</div>
 			
 			<div id="experience" style="float: left; display: none; background-color: Black; height: 90px; padding: 8px; border-width: 1px; border-style: solid; border-color: gray; width: 460px; text-align: left; font-family: Arial, Helvetica, sans-serif; font-size: x-small; color: gray;">
