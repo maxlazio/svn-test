@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.Windows.Controls.Theming;
+using System.IO;
 
 namespace org.OpenVideoPlayer.Controls {
 	/// <summary>
@@ -50,31 +51,71 @@ namespace org.OpenVideoPlayer.Controls {
 		}
 
 		/// <summary>
+		/// Applyes the theme (found in a xaml resource) to this control, and optionally to any child controls that supoprt it.
+		/// </summary>
+		/// <param name="uri"></param>
+		/// <param name="recursive"></param>
+		public void ApplyTheme(Stream uri, bool recursive) {
+			ApplyThemeToElement(this, uri, recursive);
+		}
+
+		/// <summary>
 		/// Applies a theme to a specific control
 		/// </summary>
 		/// <param name="element"></param>
 		/// <param name="uri"></param>
 		/// <param name="recursive"></param>
 		public static void ApplyThemeToElement(FrameworkElement element, Uri uri, bool recursive) {
-			if (element == null) return;
+			ApplyThemeToElement(element, uri, null, recursive, false);
+		}
 
-			if (recursive) {
-				if (element is Panel) {
-					foreach (FrameworkElement e in ((Panel)element).Children) {
-						ApplyThemeToElement(e, uri, recursive);
+		/// <summary>
+		/// Applies a theme to a specific control
+		/// </summary>
+		/// <param name="element"></param>
+		/// <param name="uri"></param>
+		/// <param name="recursive"></param>
+		public static void ApplyThemeToElement(FrameworkElement element, Stream s, bool recursive) {
+			ApplyThemeToElement(element, null, s, recursive, false);
+		}
+
+		//protected static object theme = null;
+
+		protected static void ApplyThemeToElement(FrameworkElement element, Uri uri, Stream s, bool recursive, bool atdepth) {
+			if (element == null) return;
+			DateTime start = DateTime.Now;
+			try {
+				if (recursive) {
+					if (element is Panel) {
+						foreach (FrameworkElement e in ((Panel) element).Children) {
+							ApplyThemeToElement(e, uri, s, recursive, true);
+						}
+					}
+					if (element is ContentControl) {
+						ApplyThemeToElement(((ContentControl) element).Content as FrameworkElement, uri, s, recursive, true);
+					}
+					if (element is Border) {
+						ApplyThemeToElement(((Border) element).Child as FrameworkElement, uri, s, recursive, true);
 					}
 				}
-				if (element is ContentControl) {
-					ApplyThemeToElement(((ContentControl)element).Content as FrameworkElement, uri, recursive);
-				}
-				if (element is Border) {
-					ApplyThemeToElement(((Border)element).Child as FrameworkElement, uri, recursive);
-				}
-			}
 
-			ImplicitStyleManager.SetResourceDictionaryUri(element, uri);
-			ImplicitStyleManager.SetApplyMode(element, ImplicitStylesApplyMode.Auto);
-			ImplicitStyleManager.Apply(element);
+				if (uri != null) {
+					ImplicitStyleManager.SetResourceDictionaryUri(element, uri);
+				} else if (s != null) {
+					ImplicitStyleManager.SetResourceDictionaryStream(element, s);
+				}
+
+				ImplicitStyleManager.SetApplyMode(element, ImplicitStylesApplyMode.Auto);
+				ImplicitStyleManager.Apply(element);
+
+				if (!atdepth) {
+					OutputLog.StaticOutput("ControlBase", OutputType.Info, string.Format("Applyed theme to {0}, {1}ms", element.Name, (DateTime.Now - start).TotalMilliseconds));
+				} else {
+					//Debug.WriteLine(string.Format("Applyed theme to {0}, {1}ms", element.Name, (DateTime.Now - start).TotalMilliseconds));
+				}
+			} catch (Exception ex) {
+				OutputLog.StaticOutput("ControlBase", OutputType.Error, "Error applying theme: ", ex);
+			}
 		}
 
 		/// <summary>
@@ -172,7 +213,9 @@ namespace org.OpenVideoPlayer.Controls {
 					Debug.WriteLine("Error binding member " + mi.Name + ", " + ex);
 				}
 			}
-			Debug.WriteLine(Name + ", Type " + GetType() + " has bound to " + fc + " fields, " + ec + " events in " + (DateTime.Now - start).TotalMilliseconds + "ms");
+			if (fc + ec > 0) {
+				Debug.WriteLine(Name + ", Type " + GetType() + " has bound to " + fc + " fields, " + ec + " events in " + (DateTime.Now - start).TotalMilliseconds + "ms");
+			}
 		}
 	}
 

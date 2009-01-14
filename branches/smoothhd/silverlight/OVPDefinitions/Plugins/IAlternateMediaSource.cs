@@ -11,12 +11,19 @@ using System.Windows.Shapes;
 using org.OpenVideoPlayer.Media;
 
 namespace org.OpenVideoPlayer {
-	public interface IAdaptiveSource : IPlugin {
-		IAdaptiveSegment[] GetAvailableSegments(MediaStreamType streamType);
+	public interface IAlternateMediaSource : IPlugin {
+		IAdaptiveSegment[] AvailableSegments(MediaStreamType streamType);
 
-		IBufferInfo GetBufferInfo(MediaStreamType streamType);
+		IBufferInfo BufferInfo(MediaStreamType streamType);
 
 		void SetBitrateRange(MediaStreamType streamType, long minBitrate, long maxBitrate);
+
+		void SetInitialBitrate(MediaStreamType streamType, long startBitrate);
+
+		/// <summary>
+		/// The highest adaptive segement currently allowed, because of physical size caps
+		/// </summary>
+		int SegmentCapIndex { get; }
 
 		ulong CurrentBitrate { get; }
 
@@ -24,13 +31,19 @@ namespace org.OpenVideoPlayer {
 
 		ulong CurrentBandwidth { get; }
 
-		void Initialize(MediaElement mediaElement, Uri url);
+		/// <summary>
+		/// Returns true if the url was properly handled, and appropriate for this plugin
+		/// </summary>
+		/// <param name="url"></param>
+		/// <returns></returns>
+		bool SetSource(Uri url);
 
-
+		MediaStreamSource MediaSource { get; }
 		/// <summary>
 		/// This event is fired whenever the bitrate of the playing video is changed.
 		/// </summary>
 		event EventHandler<BitrateChangedEventArgs> PlayBitrateChange;
+		//event EventHandler AdaptiveBitrateChanged;
 
 		/*
 		/// <summary>

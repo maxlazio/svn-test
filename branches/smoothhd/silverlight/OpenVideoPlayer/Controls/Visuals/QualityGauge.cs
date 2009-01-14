@@ -30,16 +30,56 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 
 		internal Panel layoutRoot;
 
-		public int Levels { get; set; }
+
+		private int levels;
+		public int Levels {
+			get { return levels; }
+			set {
+				Grid g = layoutRoot as Grid;
+				
+				if (levels != value || (g!=null && ((Vertical && g.RowDefinitions.Count!=value) || g.ColumnDefinitions.Count!=value ))) {
+					levels = value;
+					if (layoutRoot != null) {
+						
+						SetLevels();
+					}
+				}
+			}
+		}
+
 		public static DependencyProperty LevelsProperty = DependencyProperty.Register("Levels", typeof (int), typeof(QualityGauge), null);
 
 		public bool Vertical { get; set; }
 		public static DependencyProperty VerticalProperty = DependencyProperty.Register("Vertical", typeof(bool), typeof(QualityGauge), null);
 
-		public double Thickness { get; set; }
+		private double thickness;
+		public double Thickness {
+			get { return thickness; }
+			set {
+				if (thickness != value) {
+					thickness = value;
+					if (layoutRoot != null) {
+						SetLevels();
+					}
+				}
+			}
+		}
+
 		public static DependencyProperty ThicknessProperty = DependencyProperty.Register("Thickness", typeof(double), typeof(QualityGauge), null);
 
-		public double GridThickness { get; set; }
+		private double gridThickness;
+		public double GridThickness {
+			get { return gridThickness; }
+			set {
+				if (gridThickness != value) {
+					gridThickness = value;
+					if (layoutRoot != null) {
+						SetLevels();
+					}
+				}
+			}
+		}
+
 		public static DependencyProperty GridThicknessProperty = DependencyProperty.Register("GridThickness", typeof(double), typeof(QualityGauge), null);
 
 		private double value = 0.5;
@@ -56,6 +96,11 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 					int level = (Vertical) ? (int) p.GetValue(Grid.RowProperty) : (Levels-1-(int)p.GetValue(Grid.ColumnProperty));
 					if (level == Levels - 1) continue;
 					p.Visibility = (level < Levels - f) ? Visibility.Collapsed : Visibility.Visible;
+				}
+				if (levels == 1) {
+					g.Background = Foreground;
+				} else {
+					g.Background = Background;
 				}
 			}
 		}
@@ -75,6 +120,7 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 				//}
 				base.Foreground = value; 
 				Value = this.value;
+
 			}
 		}
 
@@ -91,25 +137,39 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 			layoutRoot = GetTemplateChild("layoutRoot") as Panel;
 			//BindTemplate(this, GetTemplateChild);
 
+			SetLevels();
+
+			Value = value;
+		}
+
+		private void SetLevels() {
 			Grid g = ((Grid) layoutRoot);
 			Color fc = Colors.White;
 			Color st = Colors.White;
 
-			for(int i = 0; i< Levels;i++) {
-				if (Vertical) {
-					g.RowDefinitions.Add(new RowDefinition { Height = new GridLength(GridThickness) });
-					Path p = XamlReader.Load(string.Format(@"<Path xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' "
-						+ @"Margin='2,0,2,0' Width='Auto' StrokeThickness='{2}' Grid.Row='{0}' Height='{2}'  Stretch='Fill'  Stroke='{1}' Data='M 0,0L 8,0' />", i, fc, Thickness)) as Path;
-					g.Children.Add(p);
-				} else {
-					g.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(GridThickness) });
-					Path p = XamlReader.Load(string.Format(@"<Path xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' "
-						+ @"Margin='0,0,0,0' Width='{2}' StrokeThickness='{2}' Grid.Column='{0}' Height='Auto'  Stretch='Fill'  Stroke='{1}' Data='M 0,0L 0,8' />", i, fc, Thickness)) as Path;
-					g.Children.Add(p);
+			g.RowDefinitions.Clear();
+			g.ColumnDefinitions.Clear();
+			g.Children.Clear();
+
+			if (levels == 1) {
+				g.Background = new SolidColorBrush(fc);
+				g.Margin = new Thickness(3);
+			} else {
+				g.Margin = new Thickness(0);
+				for (int i = 0; i < Levels; i++) {
+					if (Vertical) {
+						g.RowDefinitions.Add(new RowDefinition {Height = new GridLength(GridThickness)});
+						Path p = XamlReader.Load(string.Format(@"<Path xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' "
+						                                       + @"Margin='2,0,2,0' Width='Auto' StrokeThickness='{2}' Grid.Row='{0}' Height='{2}'  Stretch='Fill'  Stroke='{1}' Data='M 0,0L 8,0' />", i, fc, Thickness)) as Path;
+						g.Children.Add(p);
+					} else {
+						g.ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(GridThickness)});
+						Path p = XamlReader.Load(string.Format(@"<Path xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' "
+						                                       + @"Margin='0,0,0,0' Width='{2}' StrokeThickness='{2}' Grid.Column='{0}' Height='Auto'  Stretch='Fill'  Stroke='{1}' Data='M 0,0L 0,8' />", i, fc, Thickness)) as Path;
+						g.Children.Add(p);
+					}
 				}
 			}
-	
-			Value = value;
 		}
 
 		/// <summary>

@@ -31,26 +31,6 @@
         </Setter>
     </Style>-->
 
-    <Color x:Key="Foreground">Black</Color>
-
-    <Style TargetType="Visuals:ContentButtonPause">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonMute">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonFullScreen">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonLinkEmbed">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonOptions">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonPlay">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
 
     <!--SHINY BLUE SETTINGS FOR CHARTS-->
     <LinearGradientBrush x:Key="ShinyChartOrange" EndPoint="0.5,1" StartPoint="0.5,0">
@@ -364,6 +344,99 @@
         <Setter Property="Fill"
             Value="Black"/>
     </Style>
+
+
+
+    <!--Start OVP Specific items...-->
+
+    <SolidColorBrush x:Key="Foreground" Color="#FF000000" />
+    <SolidColorBrush x:Key="Highlight" Color="#FF555555" />
+
+    <Style TargetType="Player:OpenVideoPlayerControl">
+        <Setter Property="Highlight" Value="{StaticResource NormalBrush}" />
+    </Style>
+
+    <Style TargetType="Visuals:ContentButtonPause">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+    </Style>
+    <Style TargetType="Visuals:ContentButtonMute">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+    </Style>
+    <Style TargetType="Visuals:ContentButtonFullScreen">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+    </Style>
+    <Style TargetType="Visuals:ContentButtonLinkEmbed">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+    </Style>
+    <Style TargetType="Visuals:ContentButtonOptions">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Visuals:QualityGauge Width="22" Height="18" Padding="2" Levels="5" Vertical="True" x:Name="qualityGauge" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="Visuals:ContentButtonPlay">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+    </Style>
+    <Style TargetType="Visuals:ContentButtonNext">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+    </Style>
+    <Style TargetType="Visuals:ContentButtonPrevious">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+    </Style>
+    <Style TargetType="Visuals:ContentButtonPlaylist">
+        <Setter Property="Visibility" Value="Collapsed" />
+    </Style>
+    <Style TargetType="Visuals:ContentButtonChapters">
+        <Setter Property="Visibility" Value="Collapsed" />
+    </Style>
+
+    <Style TargetType="Visuals:QualityGauge">
+        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Highlight" Value="{StaticResource Highlight}" />
+    </Style>
+
+    <Style TargetType="Visuals:ScrubberBar">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid x:Name="Root">
+                        <Grid.Resources>
+                            <ControlTemplate x:Key="RepeatButtonTemplate">
+                                <Grid x:Name="Root" Opacity="0" Background="Transparent" />
+                            </ControlTemplate>
+                        </Grid.Resources>
+                        <Grid x:Name="HorizontalTemplate" Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Height="Auto" Margin="4,4,4,4" Fill="{StaticResource NormalBrush}" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
+                            </Rectangle>
+                            <RepeatButton x:Name="HorizontalTrackLargeChangeDecreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="0" />
+                            <Rectangle x:Name="LeftTrack" Fill="{StaticResource Foreground}" Grid.Column="0" Opacity=".7" Margin="4,7,0,7" Cursor="Hand">
+                            </Rectangle>
+                            <Thumb Height="Auto" x:Name="HorizontalThumb" Width="8" IsTabStop="True" Grid.Column="1" Visibility="Collapsed" />
+                            <RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="2" />
+                            <Rectangle x:Name="RightTrack" Fill="{StaticResource Foreground}" Margin="0,7,4,7" Height="Auto" Grid.Column="2" Cursor="Hand" Opacity="0.3">
+                            </Rectangle>
+                        </Grid>
+                        <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--END OVP ITems -->
+    
+    
 
     <!--Button-->
     <Style TargetType="Button">

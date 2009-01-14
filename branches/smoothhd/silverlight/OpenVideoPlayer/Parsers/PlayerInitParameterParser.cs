@@ -9,6 +9,8 @@ using org.OpenVideoPlayer.Connections;
 using org.OpenVideoPlayer.Media;
 using org.OpenVideoPlayer.Controls;
 using org.OpenVideoPlayer.Util;
+using System.Net;
+using System.Windows.Markup;
 
 namespace org.OpenVideoPlayer.Parsers {
 	/// <summary>
@@ -16,7 +18,6 @@ namespace org.OpenVideoPlayer.Parsers {
 	/// OpenVideoPlayer Control.
 	/// </summary>
 	public class PlayerInitParameterParser {
-		//protected ParserManager parserMgr;
 
 		protected IConnection connection;
 		protected OpenVideoPlayerControl _player;
@@ -24,23 +25,40 @@ namespace org.OpenVideoPlayer.Parsers {
 
 		public PlayerInitParameterParser() { }
 
+		/// <summary>
+		/// Use to parse the initparams and set appropriate values
+		/// </summary>
+		/// <param name="e">Start up arguments</param>
+		/// <param name="player">the player to set values to</param>
 		public void ImportInitParams(StartupEventArgs e, OpenVideoPlayerControl player) {
 			foreach (string param in e.InitParams.Keys) {
 				ParseParameter(param.ToLower(), e.InitParams[param], player);
 			}
 		}
 
+		/// <summary>
+		/// Use to parse an individual value
+		/// </summary>
+		/// <param name="key">the key of the param</param>
+		/// <param name="initValue">the value of the param</param>
+		/// <param name="player">a player, to set values to</param>
 		public void ParseParameter(string key, string initValue, OpenVideoPlayerControl player) {
 			switch(key) {
 				case "theme":
+					_player = player;
 					if (!initValue.Contains(";component/")) {
-						initValue = "OpenVideoPlayer;component/themes/" + initValue + (initValue.Contains(".xaml") ? "" : ".xaml");
+						WebClient wwc = new WebClient();
+						Uri exuri = (Uri.IsWellFormedUriString(initValue, UriKind.Absolute))? new Uri(initValue) : new Uri(HtmlPage.Document.DocumentUri,initValue);
+						wwc.OpenReadCompleted += new OpenReadCompletedEventHandler(Theme_DownloadCompleted);
+						wwc.OpenReadAsync(exuri, exuri);
+						player.Visibility = Visibility.Collapsed;
+						return;
 					}
+					Uri uri = new Uri(initValue, UriKind.Relative); //@"SLLib;component/themes/default.xaml"
 					try {
-						Uri uri = new Uri(initValue, UriKind.Relative); //@"SLLib;component/themes/default.xaml"
-						player.ApplyTheme(uri, false);
+						//player.ApplyTheme(uri, false);
 						ControlBase.ApplyThemeToElement(player.LayoutRoot, uri, true);
-						ControlBase.ApplyThemeToElement(player.Parent as FrameworkElement, uri, false);
+						ControlBase.ApplyThemeToElement(player.Parent as FrameworkElement, uri, true);
 					} catch (Exception ex) {
 						log.Output(OutputType.Error, "Can't apply template: ", ex.Message);
 					}
@@ -56,10 +74,10 @@ namespace org.OpenVideoPlayer.Parsers {
 					player.StretchMode = ParseStretchMode(initValue);
 					break;
 				case "showstats":
-					player.StatVisibility = ParseBool(initValue) ? Visibility.Visible : Visibility.Collapsed;
+					player.ShowStatistics = ParseBool(initValue);// ? Visibility.Visible : Visibility.Collapsed;
 					break;
 				case "showlogs":
-					player.LogVisibility = ParseBool(initValue) ? Visibility.Visible : Visibility.Collapsed;
+					player.ShowLogViewer = ParseBool(initValue);// ? Visibility.Visible : Visibility.Collapsed;
 					break;
 				case "playlistoverlay":
 					player.PlayListOverlay = ParseBool(initValue);
@@ -80,7 +98,6 @@ namespace org.OpenVideoPlayer.Parsers {
 					break;
 
 				case "plugins":
-					//TODO - test this
 					if (!string.IsNullOrEmpty(initValue)) {
 						foreach (string s in initValue.Split(' ')) {
 							Uri u = (Uri.IsWellFormedUriString(s, UriKind.Absolute) ? new Uri(s) : new Uri(HtmlPage.Document.DocumentUri, s));
@@ -97,11 +114,34 @@ namespace org.OpenVideoPlayer.Parsers {
 			}
 		}
 
+		void Theme_DownloadCompleted(object sender, OpenReadCompletedEventArgs e) {
+			try {
+				Stream ss = e.Result;
+				//we need to check for extra chars at beginning - seems to happen sometimes with WebClient and xaml
+				byte b = 0;
+				while ((b = (byte)ss.ReadByte()) != (byte)'<') ;
+				if (ss.Position >= ss.Length - 4) throw new Exception("invalid xaml");
+				byte[] ba = new byte[ss.Length - ss.Position + 1];
+				ba[0] = b;
+				ss.Read(ba, 1, ba.Length);
+				MemoryStream s = new MemoryStream(ba);
+				//string test = System.Text.Encoding.UTF8.GetString(b, 0, b.Length);
+
+				log.Output(OutputType.Info, "Downloaded theme: " + e.UserState);
+				
+				ControlBase.ApplyThemeToElement(_player.LayoutRoot, s, true);
+				ControlBase.ApplyThemeToElement(_player.Parent as FrameworkElement, s, true);
+
+			} catch (Exception ex) {
+				log.Output(OutputType.Error, "Can't apply template: ", ex.Message);
+			} finally {
+				_player.Visibility = Visibility.Visible;
+			}
+		}
+
 		private bool ParseBool(string initValue) {
 			return (initValue == "1" || initValue.ToUpper() == "TRUE");
 		}
-
-		//parse the source/input - can be inseveral different params
 
 		protected Stretch ParseStretchMode(string args) {
 			args = args.ToLower();  // force it to-lower for matching
@@ -130,6 +170,13 @@ namespace org.OpenVideoPlayer.Parsers {
 		#region Source/Playlist specific
 
 		private PlaylistCollection _playlist;
+
+		/// <summary>
+		/// specifically parse a parameter pertaining to a media source
+		/// </summary>
+		/// <param name="playlist">The playlist to poulate</param>
+		/// <param name="key">param key</param>
+		/// <param name="initValue">the param value</param>
 		public void ParseSource(PlaylistCollection playlist, string key, string initValue) {
 			//string initValue;
 			// ** Playlist handing ***
@@ -204,6 +251,11 @@ namespace org.OpenVideoPlayer.Parsers {
 		DefaultConnection temp;
 		private List<string> tryLoad = new List<string>();
 
+		/// <summary>
+		/// fires when we receive the content of our playlist/source
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void OnConnection_Loaded(object sender, EventArgs e) {
 			if (_playlist == null) {
 				log.Output(OutputType.Critical, "Error: received source input, but no player to use");
@@ -214,31 +266,27 @@ namespace org.OpenVideoPlayer.Parsers {
 				//log.Output(OutputType.Debug, "Received playlist with " + connection.Playlist.Count + " items");
 
 				for (int i = 0; i < connection.Playlist.Count; i++) {
-					//HACK
-					if (connection.Playlist[i].Url.Contains(".xml") && !tryLoad.Contains(connection.Playlist[i].Url)) {
-					} else {
-						//log.Output(OutputType.Debug, "Added item " + connection.Playlist[i].Title);
+					//load the non xml items first
+					if (!connection.Playlist[i].Url.Contains(".xml") || tryLoad.Contains(connection.Playlist[i].Url)) {
 						_playlist.Add(connection.Playlist[i]);
 						connection.Playlist.RemoveAt(i);
 					}
 				}
 
 				for (int i = 0; i < connection.Playlist.Count; i++) {
-					//HACK
+					//HACK - if it is xml, we assume it needs to be further resolved
 					if (connection.Playlist[i].Url.Contains(".xml") && !tryLoad.Contains(connection.Playlist[i].Url)) {
 						if (temp == null) {
 							temp = new DefaultConnection(getParserManager());
 							temp.Loaded += temp_Loaded;
 							temp.Error += temp_Error;
 						}
-						//log.Output(OutputType.Info, "Resolving xml item " + connection.Playlist[i].Url);
+						//add to a list so we dont try to load it multiple times
 						tryLoad.Add(connection.Playlist[i].Url);
 						temp.Connect(connection.Playlist[i].Url);
 						return;
 					}
 				}
-
-				//log.Output(OutputType.Critical, "Could not access playlist - no items.");
 
 			}
 			_playlist.Author = connection.Playlist.Author;
@@ -256,7 +304,11 @@ namespace org.OpenVideoPlayer.Parsers {
 			OnConnection_Loaded(connection, e);
 		}
 
-
+		/// <summary>
+		/// retrieved from our temp connection, used to resolve items that are indirected from the playlist
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void temp_Loaded(object sender, EventArgs e) {
 			DefaultConnection conn = (DefaultConnection)sender;
 			

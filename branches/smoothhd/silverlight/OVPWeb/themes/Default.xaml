@@ -10,7 +10,6 @@
     >
     <!-- BEGIN SLIDER STYLES x:Key="TimelineSliderStyle" x:Key="OptionsButtonStyle"-->
 
-
     <Color x:Key="Foreground">#FFCCCCCC</Color>
 
     <Style TargetType="Visuals:ContentButtonPause">
@@ -43,31 +42,31 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Slider">
-                    <Grid x:Name="Root" Background="#FF333333">
+                    <Grid x:Name="Root" Background="Transparent">
                         <Grid.Resources>
                             <ControlTemplate x:Key="RepeatButtonTemplate">
                                 <Grid x:Name="Root" Opacity="0" Background="Transparent"/>
                             </ControlTemplate>
                         </Grid.Resources>
-                        <Grid x:Name="HorizontalTemplate" Background="{TemplateBinding Background}">
+                        <Grid x:Name="HorizontalTemplate" Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Rectangle Height="10" Margin="1,0,1,0" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
+                            <Rectangle Height="Auto" Margin="4,4,4,4" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
                                 <Rectangle.Fill>
                                     <LinearGradientBrush EndPoint="57.5,10" StartPoint="57.5,0" MappingMode="Absolute">
-                                        <GradientStop Color="#FFE0E0E0"/>
-                                        <GradientStop Color="#FF0395D3" Offset="1"/>
+                                        <GradientStop Color="#AAE0E0E0"/>
+                                        <GradientStop Color="#AA0395D3" Offset="1"/>
                                     </LinearGradientBrush>
                                 </Rectangle.Fill>
                             </Rectangle>
                             <RepeatButton x:Name="HorizontalTrackLargeChangeDecreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="0"/>
-                            <Rectangle x:Name="LeftTrack" Grid.Column="0" Fill="#00FFFFFF" Cursor="Hand"/>
+                            <Rectangle x:Name="LeftTrack" Grid.Column="0" Fill="#00FFFFFF" Cursor="Hand" Opacity="0.4"/>
                             <Thumb Height="18" x:Name="HorizontalThumb" Width="11" IsTabStop="True" Grid.Column="1" Visibility="Collapsed"/>
                             <RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="2"/>
-                            <Rectangle x:Name="RightTrack" Grid.Column="2" Fill="#FF333333" Cursor="Hand" Opacity="0.4"/>
+                            <Rectangle x:Name="RightTrack" Grid.Column="2" Fill="#FF333333" Margin="0,7,4,7"  Cursor="Hand" Opacity="0.4"/>
                         </Grid>
                         <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
                             <Grid.RowDefinitions>
@@ -148,7 +147,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 
     <!--x:Key="ProgressStyleDeux"-->
     <Style  TargetType="ProgressBar">

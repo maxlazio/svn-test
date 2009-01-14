@@ -37,13 +37,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.Controls, Version=2.0.21027.1502, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Windows.Controls, Version=2.0.21024.1838, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SilverlightToolkit_Nov08\Binaries\Microsoft.Windows.Controls.dll</HintPath>
+      <HintPath>..\..\..\SilverlightToolkit_Dec08\Binaries\Microsoft.Windows.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Windows.Controls.Theming, Version=2.0.21027.1502, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Windows.Controls.Input, Version=2.0.21024.1838, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SilverlightToolkit_Nov08\Binaries\Microsoft.Windows.Controls.Theming.dll</HintPath>
+      <HintPath>..\..\..\SilverlightToolkit_Dec08\Binaries\Microsoft.Windows.Controls.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Windows.Controls.Theming, Version=2.0.21024.1838, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependancies\Microsoft.Windows.Controls.Theming.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Windows" />
@@ -71,6 +75,7 @@
     <Compile Include="Controls\Visuals\PlayList.cs" />
     <Compile Include="Controls\Visuals\ProgressBar.cs" />
     <Compile Include="Controls\Visuals\QualityGauge.cs" />
+    <Compile Include="Controls\Visuals\Screen.cs" />
     <Compile Include="Controls\Visuals\ScrollableListBox.cs" />
     <Compile Include="Controls\Visuals\ScrubberBar.cs" />
     <Compile Include="Controls\Visuals\Thumbnail.cs" />

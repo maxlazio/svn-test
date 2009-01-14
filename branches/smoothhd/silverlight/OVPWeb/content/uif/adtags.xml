@@ -1,46 +1,53 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <adtags>
-  <!--Test Tags for local invocation-->
-  <adtag type="bugolay0" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagbug.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="2" durationSeconds="10" active="false" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="bugtres0" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagbugtres.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="2" durationSeconds="15" active="false" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="tickerolay0" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagbanner.xml" animation="" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="2" durationSeconds="10" active="false" targetContainerName="AdOuterRegionTop"/>
-  <adtag type="tickertres0" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagbannertres.xml" animation="" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="2" durationSeconds="10" active="false" targetContainerName="AdOuterRegionTop"/>
-  <adtag type="bugcontinental0" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagbugcont.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="2" durationSeconds="15" active="false" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="postrollolay0" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagpostrollOlay.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="false" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="postrolltres0" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagpostrollTres.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="false" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="postrollcontinental0" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagpostrollCont.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="false" targetContainerName="AdOuterRegionRight"/>
-	<adtag type="bugolay1" url="http://localhost:2003/AkamaiMediaFrameworkWeb/tagbug.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="41" durationSeconds="20" active="true" targetContainerName="AdOuterRegionRight"/>
-	
+ 
 	<!--Episode 1: Corresponding RSS comments field should be "bug=olay1;postroll=continental1"-->
-	<adtag type="postrollcontinental1" url="http://cdn1.eyewonder.com/200125/755545/1024192/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+	<adtag type="postrollcontinental1" url="http://cdn1.eyewonder.com/200125/755545/1024192/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="PlayerFill"/>
+	<adtag type="bugolay1" url="http://cdn1.eyewonder.com/200125/755545/1024198/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22"
+			 startTimeSeconds="41" durationSeconds="15" active="true" targetContainerName="PlaylistBug"/>
 
   <!--Episode 2: Corresponding RSS comments field should be "bug=tres2;postroll=olay2"-->
-  <adtag type="bugtres2" url="http://cdn1.eyewonder.com/200125/755545/1022643/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="103" durationSeconds="20" active="true" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="postrollolay2" url="http://cdn1.eyewonder.com/200125/755545/1024190/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+  <adtag type="bugtres2" url="http://cdn1.eyewonder.com/200125/755545/1022643/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="103" durationSeconds="20" active="true" targetContainerName="PlaylistBug"/>
+  <adtag type="postrollolay2" url="http://cdn1.eyewonder.com/200125/755545/1024190/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="PlayerFill"/>
   
   <!--Episode 3: Corresponding RSS comments field should be "bug=continental3;postroll=tres3"-->
-  <adtag type="bugcontinental3" url="http://cdn1.eyewonder.com/200125/755545/1022645/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="24" durationSeconds="20" active="true" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="postrolltres3" url="http://cdn1.eyewonder.com/200125/755545/1024191/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+  <adtag type="bugcontinental3" url="http://cdn1.eyewonder.com/200125/755545/1022645/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="24" durationSeconds="20" active="true" targetContainerName="PlaylistBug"/>
+  <adtag type="postrolltres3" url="http://cdn1.eyewonder.com/200125/755545/1024191/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="PlayerFill"/>
   
   <!--Episode 4: Corresponding RSS comments field should be "ticker=tres4;postroll=tres4"-->
-  <adtag type="tickertres4" url="http://cdn1.eyewonder.com/200125/755545/1022644/tag.xml" animation="" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="20" durationSeconds="15" active="true" targetContainerName="AdOuterRegionTop"/>
-  <adtag type="postrolltres4" url="http://cdn1.eyewonder.com/200125/755545/1024194/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+  <adtag type="tickertres4" url="http://cdn1.eyewonder.com/200125/755545/1022644/tag.xml" animation="" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="20" durationSeconds="15" active="true" targetContainerName="LowerBanner"/>
+  <adtag type="postrolltres4" url="http://cdn1.eyewonder.com/200125/755545/1024194/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="PlayerFill"/>
 
-  <!--Episode 5: Corresponding RSS comments field should be "postroll=continental5"-->
-  <adtag type="postrollcontinental5" url="http://cdn1.eyewonder.com/200125/755545/1022645/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+  <!--Episode 5: Corresponding RSS comments field should be "ticker=olay8;postroll=continental5"-->
+  <adtag type="postrollcontinental5" url="http://cdn1.eyewonder.com/200125/755545/1024192/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="PlayerFill"/>
 	<!--url="http://cdn1.eyewonder.com/200125/755545/1022646/tag.xml" Took this one out - wasnt working right/.-->
+	<adtag type="tickerolay8" url="http://cdn1.eyewonder.com/200125/755545/1022428/tag.xml" animation="" begindate="2008-10-22" enddate="2008-10-22"
+			 startTimeSeconds="19" durationSeconds="15" active="true" targetContainerName="LowerBanner"/>
 	
 	<!--Episode 6: Corresponding RSS comments field should be "bug=olay6;postroll=tres6"-->
-  <adtag type="bugolay6" url="http://cdn1.eyewonder.com/200125/755545/1024198/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="41" durationSeconds="15" active="true" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="postrolltres6" url="http://cdn1.eyewonder.com/200125/755545/1024196/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+  <adtag type="bugolay6" url="http://cdn1.eyewonder.com/200125/755545/1024198/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="66" durationSeconds="15" active="true" targetContainerName="PlaylistBug"/>
+  <adtag type="postrolltres6" url="http://cdn1.eyewonder.com/200125/755545/1024196/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="PlayerFill"/>
 
   <!--Episode 7: Corresponding RSS comments field should be "bug=tres7;postroll=olay7"-->
-  <adtag type="bugtres7" url="http://cdn1.eyewonder.com/200125/755545/1024199/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="41" durationSeconds="15" active="true" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="postrollolay7" url="http://cdn1.eyewonder.com/200125/755545/1024193/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+  <adtag type="bugtres7" url="http://cdn1.eyewonder.com/200125/755545/1024199/tag.xml" animation="Ad_Tres" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="67" durationSeconds="15" active="true" targetContainerName="PlaylistBug"/>
+  <adtag type="postrollolay7" url="http://cdn1.eyewonder.com/200125/755545/1024193/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="PlayerFill"/>
 
-  <!--Episode 8: Corresponding RSS comments field should be "bug=olay8;ticker=olay8;postroll=continental8"-->
-  <adtag type="bugolay8" url="http://cdn1.eyewonder.com/200125/755545/1022427/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="41" durationSeconds="15" active="true" targetContainerName="AdOuterRegionRight"/>
-  <adtag type="tickerolay8" url="http://cdn1.eyewonder.com/200125/755545/1022428/tag.xml" animation="" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="2" durationSeconds="15" active="true" targetContainerName="AdOuterRegionTop"/>
-  <adtag type="postrollcontinental8" url="http://cdn1.eyewonder.com/200125/755545/1024197/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="AdOuterRegionRight"/>
+  <!--Per ROB - no ads in this one - Episode 8: Corresponding RSS comments field should be "bug=olay8;postroll=continental8"-->
+  <!--<adtag type="bugolay8" url="http://cdn1.eyewonder.com/200125/755545/1022427/tag.xml" animation="Ad_Olay" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="41" durationSeconds="15" active="true" targetContainerName="PlaylistBug"/>
+  <adtag type="postrollcontinental8" url="http://cdn1.eyewonder.com/200125/755545/1024197/tag.xml" animation="Ad_Continental" begindate="2008-10-22" enddate="2008-10-22" 
+				 startTimeSeconds="0" durationSeconds="0" active="true" targetContainerName="PlayerFill"/>-->
 
 </adtags>
