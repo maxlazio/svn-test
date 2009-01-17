@@ -115,6 +115,7 @@ package org.openvideoplayer.net
 			
 			if (connection is AkamaiConnection && (AkamaiConnection(connection).isLive)) {
 				_useFCSubscribe = AkamaiConnection(connection).subscribeRequiredForLiveStreams;
+				isLive = true;
 			}
 			_liveStreamMasterTimeout = 3600000;
 			
@@ -151,6 +152,7 @@ package org.openvideoplayer.net
 		}
 		public function set liveStreamAuthParams(ap:String):void {
 			_liveStreamAuthParams = ap;
+			isLive = true;
 		}
 		
 		/**
@@ -168,6 +170,7 @@ package org.openvideoplayer.net
 		public function set liveStreamMasterTimeout(numOfSeconds:Number):void {
 			_liveStreamMasterTimeout = numOfSeconds*1000;
 			_liveStreamTimer.delay = _liveStreamMasterTimeout;
+			isLive = true;
 		}
 		
 		//-------------------------------------------------------------------
@@ -245,12 +248,14 @@ package org.openvideoplayer.net
 				if (_liveStreamAuthParams != "") {
 					var name:String = arguments[0];
 					arguments[0] = name.indexOf("?") != -1 ? name + "&"+_liveStreamAuthParams : name+"?"+_liveStreamAuthParams;
+					isLive = true;
 				}
 				
 				if (_useFCSubscribe) {
 					_pendingLiveStreamName = arguments[0];
 					_playingLiveStream = false;
 					_successfullySubscribed = false;
+					isLive = true;
 					
 					// Master live stream timeout
 					_liveStreamTimer = new Timer(_liveStreamMasterTimeout, 1);

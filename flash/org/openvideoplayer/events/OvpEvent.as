@@ -75,23 +75,7 @@ package org.openvideoplayer.events
 		 * @see org.openvideoplayer.net.OvpConnection#detectBandwidth()
 		 */
   		public static const BANDWIDTH:String = "bandwidth";
-  			 			
-  		/** 
-		 * The OvpEvent.END_OF_STREAM constant defines the value of the OvpEvent's
-		 * <code>type</code> property, which indicates that the end of the stream has been reached. 
-		 * <br />
-		 * This event can be used for progressive download or streaming. Note that determination
-		 * of this end value is based upon an analysis of the NetStream events (specifically NetStream.Play.Stop
-		 * followed by NetStream.Buffer.Empty). This method is used, and this event provided, in order for the class
-		 * to be compatible with FCS 1.7x servers, which do not issue the NetStream.onPlayStatus.Complete event, as well as
-		 * for progressive delivery of streams. 
-		 * <br />
-		 * For streaming delivery from FMS 2.5 or higher, the OvpEvent.COMPLETE
-		 * should be used, which is a more robust indicator that end of stream has been reached.
-		 * 
-		 */
-  		public static const END_OF_STREAM:String = "end";
-  			
+  			 			  			
   		/** 
 		 * The OvpEvent.COMPLETE constant defines the value of the OvpEvent's
 		 * <code>type</code> property, which indicates that the end of the stream has been reached. 
@@ -245,15 +229,22 @@ package org.openvideoplayer.events
 		 * Internal event for handling the "FCSubscribe" calls for playing live streams on some CDNs
 		 */
 		public static const FCSUBSCRIBE:String = "fcsubscribe";
+		
   		/** 
 		 * @private
 		 * Internal event for handling the "FCUnsubscribe" calls for playing live streams on some CDNs
 		 */
 		public static const FCUNSUBSCRIBE:String = "fcunsubscribe";
   			
-   		
-		
-		 
+  		/** 
+		 * The OvpEvent.DEBUG constant defines the value of the OvpEvent's
+		 * <code>type</code> property, which indicates the class has a debug message
+		 * for tranmission. The contents of the message are carried in the data object as a string.
+		 * 
+		 */
+  		public static const DEBUG:String = "debug";
+	 		
+	
 		private var _data:Object;
 		
 		/**

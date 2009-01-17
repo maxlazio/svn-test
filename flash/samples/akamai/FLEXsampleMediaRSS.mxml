@@ -211,7 +211,6 @@ Akamai recommends breaking at the various UI and functional items into reusable 
 				// twice the bitrate of the video they will be viewing.
 				_ns.useFastStartBuffer = true;
 
-				_ns.addEventListener(OvpEvent.END_OF_STREAM, endOfStreamHandler);  
 				_ns.addEventListener(OvpEvent.COMPLETE, endHandler); 
 				_ns.addEventListener(OvpEvent.PROGRESS, update); 
 				_ns.addEventListener(NetStatusEvent.NET_STATUS, streamStatusHandler);
@@ -346,21 +345,10 @@ Akamai recommends breaking at the various UI and functional items into reusable 
 				slider.enabled = true;
 				_streamLength = e.data.streamLength;
 			}
-			// Receives information that the end of stream has been reached by a streaming stream.
+			// Receives information that the end of stream has been reached
 			private function endHandler(e:OvpEvent):void {
-				write("End of stream detected (streaming)");
+				write("End of stream detected.");
 				playNext();
-			}
-			// Receives information that the end of any stream has been reached. At the time
-			// of writing this code. Adobe Flash player 9.0.x has a bug whereby the NetStream.onPlayStatus
-			// event does not fire reliably for progressive streams. Therefore we use this older means
-			// of detecting the end of the stream for progressive streams. Non-progressive streams will
-			// also fire this event, so we need it filter out only the progressive connections.
-			private function endOfStreamHandler(e:OvpEvent):void {
-				write("End of stream detected (progressive)");
-				if (AkamaiNetStream(e.target).isProgressive) {
-					playNext();
-				}
 			}
    			// Plays the selected item in the tileList
    			private function playSelectedItem():void {

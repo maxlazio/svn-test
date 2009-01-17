@@ -41,6 +41,7 @@ package org.openvideoplayer.rss {
 	import flash.utils.Timer;
 	
 	import org.openvideoplayer.events.*;
+	import org.openvideoplayer.net.dynamicstream.DynamicStreamItem;
 	
 	/**
 	 * Dispatched when an error condition has occurred. The event provides an error number and a verbose description
@@ -144,6 +145,8 @@ package org.openvideoplayer.rss {
 		private var _secondaryEncoderSrc:String;
 		private var _versionOfMetafile:String;
 		private var _ns:Namespace;
+		private var _hostName:String;
+		private var _dsi:DynamicStreamItem;
 		
 		
 		//Declare constants
@@ -152,6 +155,7 @@ package org.openvideoplayer.rss {
 		public const METAFILE_VERSION_I:String = "METAFILE_VERSION_I";
 		public const METAFILE_VERSION_II:String = "METAFILE_VERSION_II";
 		public const METAFILE_VERSION_IV:String = "METAFILE_VERSION_IV";
+		public const METAFILE_MULTIBITRATE_SMIL:String = "METAFILE_MULTIBITRATE_SMIL";
 
 		/**
 		 * Constructor
@@ -221,12 +225,20 @@ package org.openvideoplayer.rss {
 		public function get streamName():String {
 			return _streamName;
 		}
+
+		/**
+		 * The DynamicStreamItem representation of the content. Only applicable when the metafile type is METAFILE_MULTIBITRATE_SMIL.
+		 * 
+		 */
+		public function get dsi():DynamicStreamItem{
+			return _dsi;
+		}
 		/**
 		 * The Akamai Hostname, a concatenation of the server and application names
 		 * 
 		 */
 		public function get hostName():String {
-			return _serverName+"/"+_appName;
+			return _hostName;
 		}
 		/**
 		 * Boolean parameter indicating whether the stream is live or not
@@ -407,6 +419,7 @@ package org.openvideoplayer.rss {
 						_fallbackServerName = _xml.fallbackServerName;
 						_appName = _xml.appName.split("?")[0];
 						_streamName = _xml.streamName.split("?")[0];
+						_hostName = _serverName + "/" + _appName;
 						_isLive = _xml.isLive.toString().toUpperCase() == "TRUE";
 						_bufferTime = Number(xml.bufferTime);
 						_connectAuthParams = _xml.appName.split("?")[1];
@@ -417,6 +430,7 @@ package org.openvideoplayer.rss {
 						_serverName = _xml.stream.entry.serverName;
 						_appName = _xml.stream.entry.appName.split("?")[0];
 						_streamName = _xml.stream.entry.streamName.split("?")[0];
+						_hostName = _serverName + "/" + _appName;
 						_isLive = _xml.stream.entry.isLive.toString().toUpperCase() == "TRUE";
 						_bufferTime = Number(xml.stream.entry.bufferTime);
 						_connectAuthParams = _xml.stream.entry.appName.split("?")[1];
@@ -436,9 +450,16 @@ package org.openvideoplayer.rss {
 						_secondaryEncoderSrc = _xml._ns::video._ns::param.(@name=="secondaryEncoderSrc").@value;
 						_serverName = parseServerName(_source);
 						_appName = parseAppName(_source);
+						_hostName = _serverName + "/" + _appName;
 						_streamName = parseStreamName(_source);
 						_protocol = parseProtocol(_source);
 						_isLive = _xml._ns::video._ns::param.(@name=="isLive").@value == "1";
+						dispatchEvent(new OvpEvent(OvpEvent.PARSED));
+					break;
+					case METAFILE_MULTIBITRATE_SMIL:
+						_hostName = _xml.head.meta.@base.slice(_xml.head.meta.@base.indexOf("://")+3);
+						_dsi = parseDsi(_xml);
+						_streamName = _dsi.streams[0].name;
 						dispatchEvent(new OvpEvent(OvpEvent.PARSED));
 					break;
 				}
@@ -489,10 +510,13 @@ package org.openvideoplayer.rss {
 					}
 				break;
 				case "smil":
-					_ns = new Namespace("http://www.w3.org/2005/SMIL21/Language");
 					if (src.attribute("title").toString() == "EdgeBOSS-SMIL:1.0"){
 						_versionOfMetafile = METAFILE_VERSION_IV;
+						_ns = new Namespace("http://www.w3.org/2005/SMIL21/Language");
 						isVerified = !(src._ns::video.@src == undefined);
+					} else if (src.body["switch"] != undefined) {
+						_versionOfMetafile = METAFILE_MULTIBITRATE_SMIL;
+						isVerified = !(src.head.meta.@base == undefined || src.body["switch"].video.length() < 1 );
 					} else {
 						isVerified = false;
 					}
@@ -517,6 +541,16 @@ package org.openvideoplayer.rss {
 		 */
 		private function catchSecurityError(e:SecurityErrorEvent):void {
 			catchIOError(null);
+		}
+		/** Parses the SMIL into a DynamicStreamItem
+		 * @private
+		 */
+		private function parseDsi(x:XML):DynamicStreamItem {
+			var dsi:DynamicStreamItem = new DynamicStreamItem();
+			for (var i:uint = 0; i < x.body["switch"].video.length(); i++) {
+				dsi.addStream(x.body["switch"].video[i].@src, Number(x.body["switch"].video[i].@["system-bitrate"])/1000);
+			}
+			return dsi;
 		}
 		
 	}
