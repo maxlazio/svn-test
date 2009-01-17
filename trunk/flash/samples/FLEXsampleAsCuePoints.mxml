@@ -274,6 +274,10 @@
 			_ns.addEventListener(OvpEvent.PROGRESS, update);
 			_ns.addEventListener(OvpEvent.STREAM_LENGTH, streamLengthHandler); 
 
+			// Tell the OvpNetStream object we want it to generate NetStream.Pause.Notify 
+			// for progressive download files because the Flash Player will not
+			_ns.createProgressivePauseEvents = true;
+			
 			// Give the video object our net stream object
 			_video.attachNetStream(_ns);
 			

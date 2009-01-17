@@ -1,4 +1,3 @@
-// AkamaiConnection.as
 //
 // Copyright (c) 2008, the Open Video Player authors. All rights reserved.
 //
@@ -264,7 +263,7 @@ package org.openvideoplayer.net
 			addr += (_ip && _ip != "") ? _ip : _hostName;
 			addr += ":"+port+"/"+_appNameInstName+"?";
 			addr += (_ip && _ip != "") ? "_fcs_vhost="+_hostName+"&" : "";
-			addr += "ovpfv="+VERSION+(_authParams == "" ? "":"&"+_authParams);
+			addr += "ovpfv=" + VERSION + (_authParams == "" ? "":"&" + _authParams);
 			return addr;
 		}
 

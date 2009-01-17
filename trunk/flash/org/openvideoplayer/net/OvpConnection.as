@@ -207,16 +207,25 @@ package org.openvideoplayer.net
 		 * @private
 		 */
 		protected var _serverVersion:String;
-		
-		// Declare private constants
-		private const TIMEOUT:uint = 15000;
-		private const LIVE_RETRY_INTERVAL:Number = 30000;
-		private const LIVE_ONFCSUBSCRIBE_TIMEOUT:Number = 60000;
-		private const DEFAULT_PROGRESS_INTERVAL:Number = 100;
 		/**
 		 * @private
 		 */
-		protected const VERSION:String = "1.0";
+		protected var _cacheable:Boolean;
+		/**
+		 * @private
+		 */
+		protected var _attemptInterval:uint;
+		/**
+		 * @private
+		 */
+		protected var _connectionArgs:Array;
+		
+		// Declare private constants
+		private const TIMEOUT:uint = 15000;
+		/**
+		 * @private
+		 */
+		protected const VERSION:String = "1.1";
 		
 		//-------------------------------------------------------------------
 		// 
@@ -228,7 +237,7 @@ package org.openvideoplayer.net
 		 * Constructor
 		 */
 		public function OvpConnection() {
-			NetConnection.defaultObjectEncoding = flash.net.ObjectEncoding.AMF0;
+			NetConnection.defaultObjectEncoding = flash.net.ObjectEncoding.AMF3;
 			_liveStreamMasterTimeout = 3600000;
 			_port = "any";
 			_protocol = "any";
@@ -237,6 +246,8 @@ package org.openvideoplayer.net
 			_aboutToStop = 0;
 			_isProgressive = false;
 			_serverVersion = "";
+			_cacheable = false;
+			_attemptInterval = 200;
 
 			// Master connection timeout
 			_timeOutTimerDelay = TIMEOUT;
@@ -267,48 +278,88 @@ package org.openvideoplayer.net
 		 * Indicates whether the application is connected to a server through a persistent RTMP connection (true) or not (false).
 		 */				
 		public function get connected():Boolean {
-			return _nc.connected;
+			if (_nc && (_nc is NetConnection)) {
+				return _nc.connected;
+			}
+			return false;
 		}
 		
 		/**
 		 * If a successful connection is made, indicates the method that was used to make it: a direct connection, the CONNECT method, or HTTP tunneling.
 		 */
 		public function get connectedProxyType():String {
-			return _nc.connectedProxyType;
+			if (_nc && (_nc is NetConnection)) {
+				return _nc.connectedProxyType;
+			}
+			return "";
+		}
+		
+		/**
+		 * The default object encoding for NetConnection objects. 
+		 */
+		public function get defaultObjectEncoding():uint {
+			return NetConnection.defaultObjectEncoding;
+		}
+		public function set defaultObjectEncoding(value:uint):void {
+			switch (value) {
+				case ObjectEncoding.AMF0:
+				case ObjectEncoding.AMF3:
+				case ObjectEncoding.DEFAULT:
+					NetConnection.defaultObjectEncoding = value;
+					break;
+				default:
+					dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.INVALID_ARGUMENT)));
+			} 
 		}
 		
 		/**
 		 * The object encoding for this NetConnection instance.
 		 */
 		public function get objectEncoding():uint {
-			return _nc.objectEncoding;
+			if (_nc && (_nc is NetConnection)) {
+				return _nc.objectEncoding;
+			}
+			return ObjectEncoding.DEFAULT;
 		}
 		public function set objectEncoding(value:uint):void {
-			_nc.objectEncoding = value;
+			if (_nc && (_nc is NetConnection)) {
+				_nc.objectEncoding = value;
+			}
 		}
 		
 		/**
 		 * A reference to the prototype object of a class or function object.
 		 */
 		public function get proxyType():String {
-			return _nc.proxyType;
+			if (_nc && (_nc is NetConnection)) {
+				return _nc.proxyType;
+			}
+			return "";
 		}
 		public function set proxyType(value:String):void {
-			_nc.proxyType = value;
+			if (_nc && (_nc is NetConnection)) {
+				_nc.proxyType = value;
+			}
 		}
 		
 		/**
 		 * The URI passed to the NetConnection.connect() method.
 		 */
 		public function get uri():String {
-			return _nc.uri;
+			if (_nc && (_nc is NetConnection)) {
+				return _nc.uri;
+			}
+			return "";
 		}
 		
 		/**
 		 * Indicates whether a secure connection was made using native Transport Layer Security (TLS) rather than HTTPS.
 		 */
 		public function get usingTLS():Boolean {
-			return _nc.usingTLS;
+			if (_nc && (_nc is NetConnection)) {
+				return _nc.usingTLS;
+			}
+			return false;
 		}
 						
 		/**
@@ -347,10 +398,10 @@ package org.openvideoplayer.net
 		 * time period, an OvpEvent.TIMEOUT will be dispatched.
 		 */
 		public function get timeout():Number {
-			return this._timeOutTimerDelay;
+			return _timeOutTimerDelay;
 		}
 		public function set timeout(value:Number):void {
-			this._timeOutTimerDelay = value;
+			_timeOutTimerDelay = value;
 		}
 		
 		/**
@@ -501,6 +552,28 @@ package org.openvideoplayer.net
 		public function get appNameInstanceName():String {
 			return _appNameInstName;
 		}
+		
+		/**
+		 * True if connections can be cached and re-used, false otherwise.
+		 */
+		public function get cacheable():Boolean {
+			return _cacheable;
+		}
+		public function set cacheable(value:Boolean):void {
+			_cacheable = value;
+		}
+		
+		/**
+		 * The connection attempt interval when trying multiple ports and protocols.  If connection authentication
+		 * parameters are set from a derived class instance, 150 milliseconds will be added to ensure the server
+		 * has enough time to process the auth information.
+		 */
+		public function get attemptInterval():uint {
+			return _attemptInterval;
+		}
+		public function set attemptInterval(value:uint):void {
+			_attemptInterval = value;
+		}
 				
 		//-------------------------------------------------------------------
 		//
@@ -511,25 +584,26 @@ package org.openvideoplayer.net
 		/**
 		 * Adds a context header to the Action Message Format (AMF) packet structure.
 		 */
-		public function addHeader(operation:String, mustUnderstand:Boolean=false, param:Object=null):void
-		{
-			_nc.addHeader(operation, mustUnderstand, param);
+		public function addHeader(operation:String, mustUnderstand:Boolean=false, param:Object=null):void {
+			if (_nc && (_nc is NetConnection)) {
+				_nc.addHeader(operation, mustUnderstand, param);
+			}
 		}
 		
 		/**
 		 * Invokes a command or method on Flash Media Server or on an application server running Flash Remoting.
 		 */
-		public function call(command:String, responder:Responder, ...arguments):void
-		{
-			_nc.call(command, responder, arguments);
+		public function call(command:String, responder:Responder, ...arguments):void {
+			if (_nc && (_nc is NetConnection)) {
+				_nc.call(command, responder, arguments);
+			}
 		}
 		
 		/**
 		 * Closes the connection that was opened locally or to the server and dispatches a netStatus event with a code property of NetConnection.Connect.Closed.
 		 */
-		public function close():void
-		{
-			if (_connectionEstablished) {
+		public function close():void {
+			if (_nc && _connectionEstablished) {
 				_nc.close();
 				_connectionEstablished = false;
 			}
@@ -543,8 +617,9 @@ package org.openvideoplayer.net
 		 * 
 		 * @param command A string containing hostname/appname/instance
 		 */
-		public function connect(command:String, ...arguments):void
-		{
+		public function connect(command:String, ...arguments):void {
+			_connectionArgs = arguments;
+			
 			if (command == null || command == "null") {
 				setUpProgressiveConnection();
 				return;
@@ -563,6 +638,14 @@ package org.openvideoplayer.net
 		}
 		
 		/**
+		 * Attempts to establish a connection based on the arguments passed to the connect method.
+		 */
+		public function reconnect():void {
+			_connectionEstablished = false;
+			buildConnectionSequence();	
+		}
+		
+		/**
 		 * Initiates a new bandwidth measurement.
 		 *  
 		 * To recover the estimated bandwidth value, wait for the OvpEvent.BANDWIDTH event and then inspect
@@ -578,7 +661,7 @@ package org.openvideoplayer.net
 		 * 
 		 */
 		public function detectBandwidth():Boolean {
-			if (_connectionEstablished) 
+			if (_nc && _connectionEstablished) 
 				_nc.call("_checkbw",null);
 			return _connectionEstablished;
 		}
@@ -599,7 +682,9 @@ package org.openvideoplayer.net
 				return false;
 				
 			// if the filename includes parameters, strip them off, since the server can't handle them.
-			_nc.call("getStreamLength", new Responder(onStreamLengthResult, onStreamLengthFault), filename.indexOf("?") != -1 ? filename.slice(0,filename.indexOf("?")):filename );
+			if (_nc && (_nc is NetConnection)) {
+				_nc.call("getStreamLength", new Responder(onStreamLengthResult, onStreamLengthFault), filename.indexOf("?") != -1 ? filename.slice(0,filename.indexOf("?")):filename );
+			}
 			return true;
 		}
 		
@@ -724,7 +809,7 @@ package org.openvideoplayer.net
 			_timeOutTimer.start();
 			_connectionAttempt = 0;
 			_connectionTimer.reset();
-			_connectionTimer.delay = _authParams == "" ? 200:350;
+			_connectionTimer.delay = _authParams == "" ? _attemptInterval : _attemptInterval + 150;
 			_connectionTimer.start();
 			tryToConnect(null);
 		}
@@ -745,7 +830,7 @@ package org.openvideoplayer.net
 			_aNC[_connectionAttempt].client.onFCUnsubscribe = this.onFCUnsubscribe;
 			
 			try {
-				_aNC[_connectionAttempt].connect(_aConnections[_connectionAttempt].address, false);
+				_aNC[_connectionAttempt].connect(_aConnections[_connectionAttempt].address, _connectionArgs);
 			}
 			catch (error:Error) {
 				// the connectionTimer will time out and report an error.
@@ -775,7 +860,7 @@ package org.openvideoplayer.net
 		/** Handles the case when the server rejects the connection
 		 * @private
 		 */
-		protected function handleRejection(event:NetStatusEvent):void {
+		protected function handleRejectedOrInvalid(event:NetStatusEvent):void {
 			_timeOutTimer.stop();
 			_connectionTimer.stop();
 			for (var i:uint = 0; i<_aNC.length; i++) {
@@ -784,6 +869,7 @@ package org.openvideoplayer.net
 			}
 
 			dispatchEvent(event);
+			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.CONNECTION_TIMEOUT))); 
     	}
 
 		/** Establish the progressive connection
@@ -824,13 +910,13 @@ package org.openvideoplayer.net
     			// only dispatch netconnection events once we have a good connection, otherwise
     			// the user receives all the close() events when the parallel unused connection attempts
     			// are shut down. One exception is that if the connection is rejected, then the NetStatusEvent event
-    			// is re-dispatched by the handleRejection() function.
+    			// is re-dispatched by the handleRejectedOrInvalid() function.
     			dispatchEvent(event);
 			}
 			switch (event.info.code) {
-				
+				case "NetConnection.Connect.InvalidApp":
 				case "NetConnection.Connect.Rejected":
-					handleRejection(event);
+					handleRejectedOrInvalid(event);
     				break;
 				case "NetConnection.Call.Failed":
 					if (event.info.description.indexOf("_checkbw") != -1) {

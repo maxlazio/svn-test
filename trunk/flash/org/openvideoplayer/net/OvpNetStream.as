@@ -1,4 +1,3 @@
-// OvpNetStream.as
 //
 // Copyright (c) 2008, the Open Video Player authors. All rights reserved.
 //
@@ -93,7 +92,6 @@ package org.openvideoplayer.net
 	 * has ended. 
 	 * 
 	 * @see org.openvideoplayer.events.OvpEvent#COMPLETE
-	 * @see org.openvideoplayer.events.OvpEvent#END_OF_STREAM
   	 */
 	[Event (name="end", type="org.openvideoplayer.events.OvpEvent")]
  	/**
@@ -105,11 +103,8 @@ package org.openvideoplayer.net
 	 */
 	[Event (name="progress", type="org.openvideoplayer.events.OvpEvent")]
 	/**
-	 * Dispatched when a stream from a server is complete. Note that when connecting to progressive
-	 * content this event will not be dispatched. The <code>OvpEvent.END_OF_STREAM</code>
-	 * should be used instead, in order to detect when the stream has finished playing. 
+	 * Dispatched when a stream from a server is complete. 
 	 * 
-	 * @see org.openvideoplayer.events.OvpEvent#END_OF_STREAM
 	 * @see org.openvideoplayer.events.OvpEvent#COMPLETE
  	 */
 	[Event (name="complete", type="org.openvideoplayer.events.OvpEvent")]
@@ -192,6 +187,18 @@ package org.openvideoplayer.net
 		 * @private
 		 */
 		protected var _streamLength:Number;
+		/**
+		 * @private
+		 */
+		protected var _isLive:Boolean;
+		/**
+		 * @private
+		 * 
+		 * The Flash player does not dispatch pause and resume events for progressive download files.
+		 * If this flag is set to true, this class will dispatch those events when the pause and resume
+		 * methods are called.
+		 */
+		protected var _createPDLPauseAndResumeEvents:Boolean;
 		
 		// Declare private constants
 		private const DEFAULT_PROGRESS_INTERVAL:Number = 100;
@@ -234,6 +241,8 @@ package org.openvideoplayer.net
 			_volume = 1;
 			_panning = 0;
 			_streamLength = 0;
+			_isLive = false;
+			_createPDLPauseAndResumeEvents = false;
 			
 			// So we know when the connection closes
 			_nc.addEventListener(NetStatusEvent.NET_STATUS, connectionStatus);
@@ -446,6 +455,43 @@ package org.openvideoplayer.net
 		 	return _streamLength;	
 		 }
 		 
+		/** 
+		 * Overrides and disables the setting of the client object. This is to ensure that the callbacks associated with that
+		 * object are caught internally by the stream object, which then dispatches them as true events rather than as function callbacks. 
+    	 */
+		override public function set client(client:Object):void {
+			// Do nothing
+		}
+		
+		/** 
+		 * Get the NetConnection object this class is using.
+		 */
+		public function get netConnection():NetConnection {
+			return _nc;
+		}
+
+		/**
+		 * The isLive flag is a convenience property. This class currently does nothing with this property.
+		 */
+		public function get isLive():Boolean {
+			return _isLive;
+		}
+		public function set isLive(value:Boolean):void {
+			_isLive = value;
+		}
+		
+		/**
+		 * Since the Flash player does not dispatch pause and resume events for progressive download files,
+		 * setting this property to true, will cause this class to dispatch the proper events when pause or
+		 * resume is called.
+		 */
+		 public function get createProgressivePauseEvents():Boolean {
+		 	return _createPDLPauseAndResumeEvents;
+		 }
+		 public function set createProgressivePauseEvents(value:Boolean):void {
+		 	_createPDLPauseAndResumeEvents = value;
+		 }
+ 		 
 		//-------------------------------------------------------------------
 		//
 		// Public methods
@@ -488,6 +534,30 @@ package org.openvideoplayer.net
 			if (!_streamTimer.running)
 				_streamTimer.start();
 		}
+		
+		public override function pause():void {
+			super.pause();
+			if (_isProgressive && _createPDLPauseAndResumeEvents) {
+				var info:Object = new Object();
+				info.code = "NetStream.Pause.Notify";
+				info.description = "The stream is paused.";
+				info.level = "status";
+			
+				dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, info)); 			
+			}
+		}
+		
+		public override function resume():void {
+			super.resume();
+			if (_isProgressive && _createPDLPauseAndResumeEvents) {
+				var info:Object = new Object();
+				info.code = "NetStream.Unpause.Notify";
+				info.description = "The stream is resumed.";
+				info.level = "status";
+			
+				dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, info)); 			
+			}
+		}
 
 		/** 
 		 * Closes the stream.
@@ -510,8 +580,11 @@ package org.openvideoplayer.net
 		 * @private
 		 */
 		protected function handleEnd():void {
-			dispatchEvent(new OvpEvent(OvpEvent.END_OF_STREAM));
+			if (_nc && _nc.uri == "null") {
+				dispatchEvent(new OvpEvent(OvpEvent.COMPLETE));
+			}
 		}
+
 				
 		//-------------------------------------------------------------------
 		//
@@ -589,6 +662,12 @@ package org.openvideoplayer.net
 										
 				case "NetStream.Buffer.Flush":
 					_isBuffering = false;
+					if (_aboutToStop == 1) {
+						_aboutToStop = 0;
+						handleEnd();
+					} 
+					else 
+						_aboutToStop = 2
 					break;				
 			}
 		}
@@ -635,7 +714,6 @@ package org.openvideoplayer.net
         	if (info.code == "NetStream.Play.Complete") {
         		dispatchEvent(new OvpEvent(OvpEvent.COMPLETE));
         		_bufferFailureTimer.reset();
-        		handleEnd();
         	}
     	}
     	

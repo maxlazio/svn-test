@@ -77,7 +77,6 @@ live streaming and progressive playback.
 			private const SAMPLES:Array = [
 								{label:"Metafile version I",data:"http://products.edgeboss.net/flash/products/mediaframework/fms/0223_quikpro_highlights_700.flv?xmlvers=1"},
 								{label:"Metafile version II",data:"http://products.edgeboss.net/flash/products/mediaframework/fms/akamai_10ya_nab_700k.flv?xmlvers=2"},
-								{label:"Metafile version IV",data:"http://products.edgeboss.net/flash/products/mediaframework/fms/asp_final_700k.flv?xmlvers=4"},
 								{label:"Progressive sample 1",data:"http://products.edgeboss.net/download/products/mediaframework/fms/0223_quikpro_lgwaveoftheday_web_700.flv"}
 								];
 								
@@ -197,7 +196,6 @@ live streaming and progressive playback.
 				_ns.liveStreamAuthParams = _bossMetafile.playAuthParams;
 				
 				_ns.addEventListener(OvpEvent.STREAM_LENGTH, streamLengthHandler); 
-				_ns.addEventListener(OvpEvent.END_OF_STREAM, endHandler); 
 				_ns.addEventListener(OvpEvent.COMPLETE, completeHandler); 
 				_ns.addEventListener(OvpEvent.PROGRESS, update); 
 				_ns.addEventListener(NetStatusEvent.NET_STATUS, streamStatusHandler);
@@ -357,16 +355,6 @@ live streaming and progressive playback.
 				slider.maximum = e.data.streamLength;
 				slider.enabled = true;
 				_streamLength = e.data.streamLength;
-			}
-			// Receives information that the end of stream has been reached. This notification
-			// uses an analysis of the NetStream status events.
-			// It should only be used when playing back progressive content. For streaming content,
-			// subscribe to the OvpEvent.COMPLETE event instead.
-			private function endHandler(e:OvpEvent):void {
-				write("End of stream detected");
-				_hasEnded = true;
-				status = "ENDED";
-				bPlayPause.label = "PLAY";
 			}
 			// Receives information that stream playback is complete. This notification
 			// should not be used when playing back progressive content as the Flash client

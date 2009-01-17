@@ -99,10 +99,6 @@ package org.openvideoplayer.events
 		 */
 		public static const NETWORK_FAILED:uint				= 12;
 		/**
-		 * Connection attempt was rejected by the server.
-		 */
-		public static const CONNECTION_REJECTED:uint		= 13;
-		/**
 		 * An HTTP load attempt failed.
 		 */
 		public static const HTTP_LOAD_FAILED:uint			= 14;
@@ -150,6 +146,14 @@ package org.openvideoplayer.events
 		 * Invalid cue point object.
 		 */
 		public static const INVALID_CUEPOINT:uint			= 27;
+		/**
+		 * Invalid stream index requested.
+		 */
+		public static const INVALID_INDEX:uint				= 28;
+		/**
+		 * Invalid argument passed to a property or method.
+		 */
+		public static const INVALID_ARGUMENT:uint			= 29;	
 		
 		private static const _errorMap:Array = [
 			{n:HOSTNAME_EMPTY, 			d:"Hostname cannot be empty"}, 
@@ -163,7 +167,6 @@ package org.openvideoplayer.events
 			{n:STREAM_LENGTH_REQ_ERROR,	d:"Error requesting stream length"},
 			{n:VOLUME_OUT_OF_RANGE, 	d:"Volume value out of range"},
 			{n:NETWORK_FAILED, 			d:"Network failure - unable to play the live stream"},
-			{n:CONNECTION_REJECTED,		d:"Connection attempt rejected by server"},
 			{n:HTTP_LOAD_FAILED,		d:"HTTP loading operation failed"},
 			{n:XML_MALFORMED,			d:"XML is not well formed"},
 			{n:XML_MEDIARSS_MALFORMED,	d:"XML does not conform to Media RSS standard"},
@@ -175,7 +178,10 @@ package org.openvideoplayer.events
 			{n:STREAM_BUFFER_EMPTY,		d:"NetStream buffer has remained empty past timeout threshold"}, 
 			{n:INVALID_CUEPOINT_NAME, 	d:"Invalid cue point name - cannot be null or undefined"},
 			{n:INVALID_CUEPOINT_TIME,	d:"Invalid cue point time - must be a number greater than zero"},
-			{n:INVALID_CUEPOINT,		d:"Invalid cue point object - must contain a 'name' and 'time' properties"} ];
+			{n:INVALID_CUEPOINT,		d:"Invalid cue point object - must contain a 'name' and 'time' properties"},
+			{n:INVALID_INDEX,			d:"Attempting to switch to an invalid index in a multi-bitrate stream"},
+			{n:INVALID_ARGUMENT,		d:"Invalid argument passed to property or method"} ];
+
 			
 		private var _num:uint;
 		private var _desc:String;

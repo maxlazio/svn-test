@@ -1,0 +1,18 @@
+<smil>
+<head>
+	<meta base="rtmp://cp67126.edgefcs.net/ondemand" />
+</head>
+<body>
+	<switch>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_150.mp4" system-bitrate="150000"/>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_300.mp4" system-bitrate="300000"/>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_500.mp4" system-bitrate="500000"/>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_700.mp4" system-bitrate="700000"/>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_1000.mp4" system-bitrate="1000000"/>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_1500.mp4" system-bitrate="1500000"/>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_2000.mp4" system-bitrate="2000000"/>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_2500.mp4" system-bitrate="2500000"/>
+		<video src="mp4:mediapm/ovp/content/demo/video/SpaceAloneHD_sounas_640_3000.mp4" system-bitrate="3000000"/>
+	</switch>
+</body>
+</smil>
