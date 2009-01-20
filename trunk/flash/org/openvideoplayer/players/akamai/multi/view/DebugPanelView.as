@@ -63,6 +63,8 @@ package org.openvideoplayer.players.akamai.multi.view {
 		private var _bandwidthLabel:TextField;
 		private var _streamPanel:TextField;
 		private var _streamLabel:TextField;
+		private var _bufferPanel:TextField;
+		private var _bufferLabel:TextField;
 
 
 		public function DebugPanelView(model:Model):void {
@@ -121,6 +123,21 @@ package org.openvideoplayer.players.akamai.multi.view {
 			_streamLabel.text = "CURRENT STREAM BITRATE";
 			_streamLabel.y = 130;
 			addChild(_streamLabel);
+			//
+			// Add bufferpanel
+			_bufferPanel = generateTextField();
+			_bufferPanel.embedFonts = true;
+			_bufferPanel.width = 300;
+			_bufferPanel.defaultTextFormat = textFormat;
+			_bufferPanel.y = 230;
+			_bufferPanel.text = "0 kbps";
+			addChild(_bufferPanel);
+			//Add  buffer label
+			_bufferLabel = generateTextField();
+			_bufferLabel.width = 250;
+			_bufferLabel.text = "CURRENT BUFFER LENGTH";
+			_bufferLabel.y = 210;
+			addChild(_bufferLabel);
 			//
 			var _themeTransform:ColorTransform = new ColorTransform();
 			_themeTransform.color = 0x333333;
@@ -261,7 +278,8 @@ package org.openvideoplayer.players.akamai.multi.view {
 		private function progressHandler(e:Event):void {
 			_bandwidthPanel.text = _model.maxBandwidth == 0 ? "Calculating": isNaN(_model.maxBandwidth) ? "Unavailable":_model.maxBandwidth + " kbps";
 			_streamPanel.text = _model.currentStreamBitrate == 0 ? "Calculating": isNaN(_model.currentStreamBitrate) ? "Unavailable":_model.currentStreamBitrate+ " kbps";
-		}
+			_bufferPanel.text  = isNaN(_model.bufferLength) ? "Unavailable":Math.round(_model.bufferLength*10)/10 + " sec";
+			}
 		public function resize(e:Event):void  {
 			//draw background
 			//var _availableVideoWidth:Number = _model.width - (_model.isOverlay ? 0:(_model.hasPlaylist && _model.playlistVisible) ? _model.playlistWidth+6:0) - 6;
@@ -290,6 +308,9 @@ package org.openvideoplayer.players.akamai.multi.view {
 			
 			_streamPanel.x = _availableVideoWidth - 345;
 			_streamLabel.x = _availableVideoWidth - 250;
+			
+			_bufferPanel.x = _availableVideoWidth - 345;
+			_bufferLabel.x = _availableVideoWidth - 250;
 			
 		}
 	}
