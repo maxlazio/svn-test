@@ -430,9 +430,7 @@ package org.openvideoplayer.net
 				switch (e.info.code) {
 					case "NetStream.Buffer.Full":
 					if (_isMultibitrate) {
-						if (Math.round(this.time) > 0) {
 							this.bufferTime = BUFFER_STABLE;
-						}
 					}
 					break;
 					case "NetStream.Play.Start":

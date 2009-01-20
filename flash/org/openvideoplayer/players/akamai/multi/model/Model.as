@@ -88,6 +88,7 @@ package org.openvideoplayer.players.akamai.multi.model {
 		private var _isMultiBitrate:Boolean;
 		private var _maxIndex:int;
 		private var _currentIndex:int;
+		private var _bufferLength:Number;
 		
 		
 			
@@ -340,6 +341,12 @@ package org.openvideoplayer.players.akamai.multi.model {
 		}
 		public function set bufferPercentage(percent:Number):void {
 			_bufferPercentage = isNaN(percent) ? 0:Math.min(100,Math.round(percent));
+		}
+		public function get bufferLength():Number {
+			return _bufferLength;
+		}
+		public function set bufferLength(length:Number):void {
+			_bufferLength = length;
 		}
 		public function seek(target:Number):void {
 			_seekTarget = target;

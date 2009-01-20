@@ -228,6 +228,7 @@ package org.openvideoplayer.players.akamai.multi.controller {
 				_model.bufferPercentage = _ns.bufferLength * 100 / _ns.bufferTime;
 				_model.bytesLoaded = _ns.bytesLoaded;
 				_model.bytesTotal = _ns.bytesTotal;
+				_model.bufferLength = _ns.bufferLength;
 				if (_isMultiBitrate) {
 					_model.maxBandwidth = Math.round(_ns.maxBandwidth);
 					_model.currentStreamBitrate = Math.round(_dsi.getRateAt(_model.currentIndex));
