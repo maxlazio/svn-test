@@ -185,6 +185,18 @@ package org.openvideoplayer.events
 		 */		
 		public static const NETSTREAM_TEXTDATA:String = "textdata";
 		
+		 /** 
+		 * The OvpEvent.NETSTREAM_TEXTDATA constant defines the value of an OvpEvent's
+		 * <code>type</code> property, dispatched when the NetStream receives information
+		 * specific to Adobe Extensible Metadata Platform (XMP) embedded in the video being played.
+		 * The associated event listener is triggered after a call to the NetStream.play() method,
+		 * but before the video playhead has advanced.
+		 * The data bject passed in the event handling function has one data property, which is a string.
+		 * The string is generated from a top-level UUID box which contains exactly one XML document represented
+		 * as a null-terminated UTF-8 string.
+		 */		
+		public static const NETSTREAM_XMPDATA:String = "xmpdata";
+		
   		/** 
 		 * The OvpEvent.NETSTREAM_PLAYSTATUS constant defines the value of an OvpEvent's
 		 * <code>type</code> property, dispatched when a NetStream object has completely played a stream,
