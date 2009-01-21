@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2008, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
@@ -684,6 +684,12 @@ package org.openvideoplayer.net
 				dispatchEvent(new OvpEvent(OvpEvent.STREAM_LENGTH, data));
 			}
 		}
+		/** Catches netstream onXMPData events
+    	 * @private
+    	 */
+		public function onXMPData(info:Object):void {
+        	dispatchEvent(new OvpEvent(OvpEvent.NETSTREAM_XMPDATA,info));
+    	}
 		
    		/** Catches netstream onImageData events  - only relevent when playing H.264 content
     	 * @private
