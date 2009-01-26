@@ -351,7 +351,11 @@ package org.openvideoplayer.net
 			this.bufferTime = BUFFER_START;
 			_streamIndex = 0;
 			_pendingTransitionsArray = new Array();
-			if (_metricsProvider.averageMaxBandwidth > 0) {
+					
+			if ((_dsi.startingIndex >= 0) && (_dsi.startingIndex < _dsi.streamCount)) {
+				_streamIndex = _dsi.startingIndex;
+			}
+			else if (_metricsProvider.averageMaxBandwidth > 0) {
 				for (var i:int = _dsi.streamCount-1; i >= 0; i--) {
 					if (_metricsProvider.averageMaxBandwidth > _dsi.getRateAt(i) ) {
 						_streamIndex = i;
