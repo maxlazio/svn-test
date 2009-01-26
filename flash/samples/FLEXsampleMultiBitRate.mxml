@@ -124,7 +124,7 @@
 			private var _transitionMsgTimer:Timer;
 			private var _lastSwitch:int;
 			
-			private const _DEFAULT_SMIL_FILE_:String = "spacealonehd_sounas_640.smil";
+			private const _DEFAULT_SMIL_FILE_:String = "http://mediapm.edgesuite.net/ovp/content/demo/smil/elephants_dream.smil";
 			private const _SWITCH_REQUEST_MSG_:String = "Requesting switch...";
 			private const _SWITCH_UNDERWAY_MSG_:String = "Starting stream transition...";
 			private const _SWITCH_COMPLETE_MSG_:String = "Stream transition complete.";
