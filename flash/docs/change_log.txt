@@ -162,6 +162,13 @@ The "parseSource()" method now looks at the file extension before looking at the
 6) Change to ControlbarView.as
 Fixed a bug where the scrub bar was not being sized correctly for some content.
 
+Changes from zip release v1.1.3 to v1.1.4 - January 27, 2009
+-------------------------------------------------------------
+1) Added a new event to OvpEvent called ASYNC_ERROR
+2) Added a new event handler to OvpNetStream to handle AsyncErrorEvent.ASYNC_ERROR events.  The OvpNetStream class will dispatch an OvpEvent.ASYNC_ERROR in this case and the error's text will be in the data member of the OvpEvent object.
+3) Modified the CS3sampleAMDOnDemand.fla sample to trace OvpEvent.ASYNC_ERROR events.
+ 
+
 [End of Document]
 
 
