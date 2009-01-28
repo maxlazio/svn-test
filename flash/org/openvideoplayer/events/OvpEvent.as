@@ -255,6 +255,13 @@ package org.openvideoplayer.events
 		 * 
 		 */
   		public static const DEBUG:String = "debug";
+  		
+  		/**
+  		 * The OvpEvent.ASYNC_ERROR constant defines the value of the OvpEvent's
+  		 * <code>type</code> property, which indicates an OVP class has a received
+  		 * an AsyncErrorEvent.ASYNC_ERROR event.  The event text is carried in the data object as a string.
+  		 */
+  		public static const ASYNC_ERROR:String = "asyncerror";
 	 		
 	
 		private var _data:Object;

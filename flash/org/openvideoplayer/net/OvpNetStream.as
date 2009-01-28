@@ -119,6 +119,12 @@ package org.openvideoplayer.net
 	 * while playing a progressive stream.
 	 */
 	[Event (name="streamlength", type="org.openvideoplayer.events.OvpEvent")]
+	/**
+	 * Dispatched if the class receives an AsyncErrorEvent.ASYNC_ERROR event.
+	 * 
+	 * @see org.openvideoplayer.events.OvpEvent
+	 */
+	[Event (name="asyncerror", type="org.openvideoplayer.events.OvpEvent")]
 	
 	/**
 	 * The OvpNetStream class extends flash.net.NetStream to provide unique features such as a 
@@ -248,6 +254,7 @@ package org.openvideoplayer.net
 			_nc.addEventListener(NetStatusEvent.NET_STATUS, connectionStatus);
 			
 			addEventListener(NetStatusEvent.NET_STATUS, streamStatus);
+			addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
 			
 			_progressTimer = new Timer(DEFAULT_PROGRESS_INTERVAL);
 			_progressTimer.addEventListener(TimerEvent.TIMER, updateProgress);
@@ -744,6 +751,13 @@ package org.openvideoplayer.net
 		 */
 		protected function streamTimeoutHandler(e:TimerEvent):void {
 			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.STREAM_NOT_FOUND)));
-		}							    	  			    	
+		}
+		
+		/**
+		 * @private
+		 */
+		protected function asyncErrorHandler(event:AsyncErrorEvent):void {
+			dispatchEvent(new OvpEvent(OvpEvent.ASYNC_ERROR, event.text));
+		} 			    	
 	}
 }
