@@ -168,6 +168,13 @@ Changes from zip release v1.1.3 to v1.1.4 - January 27, 2009
 2) Added a new event handler to OvpNetStream to handle AsyncErrorEvent.ASYNC_ERROR events.  The OvpNetStream class will dispatch an OvpEvent.ASYNC_ERROR in this case and the error's text will be in the data member of the OvpEvent object.
 3) Modified the CS3sampleAMDOnDemand.fla sample to trace OvpEvent.ASYNC_ERROR events.
  
+Changes from zip release v1.1.4 to v1.1.5 - January 28, 2009
+------------------------------------------------------------
+1) Added a new event to OvpEvent called ONFI
+2) Added a new event handler to OvpNetStream to handle the onFI callback. Flash Media Live Encoder contains a special built-in handler, onFI, that subscribing clients can use 
+in their ActionScript code to access timecode information. You can get timecode and system date and time information, if timecode and system date and time were embedded in the stream, 
+by accessing the tc, sd, and st properties of the data object when handling this event.
+3) Added OvpEvent.ONFI event handlers to the CS3sampleAMDOnDemand.fla and FLEXsampleAMDOnDemand.mxml sample files.
 
 [End of Document]
 

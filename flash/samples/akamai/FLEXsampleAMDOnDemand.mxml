@@ -91,7 +91,8 @@
 				_ns.addEventListener(OvpEvent.MP3_ID3,id3Handler);
 				_ns.addEventListener(OvpEvent.PROGRESS,update);
 				_ns.addEventListener(OvpEvent.STREAM_LENGTH,streamLengthHandler); 
-				
+				_ns.addEventListener(OvpEvent.ASYNC_ERROR, asyncErrorHandler);
+				_ns.addEventListener(OvpEvent.ONFI, onFIHandler);		
 
 				_video.attachNetStream(_ns);
 				if (currentState == "progressive") {
@@ -210,6 +211,20 @@
 				slider.enabled = true;
 				_streamLength = e.data.streamLength;
 			}
+			
+			// Handles async errors dispatched by the net stream class
+			private function asyncErrorHandler(e:OvpEvent):void {
+				write("Async Error: " + e.data);
+			}
+			
+			// Handles the onFI event which can be added by the Flash Media Live Encoder and 
+			// bubbled up by the OVP code base
+			private function onFIHandler(e:OvpEvent):void {
+				//write("onFI event: timecode (hh:mm:ss:ff) = " + ((e.data.tc) ? e.data.tc : "null") + 
+				//	", system date (dd-mm-yy) : " + ((e.data.sd) ? e.data.sd : "null") +
+				//	", system time (hh:mm:ss.ms) : " + ((e.data.st) ? e.data.st : "null"));
+			}
+			
 			// Receives information that the end of stream has been reached. This notification
 			// uses an analysis of the NetStream status events.
 			// It should only be used when playing back progressive content. For streaming content,

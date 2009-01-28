@@ -191,7 +191,7 @@ package org.openvideoplayer.events
 		 * specific to Adobe Extensible Metadata Platform (XMP) embedded in the video being played.
 		 * The associated event listener is triggered after a call to the NetStream.play() method,
 		 * but before the video playhead has advanced.
-		 * The data bject passed in the event handling function has one data property, which is a string.
+		 * The data object passed in the event handling function has one data property, which is a string.
 		 * The string is generated from a top-level UUID box which contains exactly one XML document represented
 		 * as a null-terminated UTF-8 string.
 		 */		
@@ -262,6 +262,19 @@ package org.openvideoplayer.events
   		 * an AsyncErrorEvent.ASYNC_ERROR event.  The event text is carried in the data object as a string.
   		 */
   		public static const ASYNC_ERROR:String = "asyncerror";
+  		
+  		/**
+  		 * Flash Media Live Encoder contains a special built-in handler, <code>onFI</code>, that subscribing clients can use 
+  		 * in their ActionScript code to access timecode information. You can get timecode and system date and time 
+  		 * information, if timecode and system date and time were embedded in the stream, by accessing the tc, sd, 
+  		 * and st properties of the data object when handling this event:
+  		 * <ul>
+  		 * <li>data.tc; // timecode string formatted hh:mm:ss:ff</li>
+  		 * <li>data.sd; // system Date string formatted as dd-mm-yy</li>
+  		 * <li>data.st; // system Time string formatted as hh:mm:ss.ms</li>
+  		 * </ul>
+  		 */
+  		public static const ONFI:String = "onfi";
 	 		
 	
 		private var _data:Object;

@@ -125,6 +125,12 @@ package org.openvideoplayer.net
 	 * @see org.openvideoplayer.events.OvpEvent
 	 */
 	[Event (name="asyncerror", type="org.openvideoplayer.events.OvpEvent")]
+	/**
+	 * Dispatched if the class' onFI callback is called.
+	 * 
+	 * @see org.openvideoplayer.events.OvpEvent
+	 */
+	 [Event (name="onfi", type="org.openvideoplayer.events.OvpEvent")]
 	
 	/**
 	 * The OvpNetStream class extends flash.net.NetStream to provide unique features such as a 
@@ -758,6 +764,13 @@ package org.openvideoplayer.net
 		 */
 		protected function asyncErrorHandler(event:AsyncErrorEvent):void {
 			dispatchEvent(new OvpEvent(OvpEvent.ASYNC_ERROR, event.text));
-		} 			    	
+		}
+		
+		/**
+		 * @private
+		 */
+		public function onFI(info:Object):void {
+			dispatchEvent(new OvpEvent(OvpEvent.ONFI, info)); 		
+		}
 	}
 }
