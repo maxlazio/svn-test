@@ -1008,7 +1008,7 @@ package org.openvideoplayer.net
 		/** Handles the responder fault after a streamlength request
 		 * @private
 		 */
-		private function onStreamLengthFault():void {
+		private function onStreamLengthFault(info:Object):void {
 			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.STREAM_LENGTH_REQ_ERROR)));
 		}
 
