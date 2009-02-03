@@ -274,8 +274,8 @@ package org.openvideoplayer.net
    		 * 
    		 * Returns True if a cue point is fired, otherwise False.
    		 */
-   		private function checkCuePoint(index:int, now:Number):Boolean {
-			if (_aCuePoints[index].time <= (now + _tolerance) && (index != _lastFiredCuePointIndex)) {
+   		private function checkCuePoint(index:int, now:Number):Boolean { 			
+			if ( (_aCuePoints[index].time >= (now - _tolerance)) && (_aCuePoints[index].time <= (now + _tolerance)) && (index != _lastFiredCuePointIndex)) {
 				_lastFiredCuePointIndex = index;
 				var info:Object = deepCopyObject(_aCuePoints[index]);
 				_ns.dispatchEvent(new OvpEvent(OvpEvent.NETSTREAM_CUEPOINT, info));
