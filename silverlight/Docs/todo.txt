@@ -1,0 +1,18 @@
+** Incomplete or untested items **
+
+
+- Attempt and Test override of themes by key
+- Define menu as a resource for easier tweaking
+- Ability to hide/show buttons and menuitems in xaml
+- Bandwidth override option
+- InitParamParser to auto-match properties
+- show meta data in player template, pause screen?
+- go native on excessive fps drop?
+- allow for zipped / xapped themes
+
+- Initial work on new Ad strategy
+	> Allow Global Ad Tags to be specified in InitParams - affect all items, also good for single file playback
+	> For per-feed-item control
+		- specify field to overload in InitParams, it will contain tag url with params?
+		- I.E. "http://cdn1.eyewonder.com/200125/755545/1022643/tag.xml?active=true&starttime=20&duration=14&container=Container"
+		

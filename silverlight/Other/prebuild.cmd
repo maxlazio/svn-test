@@ -20,13 +20,13 @@ if ERRORLEVEL 1 goto skipVer
   
 set sfile="%projectpath%properties\AssemblyInfo.cs"
 
-%projectpath%..\ReplaceLine.exe %sfile% AssemblyVersion "[assembly: AssemblyVersion("""%ver%""")]" 
-%projectpath%..\ReplaceLine.exe %sfile% AssemblyFileVersion "[assembly: AssemblyFileVersion("""%ver%""")]"  
+%projectpath%..\Other\ReplaceLine.exe %sfile% AssemblyVersion "[assembly: AssemblyVersion("""%ver%""")]" 
+%projectpath%..\Other\ReplaceLine.exe %sfile% AssemblyFileVersion "[assembly: AssemblyFileVersion("""%ver%""")]"  
 
 set ifile="%projectpath%index.html"
 
 if %projname%==OVPWeb (
-   %projectpath%..\ReplaceLine.exe %ifile% //auto "  var version = 'v%ver%'; //auto version"
+   %projectpath%..\Other\ReplaceLine.exe %ifile% //auto "  var version = 'v%ver%'; //auto version"
    rem if exist %projectpath%..\..\packages.cmd %projectpath%..\..\packages.cmd
 )
 
