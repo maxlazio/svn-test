@@ -48,6 +48,8 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		/// </summary>
 		event SelectionChangedEventHandler SelectionChanged;
 
+		event SizeChangedEventHandler SizeChanged;
+
 		/// <summary>
 		/// Implemented in some cases to refresh the view, if required
 		/// </summary>

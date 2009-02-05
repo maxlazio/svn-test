@@ -52,6 +52,7 @@
     <Compile Include="EventHandlers\EventDispatcher.cs" />
     <Compile Include="EventHandlers\MarkerTypeConv.cs" />
     <Compile Include="EventHandlers\MarkerTypes.cs" />
+    <Compile Include="Media\IAdaptiveStats.cs" />
     <Compile Include="Plugins\IAlternateMediaSource.cs" />
     <Compile Include="Plugins\IConnection.cs" />
     <Compile Include="Plugins\IMediaControl.cs" />
@@ -89,6 +90,7 @@
     </Compile>
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\Async.cs" />
     <Compile Include="Util\BrowserScreenInfo.cs" />
     <Compile Include="Util\Conversion.cs" />
     <Compile Include="Util\Extensions.cs" />

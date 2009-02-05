@@ -1,26 +1,33 @@
-*** Version 2.1.42 (In Progress) ***
-2009-01-13	Nick Brookins <nbrookin at akamai d0t com>
+*** Version 2.1.70 ***
+2009-02-05	Nick Brookins <nbrookin at akamai d0t com>
 
-- Work towards new official release
+- General changes
+	> InitParams now resolves any player property automatically
+	> distinct option for scaling in fullscreen mode
+
+- Theme work
 	> Theme specify on config page
 	> Allow themes to be loaded from remote xaml, instead of only embedded resources
 	> 200% increase in template load speed by caching resource dictionaries
-
-
-//TODO - ////Incomplete Items////
-
-- Initial work on new Ad strategy
-	> Allow Global Ad Tags to be specified in InitParams - affect all items, also good for single file playback
-	> For per-feed-item control, two options: 
-		- specify field to overload in InitParams
-		- filter tags by item field
+	> New throttling in ScrubberBar to cut down on excessive requests during dragging
 	
-// - fix download progress bar / buffer control
-// - close credits on change of channel for rogan content
-// - gear icon on standard (not adaptive) content instead of quality meter
-
-//TODO - ////Incomplete Items////
-
+- UI Updates
+	> gear icon on standard (not adaptive) content instead of quality meter
+	> close credits on change of channel for rogan content
+	> log errors from adaptive better
+	> fix download progress bar, integrated with scrubber bar for easier usage and templating
+	> add buffer control spinner for buffering video feedback
+	
+- SmoothHD
+	> Add Randomize button on front page
+	> new randomization algorthm that overrides playlist behavior
+	> New 'ad' link that forwards to rogan content
+	> seperate playlist for rogan page
+	> hide channel playlist when only one channel is available
+	
+- Bugfixes:
+	> Fixed layout issue with playlist for both overlay and side by side modes
+	> Fixed rare issue with content urls with spaces or from localhost
 
 
 *** Version 2.1.30 ***
@@ -34,6 +41,7 @@
 		- Now uses one instance of plugin, as opposed to reloading it for every content item
 	> Now support InitialBitrate, allowing a rate higher than the lowest to be used initially
 		- Enables carrying current bitrate between playlist items, instead of resetting to lowest each time
+		- Preserves bitrate across seeks, for a less jarring experience
 	> Player no longer automatically tries to load adaptive code autmatically, must specify
 		- specify in InitParam as: plugins=plugins/AdaptiveEdge.xap 
 

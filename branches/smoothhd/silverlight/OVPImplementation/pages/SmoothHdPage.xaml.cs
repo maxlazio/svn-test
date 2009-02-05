@@ -40,6 +40,13 @@ namespace OVPImplementation {
 		private double pliWidth = 209;
 		private double gliHeight = 39;
 
+		List<int[]> randomList = new List<int[]>();
+		int plLoadedCount;
+		int currentRandomIndex = 0;
+		//bool randomFlag = false;
+		bool hasRogan = false;
+		List<string> feedList;
+
 		public SmoothHdPage(object sender, StartupEventArgs e) {
 			string val;
 			if (e.InitParams.TryGetValue("masterplaylist", out val)) {
@@ -52,6 +59,8 @@ namespace OVPImplementation {
 			InitializeComponent();
 			HtmlPage.RegisterScriptableObject("page", this);
 
+			//return;
+
 			//auto scaling settings
 			Player.AutoScaling =  OpenVideoPlayerControl.AutoScalingType.ScaleObjectTag; 
 			Player.AutoScalingPlayerMargin = new Size(16, 200); //need extra at bottom for playlist
@@ -61,7 +70,8 @@ namespace OVPImplementation {
 
 			//events
 			Player.FullScreenChanged += new RoutedEventHandler(Player_FullScreenChanged);
-			Player.ItemChanged += new RoutedEventHandler(Player_ItemChanged);
+			//Player.ItemChanged += new RoutedEventHandler(Player_ItemChanged);
+			Player.PlaylistIndexChanging += new PlaylistIndexChangingEventHandler(Player_PlaylistIndexChanging);
 			Player.SizeChanged += new SizeChangedEventHandler(Player_SizeChanged);
 			Player.OnStartup(sender, e);
 
@@ -80,10 +90,34 @@ namespace OVPImplementation {
 			Player.Containers.Combine("PlaylistBug", BugContainer);
 			Player.Containers.Combine("LowerBanner", BannerContainer);
 
-			//hide the playlist and chapters menuitems
+			//hide the playlist and chapters menuitems/buttons, and the border of the player
 			foreach (MenuItem mi in Player.OptionsMenu.Items) {
 				if (mi.Text == "Chapters" || mi.Text == "Playlist") {
 					mi.Visibility = Visibility.Collapsed;
+				}
+			}
+			foreach (FrameworkElement fe in Player.ControlBox.Children) {
+				if (fe is Button && (fe.Name.Contains("Chapters") || fe.Name.Contains("Playlist") || fe.Name.Contains("Next") || fe.Name.Contains("Previous"))) {
+					fe.Visibility = Visibility.Collapsed;
+					fe.Margin = new Thickness(0);
+					fe.Width = 0.0;
+				}
+			}
+			foreach (FrameworkElement fe in Player.Children) {
+				Rectangle h = fe as Rectangle;
+				if (h!=null && h.Name == "highlightBorder") h.StrokeThickness = 0;
+			}
+
+		}
+
+		private bool random = true;
+		[ScriptableMember]
+		public bool Random {
+			get { return random; }
+			set {
+				if (random != value) {
+					random = value;
+					if (random) GoNext();
 				}
 			}
 		}
@@ -120,19 +154,26 @@ namespace OVPImplementation {
 			}
 
 			PositionAdCanvas();
-			//HideBugs();
 		}
 
-		void Player_ItemChanged(object sender, RoutedEventArgs e) {
-			if (Player.CurrentIndex >= Player.Playlist.Count) {
+		void Player_PlaylistIndexChanging(object sender, PlaylistIndexChangingEventArgs args) {
+			if (Random) {
+				if (Player.Position > TimeSpan.Zero && Player.Position == Player.Duration && Player.CurrentItem!=null && listBoxPlaylist.SelectedItem != null && Player.CurrentItem.Url == ((VideoItem)listBoxPlaylist.SelectedItem).Url) {// && Player.Playlist != listBoxPlaylist.Items || ) {//!randomFlag) {
+					args.Cancel = true;
+					GoNext();
+					return;
+				}
+			}
+
+			if (args.NewIndex >= Player.Playlist.Count) {
 				needAutoPlay = true;
 				if (groupPlaylist.SelectedIndex < groupPlaylist.Items.Count - 1) {
 					groupPlaylist.SelectedIndex++;
 				} else {
 					groupPlaylist.SelectedIndex = 0;
 				}
-			} else {
-				listBoxPlaylist.SelectedIndex = Player.CurrentIndex;
+			} else {//if (!Random){
+				listBoxPlaylist.SelectedIndex = args.NewIndex;
 			}
 		}
 
@@ -158,6 +199,7 @@ namespace OVPImplementation {
 		#endregion
 
 		#region Playlist handling and other supporting methods
+
 		void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e) {
 			if(e.Error!=null) {
 				Debug.WriteLine("Error: " + e.Error);
@@ -165,10 +207,14 @@ namespace OVPImplementation {
 			}
 
 			string[] feeds = e.Result.Split('\n');
-			List<string> feedList = new List<string>();
+			feedList = new List<string>();
 			foreach (string f in feeds) {
 				if (!string.IsNullOrEmpty(f) && f.Trim().Length > 0 && !f.Trim().StartsWith("#")) {
 					feedList.Add(f);
+					if (f.Contains("15433") && !hasRogan) {
+						hasRogan = true;
+						random = false;
+					}
 				}
 			}
 
@@ -194,18 +240,56 @@ namespace OVPImplementation {
 				Thumbnails = new List<org.OpenVideoPlayer.Media.Thumbnail> { 
 					new org.OpenVideoPlayer.Media.Thumbnail(pl.ImageURL +((pl == playlists[0])?"_1.jpg" : "_3.jpg")) 
 				},
-			Url = pl.SourceURI };
+				Url = pl.SourceURI 
+			};
+
+			plLoadedCount++;
 
 			for (int i = 1; i <= 3; i++) {
 				string url = pl.ImageURL + "_" + i + ".jpg";
 				BitmapImage bi = new BitmapImage(new Uri(url));
+				//Debug.WriteLine("Adding : " + url);
 				sources.Add(url, bi);
 			}
 
-			if(pl == playlists[0]) {
-				groupPlaylist.SelectedIndex = 0;
-				playlistStackPanel.Opacity = 1;
+			lock (randomList) {
+				for (int y = 0; y < pl.Count; y++) {
+					randomList.Add(new int[] {x, y});
+				}
+				if (playlistStackPanel.Opacity > 0) {
+					//this means we've loaded it, so we just added to the randomized list, we need to re-randomize
+					randomList.Randomize(currentRandomIndex);
+				}
 			}
+
+			if (!Random) {
+				if (pl == playlists[0]) {
+					groupPlaylist.SelectedIndex = 0;
+					playlistStackPanel.Opacity = 1;
+					if (feedList.Count < 2) {
+						groupPanel.Visibility = Visibility.Collapsed;
+						AdjustPlaylistSize();
+					}
+				}
+			} else {
+				if (playlistStackPanel.Opacity<1 && (plLoadedCount == playlists.Count || DateTime.Now - start > TimeSpan.FromSeconds(3))) {
+					Debug.WriteLine(string.Format("Starting - pl count: {0}, {1}s", plLoadedCount, (DateTime.Now - start).TotalSeconds));
+					playlistStackPanel.Opacity = 1;
+					randomList.Randomize();
+					GoNext();
+				}
+			}
+		}
+
+		private void GoNext() {
+			currentRandomIndex++;
+			if (currentRandomIndex >= randomList.Count) {
+				currentRandomIndex = 0;
+				randomList.Randomize();
+			}
+
+			needAutoPlay = true;
+			groupPlaylist.SelectedIndex = randomList[currentRandomIndex][0];
 		}
 
 		void groupPlaylist_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -233,7 +317,8 @@ namespace OVPImplementation {
 
 				if (needAutoPlay) {
 					needAutoPlay = false;
-					listBoxPlaylist.SelectedIndex = 0;
+					listBoxPlaylist.SelectedIndex = (Random) ? randomList[currentRandomIndex][1] : 0;
+
 				} else {
 					if (pl.Count > Player.CurrentIndex && Player.CurrentSource == pl[Player.CurrentIndex].Url) {
 						listBoxPlaylist.SelectedIndex = Player.CurrentIndex;
@@ -250,15 +335,18 @@ namespace OVPImplementation {
 				    }
 				}
 
-				//handle the extra logos at bottom when rogan channel is displayed
-				bool rogan = (vi.ThumbSource.ToLower().Contains("rogan"));
-				HtmlElement ads1 = HtmlPage.Document.GetElementById("ads1");
-				HtmlElement ads2 = HtmlPage.Document.GetElementById("ads2");
-				if (ads1 != null) ads1.SetStyleAttribute("visibility", ((rogan) ? "visible" : "hidden"));
-				if (ads2 != null) ads2.SetStyleAttribute("visibility", ((rogan) ? "visible" : "hidden"));
+				if (hasRogan) {
+					//handle the extra logos at bottom when rogan channel is displayed
+					bool rogan = (vi.ThumbSource.ToLower().Contains("rogan"));
+					HtmlElement ads1 = HtmlPage.Document.GetElementById("ads1");
+					HtmlElement ads2 = HtmlPage.Document.GetElementById("ads2");
+					if (ads1 != null) ads1.SetStyleAttribute("visibility", ((rogan) ? "visible" : "hidden"));
+					if (ads2 != null) ads2.SetStyleAttribute("visibility", ((rogan) ? "visible" : "hidden"));
+				}
 
 				HideBugs();
 				PositionAdCanvas();
+				if(creditsBox!=null) creditsBox.Visibility = Visibility.Collapsed;
 
 			} catch (Exception ex) {
 				log.Output(OutputType.Error, "Error on change", ex);
@@ -266,7 +354,7 @@ namespace OVPImplementation {
 		}
 
 		private void AdjustPlaylistSize() {
-			double plWidth = Player.ActualWidth - groupPlaylist.FullSize().Width;
+			double plWidth = Player.ActualWidth - ((groupPanel.Visibility== Visibility.Visible)? groupPlaylist.FullSize().Width : 0.0);
 			scrollLeft.Visibility = scrollRight.Visibility = Visibility.Collapsed;
 			if ((plWidth < listBoxPlaylist.Items.Count * pliWidth)) {
 				scrollLeft.Visibility = scrollRight.Visibility = Visibility.Visible;
@@ -281,10 +369,12 @@ namespace OVPImplementation {
 		void listBoxPlaylist_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 			if (listBoxPlaylist.SelectedIndex >=0 && (listBoxPlaylist.SelectedIndex != Player.CurrentIndex
 				|| ((VideoItem)listBoxPlaylist.SelectedItem).Url != Player.CurrentSource)) {
+
 				Player.SeekToPlaylistItem(listBoxPlaylist.SelectedIndex);
 			}
 
 			PositionAdCanvas();
+			if(creditsBox!=null)creditsBox.Visibility = Visibility.Collapsed;
 		}
 
 		private void scrollDown_Click(object sender, RoutedEventArgs e) {
@@ -448,11 +538,6 @@ namespace OVPImplementation {
 			if (!ads.ContainsKey(url)) ads.Add(url, args); else ads[url] = args;
 			type = type.ToLower();
 
-			//if (type.Contains("postroll")) {
-			//    groupPlaylist.IsEnabled = false;
-			//    listBoxPlaylist.IsEnabled = false;
-			//}
-
 			//This is a dirty dirty hack, not sure how else to handle this with UIF
 			if (type.Contains("bug")) {
 				FrameworkElement fe = ReflectionHelper.GetValue(args, "Ad.Args.UIElementToReturn.VideoContainer") as FrameworkElement;
@@ -466,9 +551,6 @@ namespace OVPImplementation {
 						fe.HorizontalAlignment = HorizontalAlignment.Stretch;
 						fe.Height = fe.Width = double.NaN;
 						fe.Margin = new Thickness(0);
-					//	fe.SetValue(Canvas.LeftProperty, 0.0);
-						//fe.SetValue(Canvas.TopProperty, 0.0);
-
 						
 					} catch (Exception ex) {
 						log.Output(OutputType.Debug, "error placing bug output", ex);
@@ -497,11 +579,6 @@ namespace OVPImplementation {
 			if (!ads.ContainsKey(url)) ads.Remove(url);
 			type = type.ToLower();
 
-			//if (type.Contains("postroll")) {
-			//    groupPlaylist.IsEnabled = true;
-			//    listBoxPlaylist.IsEnabled = true;
-			//}
-
 			if (type.Contains("bug")) {
 				FrameworkElement fe = ReflectionHelper.GetValue(args, "Ad.Args.UIElementToReturn.VideoContainer") as FrameworkElement;
 				if (fe != null) if (fe.Parent is Panel) (fe.Parent as Panel).Children.Remove(fe);
@@ -515,7 +592,11 @@ namespace OVPImplementation {
 			}
 		}
 
-		private void PositionAdCanvas() {
+		protected void PositionAdCanvas() {
+		    Async.UI(internalPositionAdCanvas, this, true);
+		}
+
+		private void internalPositionAdCanvas() {
 			try {
 				if (Player.CurrentItem == null || !images.ContainsKey(Player.CurrentItem.Title)) return;
 				double x = 0, y = 0, w = 0, h = 0;
@@ -534,7 +615,7 @@ namespace OVPImplementation {
 				h = listBoxPlaylist.ActualHeight;
 
 				if (BugContainer.Visibility == Visibility.Visible) {
-					BugContainer.SetValue(Canvas.LeftProperty, x);
+					BugContainer.SetValue(Canvas.LeftProperty,x);
 					BugContainer.SetValue(Canvas.TopProperty, y);
 					BugContainer.Width = w;
 					BugContainer.Height = h;

@@ -8,7 +8,7 @@ namespace org.OpenVideoPlayer.Controls {
 	/// </summary>
 	public class MenuItem : ListBoxItem {
 		public MenuItem() {
-			DefaultStyleKey = GetType();
+			DefaultStyleKey = typeof(MenuItem);//GetType();
 		}
 
 		/// <summary>
@@ -21,6 +21,7 @@ namespace org.OpenVideoPlayer.Controls {
 		public event RoutedEventHandler CheckedChanged;
 
 		public override void OnApplyTemplate() {
+			//DefaultStyleKey = typeof(MenuItem);
 			base.OnApplyTemplate();
 
 			layoutRoot = GetTemplateChild("layoutRoot") as Panel;

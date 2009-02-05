@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Diagnostics;
+using System.Threading;
 
 namespace org.OpenVideoPlayer.Controls.Visuals {
 	public class ScrubberBar : Slider {
@@ -15,6 +17,7 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		private FrameworkElement rightTrack;
 		private FrameworkElement upTrack;
 		private FrameworkElement downTrack;
+		private FrameworkElement Download;
 
 		public event EventHandler<ScrubberBarValueChangeArgs> ValueChangeRequest;
 		public event EventHandler<ScrubberBarValueChangeArgs> MouseOver;
@@ -29,6 +32,7 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 			rightTrack = GetTemplateChild("RightTrack") as FrameworkElement;
 			upTrack = GetTemplateChild("UpTrack") as FrameworkElement;
 			downTrack = GetTemplateChild("DownTrack") as FrameworkElement;
+			Download = GetTemplateChild("Download") as FrameworkElement;
 
 			if (leftTrack != null) {
 				leftTrack.MouseLeftButtonDown += OnMoveThumbToMouseHorizontal;
@@ -44,18 +48,85 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 			if (downTrack != null) {
 				downTrack.MouseLeftButtonDown += OnMoveThumbToMouseVertical;
 			}
+			if (horizontalThumb != null) {
+				horizontalThumb.MouseMove += new MouseEventHandler(horizontalThumb_MouseMove);
+			}
+			MouseMove += new MouseEventHandler(ScrubberBar_MouseMove);
+			this.SizeChanged += new SizeChangedEventHandler(ScrubberBar_SizeChanged);
 		}
 
-		void TrackMouseMove(object sender, MouseEventArgs e) {
+		void ScrubberBar_SizeChanged(object sender, SizeChangedEventArgs e) {
+			if (Download != null && downloadPercent > 0) Download.Width = ActualWidth * downloadPercent;
+		}
+
+		public TimeSpan Throttle = TimeSpan.Zero;
+		private System.Threading.Timer t;// = new System.Threading.Timer();
+
+		DateTime lastMove = DateTime.MinValue;
+		private readonly object tLock = new object();
+		MouseEventArgs lastArgs = null;
+
+		void ScrubberBar_MouseMove(object sender, MouseEventArgs e) {
 			try {
-				if (MouseOver != null) {
-					Point pt = e.GetPosition(this);
-					double time = GetTimeValue(pt);
-					MouseOver(this, new ScrubberBarValueChangeArgs(time, e, mouseIsDown));
+				lastArgs = e;
+
+				if (Throttle == TimeSpan.Zero) {
+					TimerTick(lastArgs);
+					return;
 				}
+
+				if (t == null) {
+					t = new System.Threading.Timer(TimerTick, lastArgs, Throttle, TimeSpan.FromMilliseconds(-1));
+				} else {
+					if (DateTime.Now - lastMove > Throttle) {
+						TimerTick(lastArgs);
+						t.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+					} else {
+						t.Change(Throttle, TimeSpan.FromMilliseconds(-1));
+					}
+				}
+				
 			} catch (Exception ex) {
 				Console.WriteLine("Mousemove issue " + ex);
 			}
+		}
+
+		private double downloadPercent;
+
+		public double DownloadPercent {
+			get { return downloadPercent; }
+			set { 
+				if(value > 1) value = 1;
+				if(value < 0) value = 0;
+				if(value!=downloadPercent) {
+					downloadPercent = value;
+					if (Download != null) Download.Width = ActualWidth * downloadPercent;
+				}
+			}
+		}
+
+		void TimerTick(object o) {
+			if (!Monitor.TryEnter(tLock)) return;
+			try {
+				MouseEventArgs e = o as MouseEventArgs;
+				if (MouseOver != null) {
+					Point pt = e.GetPosition(this);
+					double time = GetTimeValue(pt);
+					MouseOver(this, new ScrubberBarValueChangeArgs(time, e, (mouseIsDown))); // && throttle)));
+				//	Debug.WriteLine("Move : " + mouseIsDown);
+				}
+			} catch (Exception ex) {
+				Console.WriteLine("Mousemove issue " + ex);
+			} finally {
+				Monitor.Exit(tLock);
+				t.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+			}
+		}
+
+		void horizontalThumb_MouseMove(object sender, MouseEventArgs e) {
+		}
+
+		void TrackMouseMove(object sender, MouseEventArgs e) {
 		}
 
 		private void OnMoveThumbToMouseHorizontal(object sender, MouseButtonEventArgs args) {

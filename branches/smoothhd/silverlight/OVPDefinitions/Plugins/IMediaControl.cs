@@ -70,7 +70,8 @@ namespace org.OpenVideoPlayer {
 
 		Panel LayoutRoot { get; }
 
-		event RoutedEventHandler ItemChanged;
+		//event RoutedEventHandler ItemChanged;
+		event PlaylistIndexChangingEventHandler PlaylistIndexChanging;
 		event EventHandler BrowserSizeChanged;
 		event SizeChangedEventHandler SizeChanged;
 

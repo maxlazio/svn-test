@@ -40,6 +40,12 @@ namespace org.OpenVideoPlayer.Util {
 			}
 		}
 
+		public static void Combine(this IList l, object val) {
+			if (!l.Contains(val)) {
+				l.Add(val);
+			}
+		}
+
 		public static void Combine<T,U> (this IDictionary<T,U> d, T key, U val) {
 			if (d.ContainsKey(key)) {
 				d[key] = val;
@@ -48,8 +54,42 @@ namespace org.OpenVideoPlayer.Util {
 			}
 		}
 
+		public static void Randomize<T>(this IList<T> l) {
+			Randomize<T>(l, 0);
+		}
+
+		public static void Randomize<T>(this IList<T> l, int startIndex) {
+			lock(l) {
+				List<T> temp = new List<T>(); //temp shallow copy
+				for (int t = startIndex; t < l.Count; t++) temp.Add(l[t]);
+
+				Random random = new Random();
+				List<int> rList = new List<int>(); // a list of randomized indicies
+				while (rList.Count < temp.Count) {
+					int r = (int)Math.Round(random.NextDouble() * (temp.Count-1));
+					if (!rList.Contains(r)) rList.Add(r);
+				}
+
+				while (l.Count > startIndex) l.RemoveAt(startIndex);
+				foreach (int i in rList) l.Add(temp[i]);
+			}
+		}
+
 		public static Size FullSize(this FrameworkElement c) {
 			return new Size(c.ActualWidth + c.Margin.Left + c.Margin.Right, c.ActualHeight + c.Margin.Top + c.Margin.Bottom);
 		}
 	}
+
+
+	public static class Test {
+
+		public static bool NullOrEmpty(System.Collections.ICollection col) {
+			return col == null || col.Count < 1;
+		}
+		public static bool NullOrEmpty(string s) {
+			return s == null || s.Length < 1;
+		}
+	}
+
+
 }

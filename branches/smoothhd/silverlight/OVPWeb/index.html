@@ -70,7 +70,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			'http://products.edgeboss.net/wmedia/products/content/demo/video/wms/globe_tahiti_700k.wvx',
 			'http://products.edgeboss.net/download/products/content/test/adaptive_playlists/smoothhd/group2/akamai_asp_cutdown_adaptive_playlist.xml',
 			'http://products.edgeboss.net/download/products/content/demo/video/wms/moby_hybrid_700k.wmv',
-			'<playList><playListItems><playListItem title="Adaptive Demo" description="A%20short%20demo" mediaSource="http://video.smoothhd.com/Media/AD_Streaming/Coral_Reefs.ism\Manifest" adaptiveStreaming="True" thumbSource="http://video.smoothhd.com/Media/AD_Streaming/Silverlight_2008_LAGS_720p24_2ch_Thumb.jpg" ></playListItem></playList>');
+			'<playList><playListItems><playListItem title="Adaptive Demo" description="A%20short%20demo" mediaSource="http://video.smoothhd.com/Media/AD_Streaming/Coral_Reefs.ism/Manifest" adaptiveStreaming="True" thumbSource="http://video.smoothhd.com/Media/AD_Streaming/Silverlight_2008_LAGS_720p24_2ch_Thumb.jpg" ></playListItem></playListItems></playList>');
 
 		var lastSourceType = -1;
 
@@ -88,10 +88,12 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			}
 
 			var sm = document.getElementById('stretchMode');
+			var smfs = document.getElementById('stretchModeFS');
 			var tm = document.getElementById('theme');
 			
 			document.getElementById('sourceDesc').innerHTML = st.value;
 			document.getElementById('stretchDesc').innerHTML = sm.value;
+			document.getElementById('stretchDescFS').innerHTML = smfs.value;
 			document.getElementById('themeDesc').innerHTML = tm.value;
 
 			var playerXAP = 'OVP.xap';
@@ -100,6 +102,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			var ismuted = document.getElementById('muted').value;
 			var isdebug = document.getElementById('showStats').value;
 			var mystretchmode = sm.options[sm.selectedIndex].text;
+			var mystretchmodefs = smfs.options[smfs.selectedIndex].text;
 
 			var source = document.getElementById('source').value;
 			var sourceType = st.options[st.selectedIndex].text.toLowerCase();
@@ -131,16 +134,19 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			var ploverlay = document.getElementById('plOverlay').value;
 			
 			var bg = document.getElementById('bgcolor').value;
+
+			var vars = document.getElementById('addlvars').value;
+			if (vars.length > 0) vars = ', ' + vars;	
 			
 			//TODO - not yet fully supported by SL control
 			//var playlist = document.getElementById('showPlaylist').value;
 			//var chapters = document.getElementById('showChapters').value;
 			
-			var initparams = 'showstats=' + isdebug + ', autoplay=' + autoplay + ', muted=' + ismuted
+			var initparams = 'showstatistics=' + isdebug + ', autoplay=' + autoplay + ', muted=' + ismuted
 				+ ', playlistoverlay=' + ploverlay
 			//	+ ', showplaylist=' + playlist 
 			//	+ ', showchapters=' + chapters
-				+ themetag + pluginlink + linkUrl + embedUrl + ', stretchmode=' + mystretchmode + ', ' + sourceType + '=' + escape(source);
+				+ themetag + pluginlink + linkUrl + embedUrl + ', stretchmode=' + mystretchmode + ', stretchmodefullscreen=' + mystretchmodefs + ', ' + sourceType + '=' + escape(source) + vars;
 
 			var tag = '<object data="data:application/x-silverlight-2," type="application/x-silverlight-2"'
 			+ ' width="' + w + '" height="' + h
@@ -151,10 +157,10 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			tag += '<param name="onerror" value="onSilverlightError" />';
 			if(bg.length > 0) tag+= '<param name="background" value="' + bg + '" />';
 			tag += '<param name="MaxFrameRate" value="30" />';
-			tag += '\n<param name="initparams" value=\'' + initparams + '\' />';
 			tag += '\n<a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">';
 			tag += '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/></a>';
-			tag += '</object>';
+			tag += '\n<param name="initparams" value=\'' + initparams + '\' />';
+			tag += '\n</object>';
 
 			document.getElementById('htmlEmbed').value = tag;
 			return tag;
@@ -170,7 +176,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			window.open('preview.html?tag=' + tag  ,'OpenVideoPlayer_Preview','width=' + ww + ',height='+ wh + ',directories=no,location=no,menubar=no,scrollbars=no,status=yes,toolbar=no,resizable=yes');
 		}
 
-  var version = 'v2.1.42.41'; //auto version
+  var version = 'v2.1.70.43'; //auto version
 
 		function BodyLoad() {
 			OnChange();
@@ -238,6 +244,22 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style3" colspan="2">
 					<span id="stretchDesc" class="newStyle1">...</span></td>
 			</tr>
+			
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style3">
+					FullScreen Stretch: </td>
+				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 15px;">
+					<select id="stretchModeFS" class="bordered" style="width: 120px" onchange="OnChange();" name="scaling">
+						<option value="Native mode does no scaling, may result in clipped edges">Native</option>
+						<!--<option value="Native mode does no upscaling, but will scale down to ensure all video is shown">NativeOrSmaller</option>-->
+						<option value="Fit mode will scale the video to fit, keeping the aspect ratio" selected="selected">Fit</option>
+						<option value="Fill mode scales to fill the screen, clipping to preserve aspect">Fill</option>
+						<option value="Stretch mode scales the video to fill the screen, ignoring aspect ratio">Stretch</option>
+					</select></td>
+				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style3" colspan="2">
+					<span id="stretchDescFS" class="newStyle1">...</span></td>
+			</tr>
+
 			<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 17px;" class="style3">
 					PlaylistOverlay:</td>
@@ -271,7 +293,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					<select id="theme" onchange="OnChange();" class="bordered" style="width: 120px" name="theme">
 						<option value="No theme, default Silverlight look">None</option>
 						<option value="Original blue theme (default)" selected="selected">Default.xaml</option>
-						<option value="Theme used on SmoothHD.com">SmoothHd.xaml</option>
+						<option value="Theme used on SmoothHD.com">SmoothHD.xaml</option>
 						<option value="ExpressionDark theme from Microsoft toolkit">ExpressionDark.xaml</option>
 												<option value="ExpressionLight theme from Microsoft toolkit">ExpressionLight.xaml</option>
 						<option value="ShinyBlue theme from Microsoft toolkit">ShinyBlue.xaml</option>
@@ -289,42 +311,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					<span id="themeDesc" class="newStyle1">...</span>
 				</td>
 			</tr>
-
-			<!--<tr>
-				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 11px;" class="style3">
-					ShowPlaylist:</td>
-				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 11px;">
-					<select id="showPlaylist" class="bordered" style="width: 120px" onchange="OnChange();">
-						<option value="true">True</option>
-						<option value="false" selected>False</option>
-					</select></td>
-				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 11px;" class="style3" colspan="2">
-					<span id="sourceDesc1" class="newStyle1">True to initially show the playlist</span></td>
-			</tr>
-			<tr>
-				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 17px;" class="style3">
-					ShowChapters:</td>
-				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 17px;">
-					<select id="showChapters" class="bordered" style="width: 120px" onchange="OnChange();">
-						<option value="true">True</option>
-						<option value="false" selected>False</option>
-					</select></td>
-				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 17px;" class="style3" colspan="2">
-					<span id="sourceDesc0" class="newStyle1">True to initially show the chapter 
-					selection box</span></td>
-			</tr>-->
-			<!--<tr>
-				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 22px;" class="style3">
-					ShowErrors:</td>
-				<td style="border-color: #0395d3; width: 22%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; text-align: center; height: 22px;">
-					<select id="showErrors" class="bordered" style="width: 120px" onchange="OnChange();" name="D1">
-						<option value="true" selected="selected">True</option>
-						<option value="false">False</option>
-					</select></td>
-				<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 22px;" class="style3" colspan="2">
-					<span id="sourceDesc8" class="newStyle1">True to show 
-					silverlight / player errors in browser for debugging</span></td>
-			</tr>-->
+			
 			<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 33px;" class="style3">
 					Player Size:</td>
@@ -368,7 +355,15 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					&nbsp;
 					<input id="pluginlinks" style="width: 475px" type="text" onchange="OnChange();" /></td>
 			</tr>
-			
+			<tr>
+				<td style="border-color: #0395d3; width: 19%; vertical-align: middle; height: 32px;" class="style10">
+					Additional vars:
+				</td>
+				<td valign="middle" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 32px;" class="style3" colspan="3">
+					&nbsp;
+					<input id="addlvars" style="width: 475px" type="text" onchange="OnChange();" />
+				</td>
+			</tr>
 			<tr>
 				<td style="border-color: #0395d3; width: 19%; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; height: 15px;" class="style6">
 					&nbsp;</td>
@@ -399,7 +394,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 						<option value="Direct http or mms link to a media source">MediaSource</option>
 						<option value="Directly embed playlist text">PlayList</option>
 					</select></td>
-				<td colspan=2 style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3;   vertical-align: bottom; height: 26px;" class="style3">
+				<td colspan="2" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3;   vertical-align: bottom; height: 26px;" class="style3">
 					<span id="sourceDesc" class="newStyle1">...</span></td>
 			</tr>
 			<tr>
@@ -427,7 +422,8 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 				<td colspan="4" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: top; " valign="top" class="style1">
 					This tag requires the following file:
 					[
-					<a class="style4" href="OVP.xap">OVP.xap</a> ]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+					<a class="style4" href="OVP.xap">OVP.xap</a> ]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+					As well as any associated plug-ins or themes. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 			</tr>
 			</table>
 	</div>

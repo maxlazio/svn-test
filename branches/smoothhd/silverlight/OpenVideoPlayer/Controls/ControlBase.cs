@@ -29,6 +29,15 @@ namespace org.OpenVideoPlayer.Controls {
 		protected ControlBindingFlags ControlBinding { get; set; }
 		public event RoutedEventHandler TemplateBound;
 
+		private int fieldCount = 0, eventCount = 0, nullCount = 0;
+		private List<ControlBase> boundItems = new List<ControlBase>();
+
+		private List<FrameworkElement> children = new List<FrameworkElement>();
+		public List<FrameworkElement> Children {
+			get { return children; }
+			set { children = value; }
+		}
+
 		public override void OnApplyTemplate() {
 			try {
 				base.OnApplyTemplate();
@@ -39,6 +48,10 @@ namespace org.OpenVideoPlayer.Controls {
 			} catch (Exception ex) {
 				log.Output(OutputType.Error, "Error in Apply Template", ex);
 			}
+		}
+
+		public new DependencyObject GetTemplateChild(string name) {
+			return base.GetTemplateChild(name);
 		}
 
 		/// <summary>
@@ -79,8 +92,6 @@ namespace org.OpenVideoPlayer.Controls {
 			ApplyThemeToElement(element, null, s, recursive, false);
 		}
 
-		//protected static object theme = null;
-
 		protected static void ApplyThemeToElement(FrameworkElement element, Uri uri, Stream s, bool recursive, bool atdepth) {
 			if (element == null) return;
 			DateTime start = DateTime.Now;
@@ -92,7 +103,15 @@ namespace org.OpenVideoPlayer.Controls {
 						}
 					}
 					if (element is ContentControl) {
-						ApplyThemeToElement(((ContentControl) element).Content as FrameworkElement, uri, s, recursive, true);
+						if (((ContentControl)element).Content is FrameworkElement) {
+							ApplyThemeToElement(((ContentControl) element).Content as FrameworkElement, uri, s, recursive, true);
+						}
+					}
+					if (element is ControlBase) {
+						//((ControlBase)element)
+						foreach (FrameworkElement e in ((ControlBase)element).Children) {
+							ApplyThemeToElement(e, uri, s, recursive, true);
+						}
 					}
 					if (element is Border) {
 						ApplyThemeToElement(((Border) element).Child as FrameworkElement, uri, s, recursive, true);
@@ -105,7 +124,7 @@ namespace org.OpenVideoPlayer.Controls {
 					ImplicitStyleManager.SetResourceDictionaryStream(element, s);
 				}
 
-				ImplicitStyleManager.SetApplyMode(element, ImplicitStylesApplyMode.Auto);
+				ImplicitStyleManager.SetApplyMode(element, ImplicitStylesApplyMode.None);
 				ImplicitStyleManager.Apply(element);
 
 				if (!atdepth) {
@@ -127,42 +146,44 @@ namespace org.OpenVideoPlayer.Controls {
 			DateTime start = DateTime.Now;
 			//use reflection to eliminate all that boilerplate binding code.
 			//NOTE - field names must match element names in the xaml for binding to work!
-			BindingFlags flags = ((ControlBinding & ControlBindingFlags.Recursive) != 0) ? BindingFlags.Instance | BindingFlags.NonPublic : BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+			BindingFlags flags = ((ControlBinding & ControlBindingFlags.SearchBaseClasses) != 0) ? BindingFlags.Instance | BindingFlags.NonPublic : BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
 			List<MemberInfo> members = new List<MemberInfo>();
+
 			//get fields for the member list
-			if ((ControlBinding & ControlBindingFlags.BindFields) != 0) {
-				FieldInfo[] f = GetType().GetFields(flags);
-				foreach (FieldInfo fi in f) {
-					//only works with internal, and we only set field that start out null
-					if (fi == null || (!fi.IsAssembly && !fi.IsFamilyOrAssembly) || fi.GetValue(this)!=null) continue;
-					//add to list
-					members.Add(fi);
-				}
-			}
+			members.AddRange(GetFields(GetType(), flags));
+
 			//get properties for list
-			if ((ControlBinding & ControlBindingFlags.BindProperties) != 0) {
-				PropertyInfo[] p = GetType().GetProperties(flags);
-				foreach (PropertyInfo pi in p) {
-					//todo - check access of property accessors, and we only set field that start out null
-					if (pi == null || pi.GetValue(this, null)!=null) continue;
-					//add to list
-					members.Add(pi);
-				}
-			}
+			members.AddRange(GetProperties(GetType(), flags));
+
 			//get methods for use as event handlers			
 			List<string> handlers = new List<string>(); //prefilter this list
 			if ((ControlBinding & ControlBindingFlags.BindEvents) != 0) {
 				MethodInfo[] mi = GetType().GetMethods(flags);
 				foreach (MethodInfo m in mi) {
-					if (m.IsAssembly && m.Name.StartsWith("On") && (!((ControlBinding & ControlBindingFlags.Recursive) != 0) || m.DeclaringType.IsSubclassOf(typeof (ControlBase)))) {
+					if (m.IsAssembly && m.Name.StartsWith("On") && (!((ControlBinding & ControlBindingFlags.SearchBaseClasses) != 0) || m.DeclaringType.IsSubclassOf(typeof (ControlBase)))) {
 						handlers.Add(m.Name.ToLower());
 					}
 				}
 			}
 
-			int fc = 0, ec = 0;
-			foreach (MemberInfo mi in members) {
+			List<MemberInfo> unmatched = BindMembers(members, handlers);
+			//recuse just once at this point - TODO make truly recursive?
+			if (unmatched.Count > 0) {
+				BindMembers(unmatched, handlers);
+			}
+
+			if (fieldCount + eventCount > 0) {
+				Debug.WriteLine(string.Format("{0}, Type {1} has bound to {2} fields, {3} events in {4}ms", Name, GetType(), fieldCount, eventCount, (DateTime.Now - start).TotalMilliseconds));
+			}
+		}
+
+		private List<MemberInfo> BindMembers(List<MemberInfo> members, List<string> handlers) {
+			List<MemberInfo> unmatched = new List<MemberInfo>();
+
+			//foreach (MemberInfo mi in members){
+			for(int x = 0; x < members.Count; x++){
+				MemberInfo mi = members[x];
 				try {
 					FieldInfo fi = mi as FieldInfo;
 					PropertyInfo pi = mi as PropertyInfo;
@@ -173,11 +194,34 @@ namespace org.OpenVideoPlayer.Controls {
 					if (!itemType.Equals(typeof (FrameworkElement)) && !itemType.IsSubclassOf(typeof (FrameworkElement)) && !itemType.IsInterface) continue;
 					//this points to the protected method to get a child from template.
 					object o = GetTemplateChild(mi.Name);
+
+					//is null? 
+					if (o == null) {
+						//if recursive, search our already bound items
+						if ((ControlBinding & ControlBindingFlags.Recursive) != 0) {
+							foreach (ControlBase c in boundItems) {
+								if ((o = c.GetTemplateChild(mi.Name)) != null) {
+									break;
+								}
+							}
+						}
+						//if not recursive or still no match, add to unmatched list and re-loop
+						if (o == null) {
+							unmatched.Add((fi != null) ? (MemberInfo)fi : (MemberInfo)pi);
+							continue;
+						}
+					}
+
+					if(o is FrameworkElement) children.Add(o as FrameworkElement);
+
 					//preload all child templates
-					if (o is ControlBase) ((ControlBase) o).ApplyTemplate();
+					if (o is ControlBase) {
+						((ControlBase) o).ApplyTemplate();
+						boundItems.Add(o as ControlBase);
+					}
 
 					//make sure the types match
-					if (o == null || (!o.GetType().Equals(itemType) && !o.GetType().IsSubclassOf(itemType) && !(itemType.IsInterface && ReflectionHelper.TypeHasInterface(o.GetType(), itemType)))) continue;
+					if (!o.GetType().Equals(itemType) && !o.GetType().IsSubclassOf(itemType) && !(itemType.IsInterface && ReflectionHelper.TypeHasInterface(o.GetType(), itemType))) continue;
 
 					//set the value finally
 					if (fi != null) {
@@ -185,7 +229,7 @@ namespace org.OpenVideoPlayer.Controls {
 					} else {
 						pi.SetValue(this, o, null);
 					}
-					fc++;
+					fieldCount++;
 
 					if ((ControlBinding & ControlBindingFlags.BindEvents) != 0) {
 						EventInfo[] ei = itemType.GetEvents();
@@ -199,7 +243,7 @@ namespace org.OpenVideoPlayer.Controls {
 									if (method.Contains(fi.Name.ToLower()) && method.Contains(e.Name.ToLower())) {
 										Delegate eh = Delegate.CreateDelegate(e.EventHandlerType, this, method, true, true);
 										e.AddEventHandler(o, eh);
-										ec++;
+										eventCount++;
 										//Debug.WriteLine("Bound Event: " + e.Name + " to " + method);
 									}
 								}
@@ -213,9 +257,36 @@ namespace org.OpenVideoPlayer.Controls {
 					Debug.WriteLine("Error binding member " + mi.Name + ", " + ex);
 				}
 			}
-			if (fc + ec > 0) {
-				Debug.WriteLine(Name + ", Type " + GetType() + " has bound to " + fc + " fields, " + ec + " events in " + (DateTime.Now - start).TotalMilliseconds + "ms");
+
+			return unmatched;
+		}
+
+		private List<MemberInfo> GetFields(Type t, BindingFlags flags) {
+			List<MemberInfo> members = new List<MemberInfo>();
+			if ((ControlBinding & ControlBindingFlags.BindFields) != 0) {
+				FieldInfo[] f = t.GetFields(flags);
+				foreach (FieldInfo fi in f) {
+					//only works with internal, and we only set field that start out null
+					if (fi == null || (!fi.IsAssembly && !fi.IsFamilyOrAssembly) || fi.GetValue(this)!=null) continue;
+					//add to list
+					members.Add(fi);
+				}
 			}
+			return members;
+		}
+
+		private List<MemberInfo> GetProperties(Type t, BindingFlags flags) {
+			List<MemberInfo> members = new List<MemberInfo>();
+			if ((ControlBinding & ControlBindingFlags.BindProperties) != 0) {
+				PropertyInfo[] p = t.GetProperties(flags);
+				foreach (PropertyInfo pi in p) {
+					//todo - check access of property accessors, and we only set field that start out null
+					if (pi == null || pi.GetValue(this, null)!=null) continue;
+					//add to list
+					members.Add(pi);
+				}
+			}
+			return members;
 		}
 	}
 
@@ -224,10 +295,29 @@ namespace org.OpenVideoPlayer.Controls {
 	/// </summary>
 	[Flags]
 	public enum ControlBindingFlags{
+		/// <summary>
+		/// Default - no binding at all - xaml template must be manually bound with GetTemplateChild()
+		/// </summary>
 		Disabled = 0,
+		/// <summary>
+		/// Bind xaml template items to like-named internal fields
+		/// </summary>
 		BindFields = 1,
+		/// <summary>
+		/// Bind xaml template items to like-named internal properties
+		/// </summary>
 		BindProperties = 2,
+		/// <summary>
+		/// Look for matching handlers for events on our members and bind them
+		/// </summary>
 		BindEvents = 4,
-		Recursive = 8,
+		/// <summary>
+		/// Look at members defined on base classes
+		/// </summary>
+		SearchBaseClasses = 8,
+		/// <summary>
+		/// Recursively search members of our sucessfully bound members for matches
+		/// </summary>
+		Recursive = 16
 	}
 }

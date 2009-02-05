@@ -1,2 +1,2 @@
 //Change the line below to the desired version, during the build process it will update all related projects.
-2.1.42
+2.1.70

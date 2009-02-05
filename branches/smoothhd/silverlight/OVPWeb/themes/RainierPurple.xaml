@@ -98,11 +98,25 @@
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
     <Style TargetType="Visuals:ContentButtonPlaylist">
-        <Setter Property="Visibility" Value="Collapsed" />
+			<Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
     <Style TargetType="Visuals:ContentButtonChapters">
-        <Setter Property="Visibility" Value="Collapsed" />
+			<Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
+
+	<Style TargetType="Visuals:ControlsPanel">
+		<!--<Setter Property="Highlight" Value="{StaticResource Highlight}" />-->
+		<Setter Property="Highlight">
+			<Setter.Value>
+				<SolidColorBrush Color="#FF000000" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Background">
+			<Setter.Value>
+				<SolidColorBrush Color="#FF000000" />
+			</Setter.Value>
+		</Setter>
+	</Style>
 
     <Style TargetType="Visuals:QualityGauge">
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
@@ -126,15 +140,17 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Rectangle Height="Auto" Margin="4,4,4,4" Fill="{StaticResource NormalBrush}" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
+                            <Rectangle Height="Auto" Margin="0,4,0,4" Fill="{StaticResource NormalBrush}" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
                             </Rectangle>
                             <RepeatButton x:Name="HorizontalTrackLargeChangeDecreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="0" />
-                            <Rectangle x:Name="LeftTrack" Fill="{StaticResource Foreground}" Grid.Column="0" Opacity=".7" Margin="4,7,0,7" Cursor="Hand">
+                            <Rectangle x:Name="LeftTrack" Fill="{StaticResource Foreground}" Grid.Column="0" Opacity=".7" Margin="0,7,0,7" Cursor="Hand">
                             </Rectangle>
                             <Thumb Height="Auto" x:Name="HorizontalThumb" Width="8" IsTabStop="True" Grid.Column="1" Visibility="Collapsed" />
                             <RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="2" />
-                            <Rectangle x:Name="RightTrack" Fill="{StaticResource Foreground}" Margin="0,7,4,7" Height="Auto" Grid.Column="2" Cursor="Hand" Opacity="0.3">
+                            <Rectangle x:Name="RightTrack" Fill="{StaticResource Foreground}" Margin="0,7,0,7" Height="Auto" Grid.Column="2" Cursor="Hand" Opacity="0.3">
                             </Rectangle>
+													<Rectangle x:Name="Download" Margin="0,2,0,2" Fill="White" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+					 Grid.Column="0" Grid.ColumnSpan="3" Cursor="Hand" Opacity="0.4" Height="2" Width="0" />
                         </Grid>
                         <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
                         </Grid>

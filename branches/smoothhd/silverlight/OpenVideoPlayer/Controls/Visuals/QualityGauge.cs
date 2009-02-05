@@ -29,18 +29,17 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		public SolidColorBrush Green = new SolidColorBrush(Color.FromArgb(255, 175, 255, 175));
 
 		internal Panel layoutRoot;
-
+		Grid g;
 
 		private int levels;
 		public int Levels {
 			get { return levels; }
 			set {
-				Grid g = layoutRoot as Grid;
+				//Grid g = layoutRoot as Grid;
 				
 				if (levels != value || (g!=null && ((Vertical && g.RowDefinitions.Count!=value) || g.ColumnDefinitions.Count!=value ))) {
 					levels = value;
 					if (layoutRoot != null) {
-						
 						SetLevels();
 					}
 				}
@@ -86,21 +85,34 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 
 		public Double Value {
 			get { return value; }
-			set { 
+			set {
+				if (value == this.value) return;
 				this.value = value;
 				int f = (int)(Levels * value);			
-				Grid g = ((Grid) layoutRoot);
+				//Grid g = ((Grid) layoutRoot);
 
-				foreach (Path p in g.Children) {
+				foreach (UIElement e in g.Children) {
+					Path p = e as Path;
+					if (p == null) continue;
+
 					p.Stroke = Foreground; //(f <  new SolidColorBrush(Colors.White);
 					int level = (Vertical) ? (int) p.GetValue(Grid.RowProperty) : (Levels-1-(int)p.GetValue(Grid.ColumnProperty));
 					if (level == Levels - 1) continue;
 					p.Visibility = (level < Levels - f) ? Visibility.Collapsed : Visibility.Visible;
 				}
 				if (levels == 1) {
-					g.Background = Foreground;
+					//g.Background = Foreground;
+					if (icon != null) {
+						icon.Visibility = Visibility.Visible;
+					} else {
+						g.Background = Foreground;
+					}
 				} else {
-					g.Background = Background;
+					if (icon != null) {
+						icon.Visibility = Visibility.Collapsed;
+					} else {
+						g.Background = Background;
+					}
 				}
 			}
 		}
@@ -108,8 +120,8 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		public new Brush Foreground {
 			get { return base.Foreground; }
 			set {
-				Grid g = ((Grid) layoutRoot);
-				if (g == null) return;
+				//Grid g = ((Grid) layoutRoot);
+				if (g == null || Foreground == value) return;
 				//foreach (Path p in g.Children) {
 				//    Storyboard sb = new Storyboard() { BeginTime = TimeSpan.Zero, Duration = new Duration(TimeSpan.FromSeconds(1)) };
 				//    ColorAnimation ca = new ColorAnimation() { BeginTime= TimeSpan.Zero,  Duration = new Duration(TimeSpan.FromSeconds(1)), From = ((SolidColorBrush)Foreground).Color, To = ((SolidColorBrush)value).Color };
@@ -131,12 +143,14 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		}
 		public static DependencyProperty HighlightProperty = DependencyProperty.Register("Highlight", typeof(Brush), typeof(QualityGauge), new PropertyMetadata(null));
 
+		protected FrameworkElement icon;
 
 		public override void OnApplyTemplate() {
 			base.OnApplyTemplate();
 			layoutRoot = GetTemplateChild("layoutRoot") as Panel;
+			icon = GetTemplateChild("icon") as FrameworkElement;
 			//BindTemplate(this, GetTemplateChild);
-
+			g = layoutRoot as Grid;
 			SetLevels();
 
 			Value = value;
@@ -150,11 +164,24 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 			g.RowDefinitions.Clear();
 			g.ColumnDefinitions.Clear();
 			g.Children.Clear();
+			if (icon != null) g.Children.Add(icon);
 
 			if (levels == 1) {
-				g.Background = new SolidColorBrush(fc);
-				g.Margin = new Thickness(3);
+				if (icon != null) {
+					icon.Visibility = Visibility.Visible;
+				} else {
+					g.Background = new SolidColorBrush(fc);
+				}
+			
+			//g.Margin = new Thickness(3);
+
 			} else {
+				if (icon != null) {
+					icon.Visibility = Visibility.Collapsed;
+				} else {
+					g.Background = Background;
+				}
+
 				g.Margin = new Thickness(0);
 				for (int i = 0; i < Levels; i++) {
 					if (Vertical) {
