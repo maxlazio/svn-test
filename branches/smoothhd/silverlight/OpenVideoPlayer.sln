@@ -7,32 +7,29 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OVPImplementation", "OVPImp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OVPWeb", "OVPWeb\OVPWeb.csproj", "{14B58E75-546C-4B58-BBFA-666F9C8EBB47}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{3AEA2F9B-39D3-4D49-8105-091CD7DE6C37}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{3AEA2F9B-39D3-4D49-8105-091CD7DE6C37}"
 	ProjectSection(SolutionItems) = preProject
-		AdConnectors.txt = AdConnectors.txt
-		ChangeLog.txt = ChangeLog.txt
-		Deployment.txt = Deployment.txt
-		Implementation.txt = Implementation.txt
-		License.txt = License.txt
-		prebuild.cmd = prebuild.cmd
+		Docs\AdConnectors.txt = Docs\AdConnectors.txt
+		Docs\ChangeLog.txt = Docs\ChangeLog.txt
+		Docs\Deployment.txt = Docs\Deployment.txt
+		Docs\Implementation.txt = Docs\Implementation.txt
+		Docs\License.txt = Docs\License.txt
 		ReadMe.txt = ReadMe.txt
-		todo.txt = todo.txt
-		version.txt = version.txt
+		Docs\todo.txt = Docs\todo.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OVPDefinitions", "OVPDefinitions\OVPDefinitions.csproj", "{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SilverlightToolkit", "SilverlightToolkit", "{249DAB6A-ED70-4D9D-8D3F-1EAACF186D77}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "SilverlightToolkit\Controls\Controls.csproj", "{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls.Input", "SilverlightToolkit\Controls.Input\Controls.Input.csproj", "{6FC39008-405B-405C-BAAE-BF20208F7635}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls.Theming", "SilverlightToolkit\Controls.Theming\Controls.Theming.csproj", "{94D59978-57A5-4EF9-8659-D33DD73A50C7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{C7775CAD-8CA5-4F8A-91A7-5F601BC3D0DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OVPTests", "UnitTests\OVPTests\OVPTests.csproj", "{77EC0366-6C86-4D29-98BA-4D9264280EB9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildProcess", "BuildProcess", "{DC6DE9A2-E0A4-4421-AB22-A2B8781A501A}"
+	ProjectSection(SolutionItems) = preProject
+		Other\postbuild.cmd = Other\postbuild.cmd
+		Other\prebuild.cmd = Other\prebuild.cmd
+		Other\Version.txt = Other\Version.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,36 +81,6 @@ Global
 		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Release|.NET.ActiveCfg = Release|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Release|.NET.ActiveCfg = Release|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{6FC39008-405B-405C-BAAE-BF20208F7635}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Release|.NET.ActiveCfg = Release|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{77EC0366-6C86-4D29-98BA-4D9264280EB9}.Debug|.NET.ActiveCfg = Debug|Any CPU
 		{77EC0366-6C86-4D29-98BA-4D9264280EB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{77EC0366-6C86-4D29-98BA-4D9264280EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -129,9 +96,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9} = {249DAB6A-ED70-4D9D-8D3F-1EAACF186D77}
-		{6FC39008-405B-405C-BAAE-BF20208F7635} = {249DAB6A-ED70-4D9D-8D3F-1EAACF186D77}
-		{94D59978-57A5-4EF9-8659-D33DD73A50C7} = {249DAB6A-ED70-4D9D-8D3F-1EAACF186D77}
 		{77EC0366-6C86-4D29-98BA-4D9264280EB9} = {C7775CAD-8CA5-4F8A-91A7-5F601BC3D0DE}
 	EndGlobalSection
 EndGlobal
