@@ -44,7 +44,7 @@
         
         <StackPanel x:Name="playlistStackPanel" Grid.Row="1" Opacity="0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Orientation="Horizontal" Width="Auto" Margin="0,0,0,0">
             <!---Groupbox-->
-            <StackPanel Margin="4,0,0,0">
+            <StackPanel x:Name="groupPanel" Margin="4,0,0,0">
                 <Button x:Name="scrollUp" IsEnabled="False" Height="16" Cursor="Hand" Width="222" Margin="0,0,0,1" Background="#FF0F2A3D" Click="scrollUp_Click">
                     <Path Width="14.3333" Height="8.33333" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Fill" StrokeThickness="3" StrokeLineJoin="Miter" Stroke="#FFFFFFFF" Data="M -17.6719,14.9792L -11.6959,8.97916L -5.33854,15.3125" />
                 </Button>
@@ -345,10 +345,7 @@
         </StackPanel>
 
         <Canvas><!--These will be dynamically placed as page layout changes-->
-            <Canvas Name="BugContainer"/>
-            <!--<Border Name="BannerContainer" Background="Black" Opacity=".7"  HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" />-->
-            <!--<Grid Name="BannerContainer" Visibility="Collapsed" Background="Black" Opacity=".7">BorderBrush="Blue" BorderThickness="1"-->
-                <!--<Rectangle Fill="Black" Opacity=".7" />-->
+            <Canvas Name="BugContainer" />
             <Grid Name="BannerContainer" HorizontalAlignment="Center" />
         </Canvas>
     </Grid>

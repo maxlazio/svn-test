@@ -378,6 +378,26 @@
 
     <SolidColorBrush x:Key="Foreground" Color="#FF042271" />
     <SolidColorBrush x:Key="Highlight" Color="#FF387599" />
+	<SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource Foreground}" />
+	<SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource Highlight}" />
+
+	<Style TargetType="Player:OpenVideoPlayerControl">
+		<Setter Property="Highlight" Value="{StaticResource btnPressBorder}" />
+	</Style>
+
+	<Style TargetType="Visuals:ControlsPanel">
+		<!--<Setter Property="Highlight" Value="{StaticResource Highlight}" />-->
+		<Setter Property="Highlight">
+			<Setter.Value>
+				<SolidColorBrush Color="#FF000000" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Background">
+			<Setter.Value>
+				<SolidColorBrush Color="#FF000000" />
+			</Setter.Value>
+		</Setter>
+	</Style>
 
     <Style TargetType="Visuals:ContentButtonPause">
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
@@ -411,16 +431,16 @@
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
     <Style TargetType="Visuals:ContentButtonPlaylist">
-        <Setter Property="Visibility" Value="Collapsed" />
+			<Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
     <Style TargetType="Visuals:ContentButtonChapters">
-        <Setter Property="Visibility" Value="Collapsed" />
+			<Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
 
     <Style TargetType="Visuals:QualityGauge">
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Highlight" Value="{StaticResource Highlight}" />
+        <Setter Property="Highlight" Value="{StaticResource HighlightBrush}" />
     </Style>
 
     <Style TargetType="Visuals:ScrubberBar">
@@ -439,15 +459,17 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Rectangle Height="Auto" Margin="4,4,4,4" Fill="{StaticResource grayGradient}" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
+                            <Rectangle Height="Auto" Margin="0,4,0,4" Fill="{StaticResource grayGradient}" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
                             </Rectangle>
                             <RepeatButton x:Name="HorizontalTrackLargeChangeDecreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="0" />
-                            <Rectangle x:Name="LeftTrack" Fill="{StaticResource Foreground}" Grid.Column="0" Opacity=".7" Margin="4,7,0,7" Cursor="Hand">
+                            <Rectangle x:Name="LeftTrack" Fill="{StaticResource Foreground}" Grid.Column="0" Opacity=".7" Margin="0,7,0,7" Cursor="Hand">
                             </Rectangle>
                             <Thumb Height="Auto" x:Name="HorizontalThumb" Width="8" IsTabStop="True" Grid.Column="1" Visibility="Collapsed" />
                             <RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="2" />
-                            <Rectangle x:Name="RightTrack" Fill="{StaticResource Foreground}" Margin="0,7,4,7" Height="Auto" Grid.Column="2" Cursor="Hand" Opacity="0.3">
+                            <Rectangle x:Name="RightTrack" Fill="{StaticResource Foreground}" Margin="0,7,0,7" Height="Auto" Grid.Column="2" Cursor="Hand" Opacity="0.3">
                             </Rectangle>
+													<Rectangle x:Name="Download" Margin="0,2,0,2" Fill="White" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+					 Grid.Column="0" Grid.ColumnSpan="3" Cursor="Hand" Opacity="0.6" Height="2" Width="0" />
                         </Grid>
                         <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
                         </Grid>
@@ -457,9 +479,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Player:OpenVideoPlayerControl">
-        <Setter Property="Highlight" Value="{StaticResource Highlight}" />
-    </Style>
 
     <!--END OVP ITems -->
 

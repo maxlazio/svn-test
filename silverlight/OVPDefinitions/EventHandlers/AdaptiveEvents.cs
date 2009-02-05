@@ -45,4 +45,14 @@ namespace org.OpenVideoPlayer {
 		public Assembly Assembly{get;set;}
 		public Type PluginType { get; set; }
 	}
+
+	public delegate void ConnectionEventHandler(object sender, EventArgs e);
+
+	public delegate void PlaylistIndexChangingEventHandler(object sender, PlaylistIndexChangingEventArgs args);
+
+	public class PlaylistIndexChangingEventArgs : EventArgs {
+		public int CurrentIndex { get; set; }
+		public int NewIndex { get; set; }
+		public bool Cancel { get; set; }
+	}
 }

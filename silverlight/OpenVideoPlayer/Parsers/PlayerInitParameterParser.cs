@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Media;
+using org.OpenVideoPlayer;
 using org.OpenVideoPlayer.Connections;
 using org.OpenVideoPlayer.Media;
 using org.OpenVideoPlayer.Controls;
@@ -32,8 +33,20 @@ namespace org.OpenVideoPlayer.Parsers {
 		/// <param name="player">the player to set values to</param>
 		public void ImportInitParams(StartupEventArgs e, OpenVideoPlayerControl player) {
 			foreach (string param in e.InitParams.Keys) {
-				ParseParameter(param.ToLower(), e.InitParams[param], player);
+				string key = param.ToLower();
+				ParseParameter(key, e.InitParams[param], player);
 			}
+		}
+
+		public void RetryUnmatched(OpenVideoPlayerControl player) {
+			List<string> found = new List<string>();
+			foreach (string param in Unmatched.Keys) {
+				string key = param.ToLower();
+				if (ParseParameter(key, Unmatched[param], player)) {
+					found.Combine(key);
+				}
+			}
+			foreach (string key in found) Unmatched.Remove(key);
 		}
 
 		/// <summary>
@@ -42,77 +55,91 @@ namespace org.OpenVideoPlayer.Parsers {
 		/// <param name="key">the key of the param</param>
 		/// <param name="initValue">the value of the param</param>
 		/// <param name="player">a player, to set values to</param>
-		public void ParseParameter(string key, string initValue, OpenVideoPlayerControl player) {
-			switch(key) {
-				case "theme":
-					_player = player;
-					if (!initValue.Contains(";component/")) {
-						WebClient wwc = new WebClient();
-						Uri exuri = (Uri.IsWellFormedUriString(initValue, UriKind.Absolute))? new Uri(initValue) : new Uri(HtmlPage.Document.DocumentUri,initValue);
-						wwc.OpenReadCompleted += new OpenReadCompletedEventHandler(Theme_DownloadCompleted);
-						wwc.OpenReadAsync(exuri, exuri);
-						player.Visibility = Visibility.Collapsed;
-						return;
-					}
-					Uri uri = new Uri(initValue, UriKind.Relative); //@"SLLib;component/themes/default.xaml"
-					try {
-						//player.ApplyTheme(uri, false);
-						ControlBase.ApplyThemeToElement(player.LayoutRoot, uri, true);
-						ControlBase.ApplyThemeToElement(player.Parent as FrameworkElement, uri, true);
-					} catch (Exception ex) {
-						log.Output(OutputType.Error, "Can't apply template: ", ex.Message);
-					}
-					break;
-
-				case "autoplay":
-					player.AutoPlay = (initValue == "1" || initValue.ToUpper() == "TRUE");
-					break;
-				case "muted":
-					player.Muted = ParseBool(initValue);
-					break;
-				case "stretchmode":
-					player.StretchMode = ParseStretchMode(initValue);
-					break;
-				case "showstats":
-					player.ShowStatistics = ParseBool(initValue);// ? Visibility.Visible : Visibility.Collapsed;
-					break;
-				case "showlogs":
-					player.ShowLogViewer = ParseBool(initValue);// ? Visibility.Visible : Visibility.Collapsed;
-					break;
-				case "playlistoverlay":
-					player.PlayListOverlay = ParseBool(initValue);
-					break;
-				case "linkurl":
-					player.LinkUrl = initValue;
-					break;
-				case "embedtag":
-					player.EmbedTag = initValue;
-					break;
-
-				case "playlist":
-				case "mediasource":
-				case "playlistsource":
-				case "feedsource":
-				case "refsource":
-					ParseSource(player.Playlist, key, initValue);
-					break;
-
-				case "plugins":
-					if (!string.IsNullOrEmpty(initValue)) {
-						foreach (string s in initValue.Split(' ')) {
-							Uri u = (Uri.IsWellFormedUriString(s, UriKind.Absolute) ? new Uri(s) : new Uri(HtmlPage.Document.DocumentUri, s));
-							PluginManager.LoadPlugin(u, null);
+		public bool ParseParameter(string key, string initValue, OpenVideoPlayerControl player) {
+			try {
+				switch (key) {
+					case "theme":
+						_player = player;
+						if (!initValue.Contains(";component/")) {
+							WebClient wwc = new WebClient();
+							Uri exuri = (Uri.IsWellFormedUriString(initValue, UriKind.Absolute)) ? new Uri(initValue) : new Uri(HtmlPage.Document.DocumentUri, initValue);
+							wwc.OpenReadCompleted += new OpenReadCompletedEventHandler(Theme_DownloadCompleted);
+							wwc.OpenReadAsync(exuri, exuri);
+							player.Visibility = Visibility.Collapsed;
+							return true;
 						}
-					}
-					break;
-				case "type":
-					break;
+						Uri uri = new Uri(initValue, UriKind.Relative); //@"SLLib;component/themes/default.xaml"
+						try {
+							//player.ApplyTheme(uri, true);
+							ControlBase.ApplyThemeToElement(player.LayoutRoot, uri, true);
+							ControlBase.ApplyThemeToElement(player.Parent as FrameworkElement, uri, true);
+						} catch (Exception ex) {
+							log.Output(OutputType.Error, "Can't apply template: ", ex.Message);
+						}
+						break;
 
-				default:
-					if(!key.Contains(":")) log.Output(OutputType.Debug, "Unknown Parameter: " + key);
-					break;
+						//TODO - make proper properties for these
+					case "statsopacity":
+						((FrameworkElement)player.stats.Parent).Opacity = Convert.ToDouble(initValue);
+						break;
+
+					case "logsopacity":
+						((FrameworkElement)player.logViewer.Parent).Opacity = Convert.ToDouble(initValue);
+						break;
+
+					case "playlist":
+					case "mediasource":
+					case "playlistsource":
+					case "feedsource":
+					case "refsource":
+						ParseSource(player.Playlist, key, initValue);
+						break;
+
+					case "plugins":
+						if (!string.IsNullOrEmpty(initValue)) {
+							foreach (string s in initValue.Split(' ')) {
+								Uri u = (Uri.IsWellFormedUriString(s, UriKind.Absolute) ? new Uri(s) : new Uri(HtmlPage.Document.DocumentUri, s));
+								PluginManager.LoadPlugin(u, null);
+							}
+						}
+						break;
+
+					case "type":
+						//this is handled by the application.  
+						break;
+
+					default:
+						//look for property on player
+						if (ReflectionHelper.SetValue(player, key, initValue)) break;
+
+						//look for property in plugins
+						bool match = false;
+						foreach (IPlugin ip in player.Plugins) {
+							if (match = (key.StartsWith(ip.PlugInName.ToLower()) || key.StartsWith(ip.GetType().Name.ToLower()) || key.StartsWith(ip.GetType().FullName.ToLower()))) {
+								ReflectionHelper.SetValue(ip.GetType(), key.Substring(key.IndexOf('.') + 1), initValue);
+								break;
+							}
+						}
+						if (match) break;
+
+						//log 'misses'
+						if (!key.Contains(":")) {
+							log.Output(OutputType.Debug, "Unknown Parameter: " + key);
+							if (!Unmatched.ContainsKey(key)) Unmatched.Add(key, initValue);
+							return false;
+						}
+
+						break;
+				}
+				return true;
+
+			} catch (Exception ex) {
+				log.Output(OutputType.Error, "Error parsing parameter: " + key, ex);
+				return false;
 			}
 		}
+
+		public Dictionary<string, string> Unmatched = new Dictionary<string, string>();
 
 		void Theme_DownloadCompleted(object sender, OpenReadCompletedEventArgs e) {
 			try {
@@ -139,33 +166,6 @@ namespace org.OpenVideoPlayer.Parsers {
 			}
 		}
 
-		private bool ParseBool(string initValue) {
-			return (initValue == "1" || initValue.ToUpper() == "TRUE");
-		}
-
-		protected Stretch ParseStretchMode(string args) {
-			args = args.ToLower();  // force it to-lower for matching
-			if (args == "1" || args == "uniform" || args == "fit") {
-				return Stretch.Uniform;
-			}
-			if (args == "2" || args == "uniformtofill" || args == "fill") {
-				return Stretch.UniformToFill;
-			}
-			if (args == "3" || args == "stretch") {
-				return Stretch.Fill;
-			}
-
-			//nativs
-			return Stretch.None;
-		}
-
-		protected Color ParseBGColor(string args) {
-			try {
-				return Conversion.ColorFromString(args);
-			} catch (System.FormatException) {
-				return Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
-			}
-		}
 
 		#region Source/Playlist specific
 

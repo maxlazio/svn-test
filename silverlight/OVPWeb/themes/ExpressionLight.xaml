@@ -12,10 +12,69 @@
                     xmlns:controls="clr-namespace:Microsoft.Windows.Controls;assembly=Microsoft.Windows.Controls"
                     xmlns:input="clr-namespace:Microsoft.Windows.Controls;assembly=Microsoft.Windows.Controls.Input"
                     xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls"
+										    xmlns:Player="clr-namespace:org.OpenVideoPlayer.Controls;assembly=OpenVideoPlayer"
+    xmlns:Visuals="clr-namespace:org.OpenVideoPlayer.Controls.Visuals;assembly=OpenVideoPlayer"
 >
 
 
 
+	<Color x:Key="Fground">#FF000000</Color>
+	<SolidColorBrush x:Key="FBrush" Color="{StaticResource Fground}" />
+	<Color x:Key="Highlight">#FFDDDDDD</Color>
+	<SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource Highlight}" />
+
+	<Style TargetType="Player:OpenVideoPlayerControl">
+		<Setter Property="Highlight" Value="{StaticResource HighlightBrush}" />
+	</Style>
+
+	<Style TargetType="Visuals:ControlsPanel">
+		<!--<Setter Property="Highlight" Value="{StaticResource Highlight}" />-->
+		<Setter Property="Highlight" Value="{StaticResource HighlightBrush}" />
+		<Setter Property="Background" Value="{StaticResource HighlightBrush}" />
+	</Style>
+
+	<!--<Style TargetType="Visuals:ContentButtonPlaylist">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonChapters">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>-->
+
+	<Style TargetType="Visuals:ScrubberBar">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Slider">
+					<Grid x:Name="Root">
+						<Grid.Resources>
+							<ControlTemplate x:Key="RepeatButtonTemplate">
+								<Grid x:Name="Root" Opacity="0" Background="Transparent" />
+							</ControlTemplate>
+						</Grid.Resources>
+						<Grid x:Name="HorizontalTemplate" Background="Transparent">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<Rectangle Height="Auto" Margin="0,4,0,4" Fill="{StaticResource HighlightBrush}" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
+							</Rectangle>
+							<RepeatButton x:Name="HorizontalTrackLargeChangeDecreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="0" />
+							<Rectangle x:Name="LeftTrack" Fill="{StaticResource FBrush}" Grid.Column="0" Opacity=".7" Margin="0,7,0,7" Cursor="Hand">
+							</Rectangle>
+							<Thumb Height="Auto" x:Name="HorizontalThumb" Width="8" IsTabStop="True" Grid.Column="1" Visibility="Collapsed" />
+							<RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="2" />
+							<Rectangle x:Name="RightTrack" Fill="{StaticResource FBrush}" Margin="0,7,0,7" Height="Auto" Grid.Column="2" Cursor="Hand" Opacity="0.3">
+							</Rectangle>
+							<Rectangle x:Name="Download" Margin="0,2,0,4" Fill="{StaticResource FBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+					 Grid.Column="0" Grid.ColumnSpan="3" Cursor="Hand" Opacity="0.4" Height="2" Width="0" />
+						</Grid>
+						<Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
+						</Grid>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
     <!-- EXPRESSION LIGHT VALUES -->
 
     <SolidColorBrush x:Key="TextBrush" Color="#FF000000" />

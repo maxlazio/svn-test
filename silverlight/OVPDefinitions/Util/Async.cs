@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Controls;
+using System.Windows.Threading;
+using System.Windows;
+using System.Diagnostics;
 
 
 namespace org.OpenVideoPlayer.Util {
@@ -45,7 +48,7 @@ namespace org.OpenVideoPlayer.Util {
 		/// <param name="getRetVal">If true, and the method/delgete returns something, it is included in the AsyncRes returned (after the method completes)</param>
 		/// <returns>AsyncRes with all kind o' goodies for waiting, resturn and result values, etc.</returns>
 		public static AsyncRes Do(DlgR d, bool getRetVal, ReenteranceMode rMode) {
-			return Do(d, null, getRetVal, null, true, rMode,  true);
+			return Do(d, null, getRetVal, null, true, rMode,  true, null);
 		}
 
 		/// <summary>
@@ -56,7 +59,7 @@ namespace org.OpenVideoPlayer.Util {
 		/// <param name="rMode">If true, will make sure no other instances are running your method.</param>
 		/// <returns>AsyncRes with all kind o' goodies for waiting, result values, etc.</returns>
 		public static AsyncRes Do(Dlg d, ReenteranceMode rMode) {
-			return Do(null, d, false, null, true, rMode,  true);
+			return Do(null, d, false, null, true, rMode, true, null);
 		}
 
 		/// <summary>
@@ -69,7 +72,7 @@ namespace org.OpenVideoPlayer.Util {
 		/// <param name="getRetVal">If true, and the method/delgete returns something, it is included in the AsyncRes returned (after the method completes)</param>
 		/// <returns>AsyncRes with all kind o' goodies for waiting, resturn and result values, etc.</returns>
 		public static AsyncRes Do(DlgR d, bool getRetVal, object state, bool tryThreadPool, ReenteranceMode rMode) {
-			return Do(d, null, getRetVal, state, tryThreadPool, rMode,  true);
+			return Do(d, null, getRetVal, state, tryThreadPool, rMode, true, null);
 		}
 
 		/// <summary>
@@ -81,7 +84,7 @@ namespace org.OpenVideoPlayer.Util {
 		/// <param name="rMode">If true, will make sure no other instances are running your method.</param>
 		/// <returns>AsyncRes with all kind o' goodies for waiting, result values, etc.</returns>
 		public static AsyncRes Do(Dlg d, object state, bool tryThreadPool, ReenteranceMode rMode) {
-			return Do(null, d, false, state, tryThreadPool, rMode,  true);
+			return Do(null, d, false, state, tryThreadPool, rMode, true, null);
 		}
 		#endregion
 
@@ -96,7 +99,7 @@ namespace org.OpenVideoPlayer.Util {
 		/// <param name="tryThreadPool">True to use the TP, otherwise just go to a ful lthread - good for long running tasks.</param>
 		/// <param name="rMode">If true, will make sure no other instances are running your method.</param>
 		/// <returns>AsyncRes with all kind o' goodies for waiting, result values, etc.</returns>
-		private static AsyncRes Do(DlgR dr, Dlg d, bool getRetVal, object state, bool tryThreadPool, ReenteranceMode rMode, bool async) {
+		private static AsyncRes Do(DlgR dr, Dlg d, bool getRetVal, object state, bool tryThreadPool, ReenteranceMode rMode, bool async, DependencyObject dep) {
 			//get a generic MethodInfo for checks..
 			MethodInfo mi = ((dr != null) ? dr.Method : d.Method);
 			//make a unique key for output usage
@@ -115,53 +118,44 @@ namespace org.OpenVideoPlayer.Util {
 						d();//otherwise the simpler dlg
 					}
 				} catch (Exception ex) { //we never want a rogue exception on a random thread, it can't bubble up anywhere
-					Console.WriteLine("Async Exception:" + ex);
+					Debug.WriteLine("Async Exception:" + ex);
 				} finally {
 					FinishInvoke(res);//this will fire our callback if they used it, and clean up
 				}
 			};
 
-			//if (control != null) {
-			//    res.control = control;
-			//    res.result = AsyncAction.ControlInvoked;
-			//    if (!async) {
-			//        if (!control.InvokeRequired) {
-			//            res.completedSynchronously = true;
-			//            dlg();
-			//        } else {
-			//            control.Invoke(dlg);
-			//        }
-			//    } else {
-			//        control.BeginInvoke(dlg);
-			//    }
-			//    return res;
-			//} //don't catch these errors - if this fails, we shouldn't try a real thread or threadpool!
+			if (dep!=null) {
+				res.control = dep;
+				res.result = AsyncAction.ControlInvoked;
+				if (!async) {
+					if (dep.Dispatcher.CheckAccess()) {
+						res.completedSynchronously = true;
+						dlg();
+					} else {
+						dep.Dispatcher.BeginInvoke(dlg);
+					}
+				} else {
+					dep.Dispatcher.BeginInvoke(dlg);
+				}
+				return res;
+			} //don't catch these errors - if this fails, we shouldn't try a real thread or threadpool!
 
-			if (tryThreadPool) { //we are going to use the .NET threadpool
+			if (tryThreadPool) {
+				//we are going to use the .NET threadpool
 				try {
-					//get some stats - much better than trying and silently failing or throwing an expensive exception
-					//int minThreads, minIO, threads, ioThreads, totalThreads, totalIO;
-					//ThreadPool.GetMinThreads(out minThreads, out minIO);
-					//ThreadPool.GetAvailableThreads(out threads, out ioThreads);
-					//ThreadPool.GetMaxThreads(out totalThreads, out totalIO);
+					//this is what actually fires this task off..
+					bool result = ThreadPool.QueueUserWorkItem(delegate { dlg(); });
+					if (result) {
+						res.result = AsyncAction.ThreadPool;
+						//this means success in queueing and running the item
+						return res;
+					} else {
+						//according to docs, this "won't ever happen" - exception instead, but just for kicks.
+						Debug.WriteLine("Failed to queue in threadpool. Method: " + key);
+					}
 
-					////check for at least our thread plus one more in ThreadPool
-					//if (threads > minThreads) {
-						//this is what actually fires this task off..
-						bool result = ThreadPool.QueueUserWorkItem(delegate { dlg(); });
-						if (result) {
-							res.result = AsyncAction.ThreadPool;
-							//this means success in queueing and running the item
-							return res;
-						} else {
-							//according to docs, this "won't ever happen" - exception instead, but just for kicks.
-							Console.WriteLine( "Failed to queue in threadpool. Method: " + key);
-						}
-					//} else {
-					//    Console.WriteLine(String.Format("Insufficient idle threadpool threads: {0} of {1} - min {2}, Method: {3}", threads, totalThreads, minThreads, key));
-					//}
 				} catch (Exception ex) {
-					Console.WriteLine("Failed to queue in threadpool: " + ex.Message, "Method: " + key);
+					Debug.WriteLine("Failed to queue in threadpool: " + ex.Message, "Method: " + key);
 				}
 			}
 
@@ -171,6 +165,72 @@ namespace org.OpenVideoPlayer.Util {
 			t.Start();
 
 			return res;
+		}
+		#endregion
+
+		#region UI Overloads
+		/// <summary>
+		/// Fires off your delegate asyncronously, using the threadpool or a full managed thread if needed.
+		/// </summary>
+		/// <param name="d">A void delegate - can be cast to (Dlg) from an anonymous delgate or method:  Async.Do((Dlg)MyVoidMethod);</param>
+		/// <param name="async">Whether to run async, or try on current thread if invoke is not required.</param>
+		/// <param name="c">A control to Invoke upon GUI thread of, if needed. Null if unused.</param>
+		/// <returns>AsyncRes with all kind o' goodies for waiting, result values, etc.</returns>
+		public static AsyncRes UI(Dlg d, DependencyObject c, bool async) {
+			return Do(null, d, false, null, false, ReenteranceMode.Allow, async, c);
+		}
+
+		/// <summary>
+		/// Fires off your delegate asyncronously, using the threadpool or a full managed thread if needed.
+		/// </summary>
+		/// <param name="d">A void delegate - can be cast to (Dlg) from an anonymous delgate or method:  Async.Do((Dlg)MyVoidMethod);</param>
+		/// <param name="state">A user object that can be tracked through the returned result</param>
+		/// <param name="async">Whether to run async, or try on current thread if invoke is not required.</param>
+		/// <param name="rMode">If true, will make sure no other instances are running your method.</param>
+		/// <param name="c">A control to Invoke upon GUI thread of, if needed. Null if unused.</param>
+		/// <returns>AsyncRes with all kind o' goodies for waiting, result values, etc.</returns>
+		public static AsyncRes UI(Dlg d, DependencyObject c, bool async, ReenteranceMode rMode) {
+			return Do(null, d, false, null, false, rMode, async, c);
+		}
+
+
+		/// <summary>
+		/// Fires off your delegate asyncronously, using the threadpool or a full managed thread if needed.
+		/// </summary>
+		/// <param name="d">A delegate with a return value of some sort - can be cast to (DlgR) from an anonymous delgate with a return: Async.Do((DlgR)MyMethod);</param>
+		/// <param name="async">Whether to run async, or try on current thread if invoke is not required.</param>
+		/// <param name="getRetVal">If true, and the method/delgete returns something, it is included in the AsyncRes returned (after the method completes)</param>
+		/// <param name="c">A control to Invoke upon GUI thread of, if needed. Null if unused.</param>
+		/// <returns>AsyncRes with all kind o' goodies for waiting, result values, etc.</returns>
+		public static AsyncRes UI(DlgR d, bool getRetVal, DependencyObject c, bool async) {
+			return Do(d, null, getRetVal, null, false, ReenteranceMode.Allow, async, c);
+		}
+
+		/// <summary>
+		/// Fires off your delegate asyncronously, using the threadpool or a full managed thread if needed.
+		/// </summary>
+		/// <param name="d">A void delegate - can be cast to (Dlg) from an anonymous delgate or method:  Async.Do((Dlg)MyVoidMethod);</param>
+		/// <param name="state">A user object that can be tracked through the returned result</param>
+		/// <param name="async">Whether to run async, or try on current thread if invoke is not required.</param>
+		/// <param name="rMode">If true, will make sure no other instances are running your method.</param>
+		/// <param name="c">A control to Invoke upon GUI thread of, if needed. Null if unused.</param>
+		/// <returns>AsyncRes with all kind o' goodies for waiting, result values, etc.</returns>
+		public static AsyncRes UI(Dlg d, DependencyObject c, object state, bool async, ReenteranceMode rMode) {
+			return Do(null, d, false, state, false, rMode, async, c);
+		}
+
+		/// <summary>
+		/// Fires off your delegate asyncronously, using the threadpool or a full managed thread if needed.
+		/// </summary>
+		/// <param name="d">A delegate with a return value of some sort - can be cast to (DlgR) from an anonymous delgate with a return: Async.Do((DlgR)MyMethod);</param>
+		/// <param name="state">A user object that can be tracked through the returned result</param>
+		/// <param name="async">Whether to run async, or try on current thread if invoke is not required.</param>
+		/// <param name="getRetVal">If true, and the method/delgete returns something, it is included in the AsyncRes returned (after the method completes)</param>
+		/// <param name="rMode">If true, will make sure no other instances are running your method.</param>
+		/// <param name="c">A control to Invoke upon GUI thread of, if needed. Null if unused.</param>
+		/// <returns>AsyncRes with all kind o' goodies for waiting, result values, etc.</returns>
+		public static AsyncRes UI(DlgR d, bool getRetVal, DependencyObject c, object state, bool async, ReenteranceMode rMode) {
+			return Do(d, null, getRetVal, state, false, rMode, async, c);
 		}
 		#endregion
 
@@ -230,7 +290,7 @@ namespace org.OpenVideoPlayer.Util {
 						}
 					}
 				} catch (Exception ex) {
-					Console.WriteLine("Error releasing reentrant lock on " + (res.Method ?? "NULL")+ ex);
+					Debug.WriteLine("Error releasing reentrant lock on " + (res.Method ?? "NULL") + ex);
 				}
 			}
 		}
@@ -298,7 +358,7 @@ namespace org.OpenVideoPlayer.Util {
 					d();
 
 				} catch (Exception ex) {
-					Console.WriteLine("Async Timer Exception:"+ ex);
+					Debug.WriteLine("Async Timer Exception:" + ex);
 				} finally {
 					if (m != ReenteranceMode.Allow) {
 						Monitor.Exit(lck);
@@ -336,8 +396,8 @@ namespace org.OpenVideoPlayer.Util {
 		internal AsyncAction result = AsyncAction.Unknown;
 		public AsyncAction Result { get { return result; } }
 
-		internal Control control = null;
-		public Control Control { get { return control; } }
+		internal DependencyObject control = null;
+		public DependencyObject Control { get { return control; } }
 
 		internal DateTime createTime = DateTime.Now;
 		public DateTime TimeCreated { get { return createTime; } }
@@ -419,4 +479,82 @@ namespace org.OpenVideoPlayer.Util {
 		Stack = 4,
 	}
 	#endregion
+
+	public class StopWatch {
+		private Dictionary<object, long> starts = new Dictionary<object, long>();
+		private Dictionary<object, long> lastCheck = new Dictionary<object, long>();
+		private Dictionary<object, DateTime> list = new Dictionary<object, DateTime>();
+
+		private static StopWatch sw = new StopWatch();
+
+		public static void Start_(object key) { sw.Start(key); }
+
+		public void Start() { Start(this); }
+
+		public void Start(object key) {
+			starts.Combine(key,DateTime.Now.Ticks);
+		}
+
+		public static TimeSpan Check_(object key) { return sw.Check(key, false); }
+		public static TimeSpan Check_(object key, bool fromStart) { return sw.Check(key, fromStart); }
+
+		public TimeSpan Check() { return Check(this); }
+		public TimeSpan Check(object key) { return Check(key, false); }
+
+		public TimeSpan Check(object key, bool fromStart) {
+			if (!starts.ContainsKey(key)) return TimeSpan.Zero;
+
+			long n = DateTime.Now.Ticks;// TimeTools.GetTime();
+			long s = lastCheck.ContainsKey(key) && !fromStart ? lastCheck[key] : starts[key];
+
+			lastCheck.Combine(key, n);
+
+			return (TimeSpan.FromTicks(s) - TimeSpan.FromTicks(n)).Duration();
+				//TimeSpan.FromMilliseconds(TimeTools.TimeInterval(s, n));
+		}
+
+		public static TimeSpan Stop_() { return sw.Stop(sw); }
+		public static TimeSpan Stop_(object key) { return sw.Stop(key); }
+
+		public TimeSpan Stop() { return Stop(this); }
+
+		public TimeSpan Stop(object key) {
+			TimeSpan t = Check(key, true);
+			lastCheck.Remove(key);
+			starts.Remove(key);
+			return t;
+		}
+
+
+		public static string PrintMs_(object key) { return sw.PrintMs(key); }
+
+		public string PrintMs() { return PrintMs(this); }
+
+		public string PrintMs(object key) {
+			TimeSpan t = Check(key, false);
+			return t.TotalMilliseconds + "ms";
+		}
+
+
+		public static bool Throttle_(object key, int seconds) { return sw.Throttle(key, seconds); }
+		public static bool Throttle_(object key, TimeSpan period) { return sw.Throttle(key, period); }
+
+		public bool Throttle(int seconds) { return Throttle(this, seconds); }
+		public bool Throttle(TimeSpan period) { return Throttle(this, period); }
+		public bool Throttle(object key, int seconds) { return Throttle(key, TimeSpan.FromSeconds(seconds)); }
+
+		public bool Throttle(object key, TimeSpan period) {
+			if (!list.ContainsKey(key)) {
+				try {
+					list.Add(key, DateTime.Now);
+				} catch { }
+				return true;
+			}
+			if (DateTime.Now - list[key] > period) {
+				list[key] = DateTime.Now;
+				return true;
+			}
+			return false;
+		}
+	}
 }

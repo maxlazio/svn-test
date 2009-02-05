@@ -103,11 +103,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenVideoPlayer\OpenVideoPlayer.csproj">
+    <ProjectReference Include="..\..\OpenVideoPlayer\OpenVideoPlayer.csproj">
       <Project>{C2F1DE86-68A2-4336-9E69-1E816BA906C2}</Project>
       <Name>OpenVideoPlayer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OVPDefinitions\OVPDefinitions.csproj">
+    <ProjectReference Include="..\..\OVPDefinitions\OVPDefinitions.csproj">
       <Project>{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}</Project>
       <Name>OVPDefinitions</Name>
     </ProjectReference>
@@ -134,6 +134,6 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)\..\PreBuild.cmd" "$(ProjectDir)" "$(ConfigurationName)" "$(ProjectName)"</PreBuildEvent>
+    <PreBuildEvent>REM "$(ProjectDir)\..\PreBuild.cmd" "$(ProjectDir)" "$(ConfigurationName)" "$(ProjectName)"</PreBuildEvent>
   </PropertyGroup>
 </Project>

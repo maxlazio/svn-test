@@ -53,7 +53,7 @@ namespace org.OpenVideoPlayer.Connections {
 		#endregion
 
 		#region Event Delegates
-		public event ConnectionEvents.ConnectionEventHandler Loaded;
+		public event ConnectionEventHandler Loaded;
 		public event EventHandler<UnhandledExceptionEventArgs> Error;
 
 		protected virtual void OnLoaded(EventArgs e) {

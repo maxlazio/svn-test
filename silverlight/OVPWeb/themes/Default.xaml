@@ -11,6 +11,9 @@
     <!-- BEGIN SLIDER STYLES x:Key="TimelineSliderStyle" x:Key="OptionsButtonStyle"-->
 
     <Color x:Key="Foreground">#FFCCCCCC</Color>
+		<Color x:Key="Highlight">#FF333333</Color>
+	<SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource Foreground}" />
+	<SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource Highlight}" />
 
     <Style TargetType="Visuals:ContentButtonPause">
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
@@ -36,6 +39,32 @@
     <Style TargetType="Visuals:ContentButtonPrevious">
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
+	<Style TargetType="Visuals:ContentButtonPlaylist">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonChapters">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+
+
+	<Style TargetType="Visuals:ControlsPanel">
+		<!--<Setter Property="Highlight" Value="{StaticResource Highlight}" />-->
+		<Setter Property="Highlight">
+			<Setter.Value>
+				<SolidColorBrush Color="{StaticResource Highlight}" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Background">
+			<Setter.Value>
+				<SolidColorBrush Color="{StaticResource Highlight}" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Foreground">
+			<Setter.Value>
+				<SolidColorBrush Color="{StaticResource Foreground}" />
+			</Setter.Value>
+		</Setter>
+	</Style>
 
     <!--<Style TargetType="{x:Type Visuals:ScrubberBar}">-->
     <Style TargetType="Visuals:ScrubberBar">
@@ -54,7 +83,7 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Rectangle Height="Auto" Margin="4,4,4,4" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
+                            <Rectangle Height="Auto" Margin="0,4,0,4" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
                                 <Rectangle.Fill>
                                     <LinearGradientBrush EndPoint="57.5,10" StartPoint="57.5,0" MappingMode="Absolute">
                                         <GradientStop Color="#AAE0E0E0"/>
@@ -66,7 +95,9 @@
                             <Rectangle x:Name="LeftTrack" Grid.Column="0" Fill="#00FFFFFF" Cursor="Hand" Opacity="0.4"/>
                             <Thumb Height="18" x:Name="HorizontalThumb" Width="11" IsTabStop="True" Grid.Column="1" Visibility="Collapsed"/>
                             <RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="2"/>
-                            <Rectangle x:Name="RightTrack" Grid.Column="2" Fill="#FF333333" Margin="0,7,4,7"  Cursor="Hand" Opacity="0.4"/>
+                            <Rectangle x:Name="RightTrack" Grid.Column="2" Fill="#FF333333" Margin="0,7,0,7"  Cursor="Hand" Opacity="0.4"/>
+													<Rectangle x:Name="Download" Margin="0,4,0,2" Fill="{StaticResource ForegroundBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Left" 
+																		 Grid.Column="0" Grid.ColumnSpan="3" Cursor="Hand" Opacity="0.7" Height="2" Width="0" />
                         </Grid>
                         <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
                             <Grid.RowDefinitions>
@@ -86,7 +117,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+		
     <!--x:Key="BGBlendButton"-->
     <Style TargetType="Button">
         <Setter Property="Foreground" Value="#FFFFFFFF"/>
@@ -183,5 +214,6 @@
             </Setter.Value>
         </Setter>
     </Style>
+
 
 </ResourceDictionary>

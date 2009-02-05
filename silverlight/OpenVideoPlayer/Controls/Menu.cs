@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using org.OpenVideoPlayer.Util;
 using System.Windows.Shapes;
 using System.Reflection;
+using Microsoft.Windows.Controls;
 
 namespace org.OpenVideoPlayer.Controls {
 
@@ -62,15 +63,50 @@ namespace org.OpenVideoPlayer.Controls {
 		public bool RadioMode { get; set; }
 		public static readonly DependencyProperty RadioModeProperty = DependencyProperty.Register("RadioMode", typeof(bool), typeof(Menu), new PropertyMetadata(null));
 
+		//private MenuItem GetItem(object o) {
+		//    if (o is MenuItem) return o as MenuItem;
+		//    if (o is ObjectCollection) {
+		//        foreach (object i in defItems) return GetItem(i);
+		//    }
+		//    return null;
+		//}
+
 		/// <summary>
 		/// The menuitems of the next level on the menu tree
 		/// </summary>
 		public ObservableCollection<MenuItem> Items {
-			get { return menuItems; }
+			get {
+				//if (defItems!=null && defItems.Count > 0) {
+				//    menuItems = new ObservableCollection<MenuItem>();
+				//    foreach (object o in defItems.Items) {
+				//        MenuItem mi = o as MenuItem; ;
+				//        if (mi != null) menuItems.Add(mi);
+				//    }
+				//    defItems.Clear();
+				//}
+				return menuItems; 
+			}
 			set { menuItems = value; }
 		}
 		private ObservableCollection<MenuItem> menuItems = new ObservableCollection<MenuItem>();
 		public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register("Items", typeof(ObservableCollection<MenuItem>), typeof(Menu), new PropertyMetadata(null));
+
+		//private ObjectCollection defItems;
+		//public ObjectCollection DefaultItems {
+		//    get { return defItems; }
+		//    set { 
+		//        defItems = value;
+		//        if (defItems != null && defItems.Count > 0) {
+		//            menuItems = new ObservableCollection<MenuItem>();
+		//            foreach (object o in defItems.Items) {
+		//                MenuItem mi = o as MenuItem; ;
+		//                if (mi != null) menuItems.Add(mi);
+		//            }
+		//            defItems.Clear();
+		//        }
+		//    }
+		//}
+		//public static readonly DependencyProperty DefaultItemsProperty = DependencyProperty.Register("DefaultItems", typeof(ObjectCollection), typeof(Menu), new PropertyMetadata(null));
 
 		/// <summary>
 		/// The control we are targetted toward for positioning
@@ -196,6 +232,23 @@ namespace org.OpenVideoPlayer.Controls {
 		public bool SetEnabled(object tag, bool enabled) { return SetState(tag, null, enabled, MenuItemStateType.Enabled); }
 
 		/// <summary>
+		/// Sets the visiblity value of a menuitem by tag
+		/// </summary>
+		/// <param name="tag"></param>
+		/// <param name="vis"></param>
+		/// <returns></returns>
+		public bool SetVisible(object tag, bool vis) { return SetState(tag, null, vis, MenuItemStateType.Visible); }
+
+		/// <summary>
+		/// Sets the visiblity value of a menuitem by name
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="vis"></param>
+		/// <returns></returns>
+		public bool SetVisible(string text, bool vis) { return SetState(null, text, vis, MenuItemStateType.Visible); }
+
+
+		/// <summary>
 		/// A base method for use by all of the setcheckstate and setenabled methods
 		/// </summary>
 		/// <param name="tag"></param>
@@ -207,9 +260,10 @@ namespace org.OpenVideoPlayer.Controls {
 			if (menuItems == null) return false;
 
 			foreach (MenuItem mi in menuItems) {
-				if ((tag != null && mi.Tag == tag) || (text != null && mi.Text == text)) {
+				if ((tag != null && tag.Equals(mi.Tag)) || (text != null && mi.Text == text)) {
 					if (type == MenuItemStateType.Checked) mi.Checked = state;
 					if (type == MenuItemStateType.Enabled) mi.IsEnabled = state;
+					if (type == MenuItemStateType.Visible) mi.Visibility = state ? Visibility.Visible : Visibility.Collapsed;
 					return true;
 				}
 
@@ -225,7 +279,8 @@ namespace org.OpenVideoPlayer.Controls {
 		/// </summary>
 		protected enum MenuItemStateType {
 			Enabled,
-			Checked
+			Checked,
+			Visible,
 		}
 
 		#endregion
@@ -389,6 +444,7 @@ namespace org.OpenVideoPlayer.Controls {
 			PositionListbox();
 		}
 		#endregion
+
 	}
 
 	/// <summary>

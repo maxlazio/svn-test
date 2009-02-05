@@ -22,6 +22,7 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 			if (text != null) text.Text = GetValue(Box.TextProperty) as string;
 
 			close.MouseLeftButtonUp += OnCloseMouseLeftButtonUp;
+
 		}
 
 		internal Border close;
@@ -42,7 +43,9 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 
 		internal void OnCloseMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
 			this.Visibility = Visibility.Collapsed;
+			if (Closed != null) Closed(this, new RoutedEventArgs());
 		}
 
+		public static event RoutedEventHandler Closed;
 	}
 }

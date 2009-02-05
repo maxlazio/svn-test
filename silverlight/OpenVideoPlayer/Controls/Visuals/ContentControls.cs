@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System;
 using System.Diagnostics;
 using System.Text;
+using System.Collections.Generic;
 
 namespace org.OpenVideoPlayer.Controls.Visuals {
 	/// <summary>
@@ -34,4 +35,8 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		}
 	}
 
+
+	public class PlayerOptionsMenu : Menu {
+
+	}
 }

@@ -34,15 +34,7 @@ namespace org.OpenVideoPlayer.Controls {
 			SetValue(PlaylistProperty, new PlaylistCollection());
 
 			CurrentIndex = -1;
-
-			//PlaybackPosition = 0;
-			//PlaybackDuration = 0;
 			PlaybackDurationText = PlaybackPositionText = "00:00";
-
-			BufferingPercent = 0;
-			DownloadOffsetPercent = 0;
-			DownloadPercent = 0;
-
 			lastUsedVolume = START_VOLUME;
 
 			stretchMode = Stretch.None;
@@ -53,33 +45,37 @@ namespace org.OpenVideoPlayer.Controls {
 			Containers = new Dictionary<string, FrameworkElement>();
 
 			Version = ReflectionHelper.GetAssemblyVersion();
-			ControlBinding = ControlBindingFlags.BindFields | ControlBindingFlags.BindEvents;
+			ControlBinding = ControlBindingFlags.BindFields | ControlBindingFlags.BindEvents | ControlBindingFlags.Recursive;
 		}
 
 		/// <summary>
 		/// Fired when the active playlist item changes.  There are also events available on the playlist itself
 		/// </summary>
-		public event RoutedEventHandler ItemChanged;
+		//public event RoutedEventHandler ItemChanged;
+
 		/// <summary>
 		/// Occurs when the actual browser (ie/firefox,etc) window size changes
 		/// </summary>
 		public event EventHandler BrowserSizeChanged;
 
 		public new event SizeChangedEventHandler SizeChanged;
+
+		public event RoutedEventHandler FullScreenChanged;
+
 		/// <summary>
 		/// Needed internally to know why a player size is being adjusted
 		/// </summary>
 		enum PlayerSizeChangeType { Bitrate, Size };
 		//TODO - we need to carry through many of the media events and properties
 		#endregion
-		
+
 		#region internal UI Element fields - bound to XAML Template
 		//Note - these are bound dynamically by our base control, ControlBase.  They must match the name in the xaml template
 
 		/// <summary>
 		/// Our toplevel control in the template
 		/// </summary>
-		protected internal Panel layoutRoot; 
+		protected internal Panel layoutRoot;
 		/// <summary>
 		/// The border that surrounds the player
 		/// </summary>
@@ -116,11 +112,13 @@ namespace org.OpenVideoPlayer.Controls {
 		/// <summary>
 		/// The control box that houses all of our controls
 		/// </summary>
-		protected internal Panel controlBox;
+		//protected internal Panel controlBox;
+		protected internal ControlsPanel controlBox;
 		/// <summary>
 		/// Buttons in the control box
 		/// </summary>
-		protected internal Button buttonPlayPause, buttonPrevious, buttonNext, buttonStop, buttonLinkEmbed, buttonFullScreen, buttonMute, buttonMenu;
+		protected internal Button buttonPlayPause, buttonPrevious, buttonNext, buttonStop, buttonLinkEmbed, buttonFullScreen, buttonMute, buttonMenu,
+			buttonPlaylist, buttonChapters;
 		/// <summary>
 		/// icons for play/pause button and messagebox in center, referenced because they sometimes need to be swapped out
 		/// </summary>
@@ -141,10 +139,12 @@ namespace org.OpenVideoPlayer.Controls {
 		/// The text in the center, incase there is an error or message to show
 		/// </summary>
 		protected internal TextBlock messageBoxText;
-	    /// <summary>
-	    /// the tooltop, we use a custom one so we can have more control over when it renders and moves with the cursor
-	    /// </summary>
+		/// <summary>
+		/// the tooltop, we use a custom one so we can have more control over when it renders and moves with the cursor
+		/// </summary>
 		protected internal CustomToolTip toolTip;
+
+		protected internal BufferIcon bufferIcon;
 
 		#endregion
 
@@ -155,15 +155,6 @@ namespace org.OpenVideoPlayer.Controls {
 		private const Double LOWER_VOLUME_THRESHOLD = 0.01;
 		public const string PLAYER_CONTROL_NAME = "OpenVideoPlayerControl";
 		#endregion
-
-		/// <summary>
-		/// an alternate mediastream source, currently the only implementation is for the adaptiveedge plugin
-		/// </summary>
-		//private IAlternateMediaSource altMediaStreamSource;
-		/// <summary>
-		/// caches the current version of the control for use in debugging
-		/// </summary>
-		//private Version version;
 
 		/// <summary>
 		/// the timer used for many updates - it runs on the dispatcher (ui) thread, so we have to be careful not to block it 
@@ -177,40 +168,48 @@ namespace org.OpenVideoPlayer.Controls {
 		/// <summary>
 		/// The initial startup args from initparams that the app sends us
 		/// </summary>
-		public StartupEventArgs StartupArgs{get; protected set;}
+		public StartupEventArgs StartupArgs { get; protected set; }
 
 		/// <summary>
 		/// the backing store for our logs
 		/// </summary>
-		private LogCollection logList = new LogCollection();
-		/// <summary>
-		/// Track if the adaptive plugin has been loaded
-		/// </summary>
-		//private bool adaptiveInit;
+		protected  LogCollection logList = new LogCollection();
+
+		protected StopWatch sw = new StopWatch();
 
 		/// <summary>
 		/// Make sure we don't update the debug screen to often and hurt performance
 		/// </summary>
-		private DateTime lastDebugUpdate;	
+		protected DateTime lastDebugUpdate;
 		//internal/private tracking vars
-		protected bool timerIsUpdating, isPlaying, updateBuffering, updateDownloading, isMuted, waitOnClick;
-		//protected int currentlyPlayingItem, currentlyPlayingChapter;
+		protected bool timerIsUpdating, isPlaying, /*updateBuffering, updateDownloading,*/ isMuted, waitOnClick;
 
 		protected DateTime lastClick, lastMouseMove = DateTime.MinValue;
 		protected Double lastUsedVolume, lastMediaHeight = 0;
+		protected Double lastDownloadProgress, lastBufferProgress;
 
-		string lastSource, lastCommand, bitrateString= "";
-		HorizontalAlignment lastHAlighn;
-		VerticalAlignment lastVAlighn; 
+		protected string lastSource, lastCommand, bitrateString = "";
+		protected HorizontalAlignment lastHAlighn;
+		protected VerticalAlignment lastVAlighn;
 
 		protected MediaElementState lastMediaState = MediaElementState.Closed;
-		Stretch lastStretchMode;
-		private Thickness lastMargin;
+		protected Stretch lastStretchMode;
+		protected Thickness lastMargin, lastPadding;
 
-		private Size lastSize = new Size(0,0);//848 + 16, 480 + 200);
-		public Size AutoScalingCalculatedPlayerSize{get;protected set;}
-		public Size AutoScalingMinimumSize {get;set;}// = new Size(848, 480);
-		public Size AutoScalingForcedAspect {get;set;}
+		protected bool overrideStretch = false;
+		protected AdaptiveStats currentStats;
+		protected string lastQualityTag;
+		protected string lastStats;
+
+		private readonly object timerLock = new object();
+		private readonly object uiTimerLock = new object();
+
+		private TimeSpan lastDur;
+
+		protected Size lastSize = new Size(0, 0);//848 + 16, 480 + 200);
+		public Size AutoScalingCalculatedPlayerSize { get; protected set; }
+		public Size AutoScalingMinimumSize { get; set; }// = new Size(848, 480);
+		public Size AutoScalingForcedAspect { get; set; }
 		public AutoScalingType AutoScaling { get; set; }
 
 		public enum AutoScalingType {
@@ -224,12 +223,12 @@ namespace org.OpenVideoPlayer.Controls {
 		/// The amount of margin that the player must be larger than the playable content size for the player to upsize itself, when in adaptive resize mode.
 		/// For example, if the content is 848x480 now and the next size is 1280x720, then the next outside player size will be 1296x920 (assuming the default margin of 16x200)
 		/// </summary>
-		public Size AutoScalingPlayerMargin{get;set;}// = new Size(16, 200);//TODO - configgable
+		public Size AutoScalingPlayerMargin { get; set; }// = new Size(16, 200);//TODO - configgable
 		/// <summary>
 		/// The broswer margin for resizing, this additional area must be available beyond the anticipated size of the player, in order to resize
 		/// The is to accomodate for other aspects of the page
 		/// </summary>
-		public Size AutoScalingBrowserMargin{get;set;}// = new Size(60, 80);
+		public Size AutoScalingBrowserMargin { get; set; }// = new Size(60, 80);
 
 		#endregion
 
@@ -244,6 +243,7 @@ namespace org.OpenVideoPlayer.Controls {
 				lastMargin = Margin;
 				lastHAlighn = HorizontalAlignment;
 				lastVAlighn = VerticalAlignment;
+				lastPadding = Padding;
 
 				base.OnApplyTemplate();
 
@@ -255,10 +255,22 @@ namespace org.OpenVideoPlayer.Controls {
 
 				HookHandlers();
 
+				//foreach (FrameworkElement fe in base.Children) {
+				//    Button b = fe as Button;
+				//    if (b != null) {
+				//        ContentOverrideControl c = b.Content as ContentOverrideControl;
+				//        if (c != null) {
+				//            if (c.Content == null) {
+				//                //	b.Visibility = Visibility.Collapsed;
+				//            }
+				//        }
+				//    }
+				//}
+
 			} catch (Exception ex) {
 				// Debug.WriteLine("Failed to load theme : " + ", " + ex);
 				log.Output(OutputType.Error, "Error in Apply Template", ex);
-			}
+			} 
 		}
 
 
@@ -268,15 +280,8 @@ namespace org.OpenVideoPlayer.Controls {
 		protected void HookHandlers() {
 			OutputLog.StaticOutputEvent += OutputLog_StaticOutputEvent;
 
-			if (mainTimer == null) {
-				mainTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, (6 * 1001 / 30)) };
-				mainTimer.Tick += OnTimerTick;
-			}
-			if (threadTimer == null) {
-				threadTimer = new Timer(OnThreadTimerTick, threadTimer, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
-			}
-
-			mainTimer.Start();
+			//Use this instead of our timer - for better control and option of background priority
+			Async.Do(AsyncLoop, null, false, ReenteranceMode.Bypass);
 
 			if (Application.Current != null) {
 				Application.Current.Host.Content.FullScreenChanged += OnFullScreenChanged;
@@ -289,27 +294,14 @@ namespace org.OpenVideoPlayer.Controls {
 			PluginManager.PluginLoaded += On_PluginLoaded;
 			this.BindingValidationError += On_BindingValidationError;
 
+			Box.Closed += new RoutedEventHandler(OnBoxClosed);
+
 			if (Playlist != null) {
 				Playlist.LoadComplete += Playlist_LoadComplete;
 			}
-
-			if (Parent is FrameworkElement) {
-				((FrameworkElement)Parent).SizeChanged += new SizeChangedEventHandler(OnParentSizeChanged);
-			}
 		}
 
-		void OnParentSizeChanged(object sender, SizeChangedEventArgs e) {
-			//if(this.Width == double.NaN){
-				//this.Width 
-		}
-
-		void On_SizeChanged(object sender, SizeChangedEventArgs e) {
-			if (SizeChanged != null) SizeChanged(sender, e);
-		}
-
-		void On_BindingValidationError(object sender, ValidationErrorEventArgs e) {
-			throw new NotImplementedException();
-		}
+		PlayerInitParameterParser playerInitParser;
 
 		/// <summary>
 		/// Applies the configuration of the properties to the template
@@ -321,7 +313,7 @@ namespace org.OpenVideoPlayer.Controls {
 
 			if (StartupArgs != null) {
 				//Import our initialization values via the init parser
-				PlayerInitParameterParser playerInitParser = new PlayerInitParameterParser();
+				playerInitParser = new PlayerInitParameterParser();
 				playerInitParser.ImportInitParams(StartupArgs, this);
 			}
 
@@ -334,11 +326,11 @@ namespace org.OpenVideoPlayer.Controls {
 
 			if (string.IsNullOrEmpty(EmbedTag) && string.IsNullOrEmpty(LinkUrl)) {
 				//check embed 
-				if(buttonLinkEmbed!=null) buttonLinkEmbed.Visibility = Visibility.Collapsed;
+				if (buttonLinkEmbed != null) buttonLinkEmbed.Visibility = Visibility.Collapsed;
 			} else {
 				if (linkEmbed != null) {
-					linkEmbed.EmbedText.Text = EmbedTag??"";
-					linkEmbed.LinkText.Text = LinkUrl??"";
+					linkEmbed.EmbedText.Text = EmbedTag ?? "";
+					linkEmbed.LinkText.Text = LinkUrl ?? "";
 				}
 				if (buttonLinkEmbed != null) buttonLinkEmbed.Visibility = Visibility.Visible;
 			}
@@ -371,17 +363,20 @@ namespace org.OpenVideoPlayer.Controls {
 				menuOptions.SetCheckState("Logs", ShowLogViewer);
 			}
 
+			if (scrubberBar != null) {
+				scrubberBar.Throttle = TimeSpan.FromSeconds(1);
+			}
 			UpdateDebugPanel();
 		}
 
 		#endregion
 
 		#region properties
-	
+
 		/// <summary>
 		/// the adaptive plugin currently in use, if available
 		/// </summary>
-		public IAlternateMediaSource AlternateMediaSource {  get; protected set;}
+		public IAlternateMediaSource AlternateMediaSource { get; protected set; }
 
 		/// <summary>
 		/// The number of frames currently rendered per second
@@ -422,7 +417,7 @@ namespace org.OpenVideoPlayer.Controls {
 		//public bool InAd { get; set; }
 
 		public IDictionary<string, FrameworkElement> Containers { get; set; }
-		
+
 		/// <summary>
 		/// If true, the player will autoplay when loaded
 		/// </summary>
@@ -452,7 +447,15 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
-		protected Stretch stretchMode;
+		/// <summary>
+		/// The control box that houses all of our controls
+		/// </summary>
+		//protected internal Panel controlBox;
+		public ControlsPanel ControlBox {
+			get { return controlBox; }
+		}
+
+		protected Stretch stretchMode = Stretch.Uniform;
 		/// <summary>
 		/// The type of player scaling to use; Fit, native, stretch ,etc...
 		/// </summary>
@@ -461,8 +464,14 @@ namespace org.OpenVideoPlayer.Controls {
 			set {
 				stretchMode = value;
 				if (mediaElement != null) mediaElement.Stretch = StretchMode;
-				if (menuOptions != null) menuOptions.SetCheckState(StretchMode, true);
+				if (menuOptions != null) menuOptions.SetCheckState((object)StretchMode.ToString(), true);
 			}
+		}
+
+		private Stretch stretchModeFullScreen = Stretch.Uniform;
+		public Stretch StretchModeFullScreen {
+			get { return stretchModeFullScreen; }
+			set { stretchModeFullScreen = value; }
 		}
 
 		/// <summary>
@@ -480,16 +489,21 @@ namespace org.OpenVideoPlayer.Controls {
 		[ScriptableMember]
 		public bool ShowPlaylist {
 			get { return ((FrameworkElement)playlist.Parent).Visibility == Visibility.Visible; }
-			set { ((FrameworkElement)playlist.Parent).Visibility = (value && (Playlist.Count > 1)) ? Visibility.Visible : Visibility.Collapsed; }
+			set {
+				if (value != ShowPlaylist) {
+					((FrameworkElement)playlist.Parent).Visibility = (value && (Playlist.Count > 1)) ? Visibility.Visible : Visibility.Collapsed;
+					AdjustPlaylist();
+				}
+			}
 		}
 		/// <summary>
 		/// the main border around the player
 		/// </summary>
-		public Border MainBorder {get { return mainBorder; }}
+		public Border MainBorder { get { return mainBorder; } }
 		/// <summary>
 		/// The main panel at the root of our template
 		/// </summary>
-		public Panel LayoutRoot {get { return layoutRoot; }}
+		public Panel LayoutRoot { get { return layoutRoot; } }
 		/// <summary>
 		/// The menu for adavanced options
 		/// </summary>
@@ -500,7 +514,7 @@ namespace org.OpenVideoPlayer.Controls {
 		/// <summary>
 		/// The index of the currently playing item
 		/// </summary>
-		public int CurrentIndex {get ; set ; }
+		public int CurrentIndex { get; set; }
 		/// <summary>
 		/// The item currently playing
 		/// </summary>
@@ -553,111 +567,41 @@ namespace org.OpenVideoPlayer.Controls {
 
 		public IElementList Chapters {
 			get { return chapters; }
-			set {chapters = value;}
+			set { chapters = value; }
 		}
-		//public Double PlaybackPosition {
-		//    get { return (Double)GetValue(PlaybackPositionProperty); }
-		//    set {
-		//        SetValue(PlaybackPositionProperty, value);
-		//        if (scrubberBar != null) scrubberBar.Value = value;
-		//    }
-		//}
-		///// <summary>
-		///// Dependency Property stores the current playback position
-		///// </summary>
-		//public static readonly DependencyProperty PlaybackPositionProperty = DependencyProperty.Register("PlaybackPosition", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
 
 		public String PlaybackPositionText {
 			get { return (String)GetValue(PlaybackPositionTextProperty); }
-			set { SetValue(PlaybackPositionTextProperty, value); }
+			set { 
+				SetValue(PlaybackPositionTextProperty, value);
+				if (controlBox != null) controlBox.SetValue(ControlsPanel.PlaybackPositionTextProperty, value); 
+			}
 		}
 		/// <summary>
 		/// Dependency Property stores the current playback position text value
 		/// </summary>
 		public static readonly DependencyProperty PlaybackPositionTextProperty = DependencyProperty.Register("PlaybackPositionText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
-
-		//public Double PlaybackDuration {
-		//    get { return (Double)GetValue(PlaybackDurationProperty); }
-		//    set { SetValue(PlaybackDurationProperty, value); }
-		//}
-		///// <summary>
-		///// Depencency Property stores the total media duration
-		///// </summary>
-		//public static readonly DependencyProperty PlaybackDurationProperty = DependencyProperty.Register("PlaybackDuration", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
-
 		public String PlaybackDurationText {
 			get { return (String)GetValue(PlaybackDurationTextProperty); }
-			set { SetValue(PlaybackDurationTextProperty, value); }
+			set { SetValue(PlaybackDurationTextProperty, value);
+			if (controlBox != null) controlBox.SetValue(ControlsPanel.PlaybackDurationTextProperty, value); 
+			}
 		}
 		/// <summary>
 		/// Depencency Property stores the total media duration text value
 		/// </summary>
-		public static readonly DependencyProperty PlaybackDurationTextProperty =	DependencyProperty.Register("PlaybackDurationText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty PlaybackDurationTextProperty = DependencyProperty.Register("PlaybackDurationText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+
+		public static readonly DependencyProperty CurrentItemProperty = DependencyProperty.Register("CurrentItem", typeof(IMediaItem), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
 
-		public Double BufferingPercent {
-			get { return (Double)GetValue(BufferingPercentProperty); }
-			set { SetValue(BufferingPercentProperty, value); }
-		}
-		/// <summary>
-		/// Depencency Property stores the percent-complete of buffering
-		/// </summary>
-		public static readonly DependencyProperty BufferingPercentProperty =DependencyProperty.Register("BufferingPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
-
-		public String BufferingImageSource {
-			get { return (String)GetValue(BufferingImageSourceProperty); }
-			set { SetValue(BufferingImageSourceProperty, value); }
-		}
-		/// <summary>
+        /// <summary>
 		/// Depencency Property stores the url for the overlay image to display when buffering
 		/// </summary>
-		public static readonly DependencyProperty BufferingImageSourceProperty =DependencyProperty.Register("BufferingImageSource", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+		public static readonly DependencyProperty OptionsMenuProperty = DependencyProperty.Register("menuOptions", typeof(Menu), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
-
-		public Visibility BufferingControlVisibility {
-			get { return (Visibility)GetValue(BufferingControlVisibilityProperty); }
-			set { SetValue(BufferingControlVisibilityProperty, value); }
-		}
-		/// <summary>
-		/// Depencency Property stores the visibility level of the buffering control
-		/// </summary>
-		public static readonly DependencyProperty BufferingControlVisibilityProperty = DependencyProperty.Register("BufferingControlVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
-
-		public Double DownloadOffsetPercent {
-			get { return (Double)GetValue(DownloadOffsetPercentProperty); }
-			set { SetValue(DownloadOffsetPercentProperty, value); }
-		}
-		/// <summary>
-		/// Depencency Property stores the download offset
-		/// </summary>
-		public static readonly DependencyProperty DownloadOffsetPercentProperty = DependencyProperty.Register("DownloadOffsetPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
-
-		public Double DownloadPercent {
-			get { return (Double)GetValue(DownloadPercentProperty); }
-			set { SetValue(DownloadPercentProperty, value); }
-		}
-		/// <summary>
-		/// Depencency Property stores the download complete percentage
-		/// </summary>
-		public static readonly DependencyProperty DownloadPercentProperty = DependencyProperty.Register("DownloadPercent", typeof(Double), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
-
-		//public Visibility DownloadProgressControlVisibility {
-		//    get { return (Visibility)GetValue(DownloadProgressControlVisibilityProperty); }
-		//    set { SetValue(DownloadProgressControlVisibilityProperty, value); }
-		//}
-		///// <summary>
-		///// Depencency Property stores the visibility level of the download progress bar
-		///// </summary>
-		//public static readonly DependencyProperty DownloadProgressControlVisibilityProperty = DependencyProperty.Register("DownloadProgressControlVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
-
-
+	
 		public String CaptionText {
 			get { return (String)GetValue(CaptionTextProperty); }
 			set { SetValue(CaptionTextProperty, value); }
@@ -676,19 +620,20 @@ namespace org.OpenVideoPlayer.Controls {
 		/// </summary>
 		public static readonly DependencyProperty MessageTextProperty = DependencyProperty.Register("MessageText", typeof(String), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
+
+		public bool RandomPlayback {
+			get { return (bool)GetValue(RandomPlaybackProperty); }
+			set { SetValue(RandomPlaybackProperty, value); }
+		}
+		/// <summary>
+		/// Depencency Property stores the bitrate/diagnostics string.
+		/// </summary>
+		public static readonly DependencyProperty RandomPlaybackProperty = DependencyProperty.Register("RandomPlayback", typeof(bool), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
+
 		public bool ShowStatistics {
 			get { return ((FrameworkElement)stats.Parent).Visibility == Visibility.Visible; }
 			set { ((FrameworkElement)stats.Parent).Visibility = (value) ? Visibility.Visible : Visibility.Collapsed; }
 		}
-			//todo - change to 'showstats' boolean
-		//public Visibility StatVisibility {
-		//    get { return (Visibility)GetValue(StatVisibilityProperty); }
-		//    set { if (StatVisibility != value) SetValue(StatVisibilityProperty, value); }
-		//}
-		///// <summary>
-		///// Depencency Property 
-		///// </summary>
-		//public static readonly DependencyProperty StatVisibilityProperty = DependencyProperty.Register("StatVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
 		public bool ShowLogViewer {
 			get { return logViewer.Parent.Visibility == Visibility.Visible; }
@@ -697,15 +642,6 @@ namespace org.OpenVideoPlayer.Controls {
 				if (value) log.Output(OutputType.Debug, "Showing logs");
 			}
 		}
-		////todo - change to 'showlogs' boolean
-		//public Visibility LogVisibility {
-		//    get { return (Visibility)GetValue(LogVisibilityProperty); }
-		//    set { 
-		//        SetValue(LogVisibilityProperty, value);
-		//        if (value== Visibility.Visible) logViewer.Refresh();
-		//    }
-		//}
-		//public static readonly DependencyProperty LogVisibilityProperty = DependencyProperty.Register("LogVisibility", typeof(Visibility), typeof(OpenVideoPlayerControl), new PropertyMetadata(null));
 
 		#endregion
 
@@ -866,6 +802,8 @@ namespace org.OpenVideoPlayer.Controls {
 			SeekToPlaylistItem(CurrentIndex + 1);
 		}
 
+		public event PlaylistIndexChangingEventHandler PlaylistIndexChanging;
+	
 		/// <summary>
 		/// Attempts to seek to the previous item in the playlist
 		/// </summary>
@@ -874,7 +812,7 @@ namespace org.OpenVideoPlayer.Controls {
 			string command = "Prev";
 			lastCommand = command;
 			log.Output(OutputType.Debug, "Command: " + command);
-
+			
 			SeekToPlaylistItem(CurrentIndex - 1);
 		}
 
@@ -893,25 +831,6 @@ namespace org.OpenVideoPlayer.Controls {
 			isMuted = sliderVolume.Value < LOWER_VOLUME_THRESHOLD;
 		}
 
-		///<summary>
-		/// Shows or hides the debug panel
-		/// </summary>
-		//[ScriptableMember]
-		//public void ToggleStatPanel() {
-		//    StatVisibility = (StatVisibility == Visibility.Collapsed) ? Visibility.Visible : Visibility.Collapsed;
-		//    //CheckMenuHighlights();
-		//    menuOptions.SetCheckState("Statistics", StatVisibility == Visibility.Visible);
-		//}
-
-		//[ScriptableMember]
-		//public void ToggleLogPanel() {
-		//    LogVisibility = (LogVisibility == Visibility.Collapsed) ? Visibility.Visible : Visibility.Collapsed;
-		//    //CheckMenuHighlights();
-		//    menuOptions.SetCheckState("Logs", LogVisibility == Visibility.Visible);
-		//}
-
-		//[ScriptableMember]
-		//public void ToggleControls() { ShowControls = !ShowControls; }
 
 		[ScriptableMember]
 		public bool ShowControls {
@@ -953,9 +872,7 @@ namespace org.OpenVideoPlayer.Controls {
 		[ScriptableMember]
 		public string EmbedTag { get; set; }
 
-		public Version Version {get; protected set;}
-
-
+		public Version Version { get; protected set; }
 
 		[ScriptableMember]
 		public void ToggleFullscreen() {
@@ -996,66 +913,52 @@ namespace org.OpenVideoPlayer.Controls {
 		/// <summary>
 		/// Moves to the given item in the playlist.  If the item does not exist it does nothing.
 		/// </summary>
-		/// <param name="playlistItemIndex">The item index to seek to</param>
-		public void SeekToPlaylistItem(int playlistItemIndex) {
-			if (playlistItemIndex < 0) return;
+		/// <param name="newIndex">The item index to seek to</param>
+		public void SeekToPlaylistItem(int newIndex) {
+			//if (newIndex == CurrentIndex) return;
+
+			if (PlaylistIndexChanging != null) {
+				PlaylistIndexChangingEventArgs args = new PlaylistIndexChangingEventArgs() {NewIndex = newIndex, CurrentIndex = this.CurrentIndex};
+				PlaylistIndexChanging(this, args);
+				if (args.Cancel) return;
+				newIndex = args.NewIndex;
+			}
+
+			if (newIndex < 0 || newIndex >= Playlist.Count) {
+				return;
+			}
 
 			//we have something to play.
 			CurrentChapterIndex = 0;
-			CurrentIndex = playlistItemIndex;
-			if (ItemChanged != null) ItemChanged(this, new RoutedEventArgs());
-
-			if (playlistItemIndex < 0 || playlistItemIndex >= Playlist.Count) {
-				return;
-			}
+			CurrentIndex = newIndex;
+			//if (ItemChanged != null) ItemChanged(this, new RoutedEventArgs());
 
 			if (chapters != null) {
 				chapters.Source = CurrentItem.Chapters;
 			}
 
-			//if (Playlist[currentlyPlayingItem].DeliveryType == DeliveryTypes.Adaptive) {
-			//hide the download progress bar
-			//DownloadProgressControlVisibility = Visibility.Collapsed;
-
 			// Bring adaptive heuristics in..
 			// NOTE: ADAPTIVE IS DISABLED IN THE PUBLIC BUILD, THE DLL MUST BE PROVIDED BY AKAMAI/MICROSOFT
-			//if(!PluginManager.PluginTypes.ContainsKey("AdaptiveStreamingSource")){
-			//    if (!adaptiveInit) {
-			//        adaptiveInit = true; //make sure we only try once
-			//        PluginManager.LoadPlugin(new Uri(HtmlPage.Document.DocumentUri, "plugins/AdaptiveStreaming.dll"), "Microsoft.Expression.Encoder.AdaptiveStreaming.AdaptiveStreamingSource");
-			//        return; //get out of here so WC can work..
-			//    }
-			//} else {
 			bool found = false;
 			foreach (IPlugin p in plugins) {
 				IAlternateMediaSource alt = p as IAlternateMediaSource;
 				if (alt == null) continue;
-
 				if (alt.SetSource(new Uri(CurrentItem.Url))) {
 					AlternateMediaSource = alt;
 					mediaElement.SetSource(AlternateMediaSource.MediaSource);
 					found = true;
 					//found the one
 					break;
-					//create new one each time.. - the name of the plugin could eventually be configurable
-					//altMediaStreamSource = PluginManager.CreatePlugin("AdaptiveStreamingSource") as MediaStreamSource;
-					//AdaptiveSource.PlayBitrateChange += AdaptiveSourcePlayBitrateChange;
 				}
 			}
 
-			//if (altMediaStreamSource == null) {
-			//TODO - do we crash, or just skip this content?  How do we inform user?
-			//throw new Exception("Unable to load alternate source plugin.");
-			//}
 			if (!found) {
 				//Assign the source directly from the playlist url
 				mediaElement.Source = new Uri(CurrentItem.Url);
 				// Set altMediaStreamSource to null, it is not used for non-adaptive streams
 				AlternateMediaSource = null;
 			}
-			//show the download progress bar if type is download
-			//TODO: WE DON'T PROPERLY DETECT STREAMING VIA A METAFILE (ASX) YET
-			//DownloadProgressControlVisibility = (CurrentItem.DeliveryType == DeliveryTypes.Progressive) ? Visibility.Visible : Visibility.Collapsed;
+
 			lastSource = CurrentItem.Url;
 
 			if (menuOptions != null) menuOptions.SetEnabled("Chapters", CurrentItem.Chapters.Count > 0);
@@ -1066,9 +969,17 @@ namespace org.OpenVideoPlayer.Controls {
 		}
 
 		void OnAdaptiveSourcePlayBitrateChange(object sender, BitrateChangedEventArgs e) {
-			log.Output(OutputType.Debug, "Bitrate in use: " + StringTools.FriendlyBitsPerSec((int)e.Bitrate)); 
+			log.Output(OutputType.Debug, "Bitrate in use: " + e.StreamType + ", " + StringTools.FriendlyBitsPerSec((int)e.Bitrate));
 			UpdateAdaptiveSegments();
 			AdjustPlayerSize(PlayerSizeChangeType.Bitrate);
+		}
+
+		internal void OnPlaylistSizeChanged(object sender, SizeChangedEventArgs args) {
+			AdjustPlaylist();
+		}
+
+		internal void OnQualityGaugeSizeChanged(object sender, SizeChangedEventArgs args) {
+			OnControlBoxSizeChanged(null, null);
 		}
 
 		protected List<IPlugin> plugins = new List<IPlugin>();
@@ -1085,6 +996,8 @@ namespace org.OpenVideoPlayer.Controls {
 				plugins.Add(args.Plugin);
 
 				args.Plugin.Player = this;
+
+				playerInitParser.RetryUnmatched(this);
 
 				//Special Case//
 				if (args.Plugin as IAlternateMediaSource != null) {
@@ -1132,11 +1045,12 @@ namespace org.OpenVideoPlayer.Controls {
 		/// Called for fullscreen support to stretch the player out
 		/// </summary>
 		private void PerformResize() {
-
 			if ((Application.Current != null)) {
 				if (Application.Current.Host.Content.IsFullScreen) {
 					//start timer to close controls
 					ShowControls = false;
+					lastPadding = Padding;
+					this.Padding = new Thickness(0);
 					mainGrid.RowDefinitions[1].Height = mainGrid.RowDefinitions[2].Height = new GridLength(0);
 				} else {
 					ShowControls = true;
@@ -1146,20 +1060,19 @@ namespace org.OpenVideoPlayer.Controls {
 					Margin = lastMargin;
 					HorizontalAlignment = lastHAlighn;
 					VerticalAlignment = lastVAlighn;
+					Padding = lastPadding;
 					mainGrid.RowDefinitions[1].Height = mainGrid.RowDefinitions[2].Height = new GridLength(32);
 					//OnControlBoxSizeChanged(this, null);
 				}
 			}
 		}
 
-		private void SetCustomToolTip(Point pt, string text) {
+		private void SetCustomToolTip(Point pt, string text, object tag) {
 			toolTip.Text = text;
 			toolTip.Visibility = Visibility.Visible;
-
-			toolTip.SetValue(Canvas.LeftProperty, pt.X - (toolTip.ActualWidth));//+ 4);
-			toolTip.SetValue(Canvas.TopProperty, pt.Y - toolTip.ActualHeight - 4);
-
-			//if (customToolTip.Opacity < 1) customToolTip.Opacity = 1;
+			toolTip.Tag = tag;
+			toolTip.SetValue(Canvas.LeftProperty, pt.X - (toolTip.ActualWidth));
+			toolTip.SetValue(Canvas.TopProperty, pt.Y - toolTip.ActualHeight - 8);
 		}
 
 		public bool ControlsEnabled {
@@ -1174,7 +1087,7 @@ namespace org.OpenVideoPlayer.Controls {
 		/// </summary>
 		/// <param name="type"></param>
 		void AdjustPlayerSize(PlayerSizeChangeType type) {
-			if (AutoScaling== AutoScalingType.None) return; // || AlternateMediaSource == null || AlternateMediaSource.CurrentBitrate <= 0) return;
+			if (AutoScaling == AutoScalingType.None) return; // || AlternateMediaSource == null || AlternateMediaSource.CurrentBitrate <= 0) return;
 
 			List<Size> sizes = new List<Size>();
 			IAdaptiveSegment[] segs = null;
@@ -1190,7 +1103,7 @@ namespace org.OpenVideoPlayer.Controls {
 
 				//force 16x9 or other aspect?
 				if (AutoScalingForcedAspect != Size.Empty && AutoScalingForcedAspect.Width != 0 && AutoScalingForcedAspect.Height != 0) {
-					contentRes = new Size((int) (contentRes.Height*(AutoScalingForcedAspect.Width/AutoScalingForcedAspect.Height)), contentRes.Height); //1.77777777
+					contentRes = new Size((int)(contentRes.Height * (AutoScalingForcedAspect.Width / AutoScalingForcedAspect.Height)), contentRes.Height); //1.77777777
 				}
 
 				//force over 480 lines, or other size
@@ -1209,7 +1122,7 @@ namespace org.OpenVideoPlayer.Controls {
 					//compare with browser + margin
 					if (BrowserSize.Width < bSize.Width + extra || BrowserSize.Height < bSize.Height + extra) continue;
 					//make sure we've reached the bitrate below this level
-					if (segs != null && x > 0 && (long) AlternateMediaSource.CurrentBitrate < segs[x - 1].Bitrate) continue;
+					if (segs != null && x > 0 && (long)AlternateMediaSource.CurrentBitrate < segs[x - 1].Bitrate) continue;
 					//if it drops through then we need to set our minimum
 				}
 
@@ -1223,34 +1136,34 @@ namespace org.OpenVideoPlayer.Controls {
 				AutoScalingCalculatedPlayerSize = plSize;
 
 				Dispatcher.BeginInvoke(delegate {
-				                       	//we're golden, set player size? or object size?
-				                       	if (AutoScaling == AutoScalingType.ScalePlayer) {
-				                       		Width = plSize.Width;
-				                       		Height = plSize.Height;
-				                       	} else {
-				                       		if (AutoScaling == AutoScalingType.ScaleObjectTag) {
-				                       			HtmlPage.Plugin.SetStyleAttribute("width", plSize.Width + "px");
-				                       			HtmlPage.Plugin.SetStyleAttribute("height", plSize.Height + "px");
+					//we're golden, set player size? or object size?
+					if (AutoScaling == AutoScalingType.ScalePlayer) {
+						Width = plSize.Width;
+						Height = plSize.Height;
+					} else {
+						if (AutoScaling == AutoScalingType.ScaleObjectTag) {
+							HtmlPage.Plugin.SetStyleAttribute("width", plSize.Width + "px");
+							HtmlPage.Plugin.SetStyleAttribute("height", plSize.Height + "px");
 
-				                       		} else if (AutoScaling == AutoScalingType.ScaleParent) {
-				                       			HtmlPage.Plugin.Parent.SetStyleAttribute("width", plSize.Width + "px");
-				                       			HtmlPage.Plugin.Parent.SetStyleAttribute("height", plSize.Height + "px");
-				                       		}
-									
-				                       		if (SizeChanged != null) SizeChanged(this, null);
-				                       	}
+						} else if (AutoScaling == AutoScalingType.ScaleParent) {
+							HtmlPage.Plugin.Parent.SetStyleAttribute("width", plSize.Width + "px");
+							HtmlPage.Plugin.Parent.SetStyleAttribute("height", plSize.Height + "px");
+						}
 
-				                       	//go native if we match our resolution
-				                       	if (segs != null && StretchMode != Stretch.None && plSize.Width > segs[segs.Length - 1].Resolution.Width) {
-				                       		lastStretchMode = StretchMode;
-				                       		StretchMode = Stretch.None;
-				                       		Debug.WriteLine("Switched mode to native");
+						if (SizeChanged != null) SizeChanged(this, null);
+					}
 
-				                       	} else if (StretchMode == Stretch.None) {
-				                       		StretchMode = lastStretchMode;
-				                       		Debug.WriteLine("Switched mode from native to " + StretchMode);
-				                       	}
-				               });
+					//go native if we match our resolution
+					if (segs != null && StretchMode != Stretch.None && plSize.Width > segs[segs.Length - 1].Resolution.Width) {
+						lastStretchMode = StretchMode;
+						StretchMode = Stretch.None;
+						Debug.WriteLine("Switched mode to native");
+
+					} else if (StretchMode == Stretch.None) {
+						StretchMode = lastStretchMode;
+						Debug.WriteLine("Switched mode from native to " + StretchMode);
+					}
+				});
 				return;
 			}
 		}
@@ -1282,12 +1195,25 @@ namespace org.OpenVideoPlayer.Controls {
 		/// <summary>
 		/// Adjust everything when the playlist is changed from overlay to external
 		/// </summary>
-		private void AdjustForPlaylist() {
-			if (PlayListOverlay == false) {
-				mainBorder.Margin = new Thickness(0, 0, ((ShowPlaylist) ? 0 : playlist.ActualWidth), 0);
-				playlist.Margin = new Thickness(0, 5, 3, 5);
-			} else {
-				playlist.Margin = new Thickness(0, 3, 3, 24);
+		private void AdjustPlaylist() {
+			double w = playlist.Parent.FullSize().Width;
+			Thickness pm = playlist.Parent.Margin;
+
+			//adjust margin when playlist shown
+			if (playlist != null) {
+				if (ShowPlaylist && !PlayListOverlay) {
+					if (mainBorder.Margin.Right != w) {
+						mainBorder.Margin = new Thickness(0, 0, w, 0);
+					}
+					if (pm.Bottom != 0) {
+						playlist.Parent.Margin = new Thickness(pm.Left, pm.Top, pm.Right, 0);
+					}
+				} else if (!ShowPlaylist) {
+					mainBorder.Margin = new Thickness(0);
+					if (pm.Bottom != controlBox.ActualHeight) {
+						playlist.Parent.Margin = new Thickness(pm.Left, pm.Top, pm.Right, controlBox.ActualHeight);
+					}
+				}
 			}
 		}
 
@@ -1310,11 +1236,19 @@ namespace org.OpenVideoPlayer.Controls {
 
 				//	isPlaying = false;
 				ToolTipService.SetToolTip(buttonPlayPause, "Play");
+				
+			}
+
+			if (bufferIcon != null) {
+				bool buffering = (mediaElement.CurrentState == MediaElementState.Buffering && AlternateMediaSource == null);
+				if (buffering != bufferIcon.Active) {
+					Dispatcher.BeginInvoke((Action)delegate { bufferIcon.Active = buffering; });
+				}
 			}
 
 			//update button visibility
 			if (buttonNext != null && buttonPrevious != null) {
-				buttonNext.Visibility = buttonPrevious.Visibility = (playlist.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+				buttonNext.Visibility = buttonPrevious.Visibility = (playlist.Count > 1) ? Visibility.Visible : Visibility.Collapsed;
 			}
 
 			//Debug.WriteLine("State: " + mediaElement.CurrentState);
@@ -1331,9 +1265,7 @@ namespace org.OpenVideoPlayer.Controls {
 
 			PerformResize();
 
-			//Detect that we opened a streaming link (perhaps through an asx) and hide the download progress bar
-			//TODO
-			//DownloadProgressControlVisibility = (mediaElement.DownloadProgress == 1) ? Visibility.Collapsed : Visibility.Visible;
+			scrubberBar.DownloadPercent = 0.0;
 
 			if (mediaElement.NaturalDuration.HasTimeSpan && mediaElement.NaturalDuration.TimeSpan > TimeSpan.Zero) {
 				TimeSpan dur = mediaElement.NaturalDuration.TimeSpan;
@@ -1368,7 +1300,11 @@ namespace org.OpenVideoPlayer.Controls {
 				}
 			}
 
-			if (menuOptions != null) menuOptions.SetEnabled("Playlist", Playlist.Count > 0);
+			if (menuOptions != null) menuOptions.SetVisible("Playlist", Playlist.Count > 1);
+			if (menuOptions != null) menuOptions.SetVisible("Chapters", (CurrentItem.Chapters != null && CurrentItem.Chapters.Count > 0));
+			if (buttonPlaylist != null) buttonPlaylist.Visibility = (Playlist.Count > 1) ? Visibility.Visible : Visibility.Collapsed;
+			if (buttonChapters != null) buttonChapters.Visibility = (CurrentItem.Chapters != null && CurrentItem.Chapters.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+			OnControlBoxSizeChanged(null, null);
 
 			log.Output(OutputType.Info, "Opened: " + CurrentIndex + ", " + CurrentSource);
 
@@ -1389,7 +1325,7 @@ namespace org.OpenVideoPlayer.Controls {
 					VideoResolution = seg.Resolution;
 				}
 			}
-			if(brs.Length > 1) bitrateString = brs.Substring(0, brs.Length - 1);
+			if (brs.Length > 1) bitrateString = brs.Substring(0, brs.Length - 1);
 		}
 
 		void OutputLog_StaticOutputEvent(OutputEntry outputEntry) {
@@ -1401,7 +1337,7 @@ namespace org.OpenVideoPlayer.Controls {
 			SeekToNextItem();
 		}
 
-		internal void OnMediaElementMediaFailed(object sender, ExceptionRoutedEventArgs e){//RoutedEventArgs e) {
+		internal void OnMediaElementMediaFailed(object sender, ExceptionRoutedEventArgs e) {//RoutedEventArgs e) {
 			//Debug.WriteLine("Content Failed! ");
 			string error = (e as ExceptionRoutedEventArgs != null) ? "Message: " + ((ExceptionRoutedEventArgs)e).ErrorException.Message : null;
 			MessageText = string.Format("Error opening {0}\n{1}{2}", CurrentSource, (error ?? "(Unknown Error)"), (Playlist.Count > CurrentIndex + 1) ? "\n\nTrying next playlist item..." : "");
@@ -1417,11 +1353,39 @@ namespace org.OpenVideoPlayer.Controls {
 		}
 
 		internal void OnMediaElementBufferingProgressChanged(object sender, RoutedEventArgs e) {
-			updateBuffering = true;
+			//updateBuffering = true;
+			lastBufferProgress = mediaElement.BufferingProgress;
 		}
 
 		internal void OnMediaElementDownloadProgressChanged(object sender, RoutedEventArgs e) {
-			updateDownloading = true;
+			//updateDownloading = true;
+			
+			lastDownloadProgress = mediaElement.DownloadProgress;
+			if (scrubberBar.DownloadPercent == 0 && lastDownloadProgress == 1) {
+			} else {
+				scrubberBar.DownloadPercent = lastDownloadProgress;
+			}
+		}
+
+		void OnBoxClosed(object sender, RoutedEventArgs e) {
+			if (playlist != null && sender == playlist.Parent) {
+				AdjustPlaylist();
+			}
+			if (sender == stats.Parent) {
+				OptionsMenu.SetCheckState("Statistics", false);
+			}
+			if (sender == logViewer.Parent) {
+				OptionsMenu.SetCheckState("Logs", false);
+			}
+		}
+
+
+		void On_SizeChanged(object sender, SizeChangedEventArgs e) {
+			if (SizeChanged != null) SizeChanged(sender, e);
+		}
+
+		void On_BindingValidationError(object sender, ValidationErrorEventArgs e) {
+			throw new NotImplementedException();
 		}
 
 		internal void On_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
@@ -1457,6 +1421,14 @@ namespace org.OpenVideoPlayer.Controls {
 
 		internal void OnButtonStopClick(object sender, RoutedEventArgs e) {
 			Stop();
+		}
+
+		internal void OnButtonPlaylistClick(object sender, RoutedEventArgs e) {
+			ShowPlaylist = !ShowPlaylist;
+		}
+
+		internal void OnButtonChaptersClick(object sender, RoutedEventArgs e) {
+			ShowChapters = !ShowChapters;
 		}
 
 		/// <summary>
@@ -1505,8 +1477,7 @@ namespace org.OpenVideoPlayer.Controls {
 			CollapseMenus();
 		}
 
-		public event RoutedEventHandler FullScreenChanged;
-		private bool overrideStretch = false;
+
 		/// <summary>
 		/// Event callback, supports fullscreen toggling by wrapping the PerformResize method.
 		/// </summary>
@@ -1515,20 +1486,33 @@ namespace org.OpenVideoPlayer.Controls {
 		internal void OnFullScreenChanged(object sender, EventArgs e) {
 			PerformResize();
 			if (FullScreenChanged != null) FullScreenChanged(this, new RoutedEventArgs());
+
 			if (Application.Current.Host.Content.IsFullScreen) {
 				highlightBorder.Stroke.Opacity = 0.0;
-				if (StretchMode == Stretch.None && StretchMode != lastStretchMode) {
-					StretchMode = lastStretchMode;
-					lastStretchMode = Stretch.None;
-					overrideStretch = true;
-					Debug.WriteLine("Switched mode from native to " + StretchMode + " for FS");
+				if (StretchModeFullScreen != StretchMode) {
+					mediaElement.Stretch = StretchModeFullScreen;
+				} else {
+					//special logic to stay native if the screen is that size, and then go to normal scaling for FS mode
+					if (mediaElement.Stretch == Stretch.None && StretchMode != Stretch.None) {
+						//StretchMode = lastStretchMode;
+						//lastStretchMode = Stretch.None;
+						//overrideStretch = true;
+						mediaElement.Stretch = StretchMode;
+						Debug.WriteLine("Switched mode from native to " + StretchMode + " for FS");
+					}
 				}
 			} else {
 				highlightBorder.Stroke.Opacity = 1.0;
-				if (overrideStretch && StretchMode != Stretch.None && lastStretchMode == Stretch.None) {
-					lastStretchMode = StretchMode;
-					StretchMode = Stretch.None;
-					Debug.WriteLine("Switched mode back to native");
+				if (StretchModeFullScreen != StretchMode && !overrideStretch) {
+					mediaElement.Stretch = StretchMode;
+				} else {
+					//back to native
+					if (overrideStretch && mediaElement.Stretch != Stretch.None){// && lastStretchMode == Stretch.None) {
+						//lastStretchMode = StretchMode;
+						//StretchMode = Stretch.None;
+						mediaElement.Stretch = Stretch.None;
+						Debug.WriteLine("Switched mode back to native");
+					}
 				}
 			}
 		}
@@ -1553,14 +1537,12 @@ namespace org.OpenVideoPlayer.Controls {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		internal void OnListBoxPlaylistSelectionChanged(object sender, SelectionChangedEventArgs e) {
+			if (playlist.SelectedIndex < 0) return;
 			SeekToPlaylistItem(playlist.SelectedIndex);
 			if (PlayListOverlay) {
-				//borderPlaylist.Visibility = Visibility.Collapsed; // hides the playlist
 				if (isPlaying) ShowPlaylist = false; // hides the playlist
-
-				AdjustForPlaylist();
+				AdjustPlaylist();
 			}
-			//borderChapters.Visibility = Visibility.Collapsed;
 		}
 
 		/// <summary>
@@ -1604,6 +1586,7 @@ namespace org.OpenVideoPlayer.Controls {
 		}
 
 		void Playlist_LoadComplete(object sender, RoutedEventArgs e) {
+			//try this here?
 			StartAutoPlay();
 		}
 
@@ -1616,7 +1599,7 @@ namespace org.OpenVideoPlayer.Controls {
 			foreach (FrameworkElement fe in controlBox.Children) {
 				if (fe != null && fe.Name != "scrubberBar" && fe.Visibility == Visibility.Visible) sum += fe.FullSize().Width;
 			}
-			double w = ActualWidth - sum - scrubberBar.Margin.Right - scrubberBar.Margin.Right - 4;
+			double w = MainBorder.ActualWidth - sum - scrubberBar.Margin.Right - scrubberBar.Margin.Right - (MainBorder.BorderThickness.Right + MainBorder.BorderThickness.Left);
 			if (scrubberBar != null && w > scrubberBar.MinWidth) scrubberBar.Width = w;
 		}
 
@@ -1638,7 +1621,7 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 
 			if (m.Text == "Statistics") ShowStatistics = (m.Checked);// ? Visibility.Visible : Visibility.Collapsed;
-			if (m.Text == "Logs") ShowLogViewer  = (m.Checked);// ? Visibility.Visible : Visibility.Collapsed;
+			if (m.Text == "Logs") ShowLogViewer = (m.Checked);// ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		internal void OnMenuOptionsItemClick(object sender, RoutedEventArgs e) {
@@ -1706,7 +1689,7 @@ namespace org.OpenVideoPlayer.Controls {
 
 			string text = string.Format("Volume: {0}%", (int)(val * 100));
 
-			SetCustomToolTip(pt, text);
+			SetCustomToolTip(pt, text, sender);
 
 			if (e.MousePressed) {
 				sliderVolume.Value = val;
@@ -1732,7 +1715,7 @@ namespace org.OpenVideoPlayer.Controls {
 
 		internal void OnQualityGaugeMouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
 			if (qualityGauge.Tag == null || qualityGauge.Tag.ToString() == "") qualityGauge.Tag = "Standard-Definition (loading)\n\n\n";
-			SetCustomToolTip(e.GetPosition(this), qualityGauge.Tag.ToString());
+			SetCustomToolTip(e.GetPosition(this), qualityGauge.Tag.ToString(), qualityGauge);
 		}
 
 		internal void OnScrubberBarMouseOver(object sender, ScrubberBarValueChangeArgs e) {
@@ -1740,7 +1723,7 @@ namespace org.OpenVideoPlayer.Controls {
 			TimeSpan ts = TimeSpan.FromSeconds(e.Value);
 			string text = "Seek to: " + string.Format("{0}:{1}:{2}", ts.Hours.ToString("00"), ts.Minutes.ToString("00"), ts.Seconds.ToString("00"));
 
-			SetCustomToolTip(pt, text);
+			SetCustomToolTip(pt, text, sender);
 
 			if (e.MousePressed && e.Value < scrubberBar.Maximum && e.Value >= 0) {
 				scrubberBar.Value = e.Value;
@@ -1749,7 +1732,7 @@ namespace org.OpenVideoPlayer.Controls {
 
 		internal void OnButtonLinkEmbed_Click(object sender, RoutedEventArgs e) {
 			FrameworkElement fe = linkEmbed.Parent as FrameworkElement;
-			if(fe!=null) fe.Visibility = (fe.Visibility == Visibility.Collapsed) ? Visibility.Visible : Visibility.Collapsed;
+			if (fe != null) fe.Visibility = (fe.Visibility == Visibility.Collapsed) ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		internal void OnButtonMenuClick(object sender, RoutedEventArgs e) {
@@ -1757,241 +1740,254 @@ namespace org.OpenVideoPlayer.Controls {
 
 			menuOptions.Target = buttonMenu;
 			menuOptions.Toggle();
+			HideTooltip();
 		}
 
 		#endregion
 
 		#region Timers and their associated methods
 
-		private readonly object timerLock = new object();
+		public void AsyncLoop() {
+			while (true) {
+
+				if (sw.Throttle("threadTimer", 3)) {//every 3 sec
+					OnThreadTimerTick();
+				}
+
+				Dispatcher.BeginInvoke(OnUiTimerTick);
+
+				Thread.Sleep(500);
+				//Thread.Sleep(100);
+			}
+		}
+
+
 		/// <summary>
 		/// Fires when our non-ui timer ticks, do as much here as possible vs. the other timer
 		/// </summary>
 		/// <param name="sender"></param>
-		protected void OnThreadTimerTick(object sender) {
+		protected void OnThreadTimerTick() {
 			if (!Monitor.TryEnter(timerLock)) return;
 			try {
 
-				//if (AlternateMediaSource != null) {
-				//    if (lastMediaHeight != MediaElementSize.Height) {
-				//        //AdaptiveFigureMaxResolution();
-				//        //mediaElement.s
-				//        //if(SizeChanged!=null) SizeChanged
-				//        Console.WriteLine("Size changed");
-				//    }
-				//}
+				UpdateStatistics();
 
 			} catch (Exception ex) {
-				Debug.WriteLine("Error in timer: " + ex);
+				Dispatcher.BeginInvoke((Action)delegate {log.Output(OutputType.Error, "Timer Error: ", ex);});
 
-				//TODO - make this thread-safe!!
-				//log.Output(OutputType.Error, "Timer Error: ", ex);
 			} finally {
 				Monitor.Exit(timerLock);
 			}
 		}
 
-		public void OnTimerTick(object sender, EventArgs e) {
-			try {
-				if (mediaElement == null) return;
-				timerIsUpdating = true;
+		private void UpdateStatistics() {
+			//check adaptive rate, right now just put in our rendered fps
+			StringBuilder sb = new StringBuilder();
+			sb.AppendFormat("OpenVideoPlayer v{0} ({1})", Version, lastMediaState);
 
-				//check controlbox width (event isnt reliable)
-				//HACK - shouldnt be hardcoded value
-				if (controlBox.Visibility == Visibility.Visible && controlBox.ActualWidth != ActualWidth - 4) OnControlBoxSizeChanged(null, null);
+			if (lastDownloadProgress > 0 && lastDownloadProgress < 1) {
+				sb.AppendFormat("\nDownload progress: {0}%", (int)(100 * lastDownloadProgress));
+			}
 
-				//adjust margin when playlist shown
-				if (playlist != null && mainBorder.Margin.Right != playlist.ActualWidth && PlayListOverlay == false && ShowPlaylist && mainBorder.Margin.Right == 0) {
-					mainBorder.Margin = new Thickness(0, 0, playlist.ActualWidth, 0);
+			int dropPerc = (FPSTotal > 0) ? (int)Math.Round(100 * (FPSDropped / FPSTotal), 0) : 0;
+			if (isPlaying) sb.AppendFormat("\n{3} - Framedrop: {0}% ({1}/{2} FPS)", dropPerc, FPSDropped, FPSTotal, StringTools.SizetoString(VideoResolution));
+			
+			if (AlternateMediaSource != null) {
+				sb.AppendFormat("\nCurrent Bitrate: {0}", StringTools.FriendlyBitsPerSec((int)AlternateMediaSource.CurrentBitrate));
+
+				if (!string.IsNullOrEmpty(bitrateString)) sb.AppendFormat("\n{0} kbps", bitrateString);
+
+				sb.AppendFormat("\nAvailable bandwidth:  {0}", StringTools.FriendlyBitsPerSec((int)AlternateMediaSource.CurrentBandwidth));
+				IBufferInfo buffer = AlternateMediaSource.BufferInfo(MediaStreamType.Video);
+				sb.AppendFormat("\nCurrent Buffer: {0}, {1} sec", StringTools.FriendlyBytes((long)buffer.Size), Math.Round(buffer.Time.TotalSeconds, 1));
+
+				AdaptiveStats newStats = new AdaptiveStats();
+
+				newStats.Segments = AlternateMediaSource.AvailableSegments(MediaStreamType.Video);
+				if (newStats.Segments.Length > 0) {
+
+					newStats.MaxBitrate = newStats.Segments[newStats.Segments.Length - 1].Bitrate; // -bitrates[0];
+					newStats.CapBitrate = (AlternateMediaSource.SegmentCapIndex > -1) ? newStats.Segments[AlternateMediaSource.SegmentCapIndex].Bitrate : 0;
+					newStats.BitratePercent = (newStats.MaxBitrate > 0) ? (double)AlternateMediaSource.CurrentBitrate / ((newStats.CapBitrate > 0 && newStats.CapBitrate < newStats.MaxBitrate) ? newStats.CapBitrate : newStats.MaxBitrate) : 0.0;
+					newStats.CapBitrateSize = newStats.Segments[AlternateMediaSource.SegmentCapIndex].Resolution;
+			
+					int qualPercent = (int)Math.Round(newStats.BitratePercent * 100, 0);
+
+					string maxStr = (newStats.CapBitrate > 0 && newStats.CapBitrate < newStats.MaxBitrate) ? string.Format("Capped at {0} ({1})\n", StringTools.SizetoString(newStats.CapBitrateSize), StringTools.FriendlyBitsPerSec((int)newStats.CapBitrate)) : "";
+
+					lastQualityTag = string.Format("{0} :: {1}x{2}\n{8}Bitrate: {3} ({4}% of max)\nAvailable bandwidth: {9}\nFramedrop: {5}% ({6}/{7} FPS)",
+											   ((VideoResolution.Height >= 480) ? "High-Definition".ToUpper() : "Standard-Definition".ToUpper()),
+											   VideoResolution.Width, VideoResolution.Height,
+											   StringTools.FriendlyBitsPerSec((int)AlternateMediaSource.CurrentBitrate),
+											   qualPercent, dropPerc, FPSDropped, FPSTotal, maxStr, StringTools.FriendlyBitsPerSec((int)AlternateMediaSource.CurrentBandwidth));
 				}
 
-				//set scrubber position
-				TimeSpan pos = mediaElement.Position;
-				scrubberBar.IsEnabled = mediaElement.NaturalDuration.TimeSpan != TimeSpan.Zero;
-				scrubberBar.Value = pos.TotalSeconds;
-				scrubberBar.Maximum = mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
-				//PlaybackPosition = pos.TotalSeconds;
+				currentStats = newStats;
+
+			} else {
+				lastQualityTag = string.Format("{0} :: {1}x{2}\nFramedrop: {3}% ({4}/{5} FPS)",
+				                           ((VideoResolution.Height >= 480) ? "High-Definition".ToUpper() : "Standard-Definition".ToUpper()),
+				                           VideoResolution.Width,
+				                           VideoResolution.Height,
+				                           dropPerc, FPSDropped, FPSTotal
+					);
+				currentStats = null;
+			}
+
+			lastStats = sb.ToString();
+			//Debug.WriteLine(sb.ToString());
+		}
+
+		public void OnUiTimerTick(){//(object sender, EventArgs e) {
+			if (!Monitor.TryEnter(uiTimerLock)) return;
+			try {
+				if (mediaElement == null) return;
+				DateTime start = DateTime.Now;
+				timerIsUpdating = true;
+
+				UpdateFrameRates();
+				CheckMouseActions();
+
+				//every loop (250ms) unless framedrop is high, then every 4 sec
+				if (FPSDropped < .15 || sw.Throttle("uiTimer", 3)) {
+					UpdatePosition();
+					SyncChapters();
+					UpdateDebugPanel();
+				}
+
+				//Debug.WriteLine("Update time: " + (DateTime.Now - start).TotalMilliseconds);
+			} catch (Exception ex) {
+				log.Output(OutputType.Error, "UI Timer Error: ", ex);
+
+			} finally {
+				Monitor.Exit(uiTimerLock);
+			}
+			timerIsUpdating = false;
+		}
+
+		private void UpdateFrameRates() {
+			FPSRendered = mediaElement.RenderedFramesPerSecond;
+			FPSDropped = mediaElement.DroppedFramesPerSecond;
+			FPSTotal = FPSDropped + FPSRendered;
+		}
+
+		private void CheckMouseActions() {
+			//Catch single clicks for play pause
+			if (waitOnClick && DateTime.Now - lastClick >= TimeSpan.FromMilliseconds(250)) {
+				waitOnClick = false;
+				TogglePlayPause();
+			}
+
+			//hide controls if fullscreeen and mouse stops moving
+			if (ShowControls && Application.Current.Host.Content.IsFullScreen && DateTime.Now - lastMouseMove > TimeSpan.FromSeconds(5)) {
+				ShowControls = false;
+			}
+		}
+
+		private void UpdatePosition() {
+			//set scrubber position
+			TimeSpan pos = mediaElement.Position;
+			scrubberBar.Value = pos.TotalSeconds;
+
+			if (sw.Throttle("sizeCheck",2)) {
+
+				CheckSizing();
+
+				lastDur = mediaElement.NaturalDuration.TimeSpan;
+				scrubberBar.IsEnabled = lastDur != TimeSpan.Zero;
+				if (lastDur.TotalSeconds != scrubberBar.Maximum) scrubberBar.Maximum = lastDur.TotalSeconds;
 
 				//hack - sometimes gets into a wierd state.  need to look more at this
-				if (/*Playback*/Position.TotalSeconds > scrubberBar.Maximum) {
-					if (mediaElement.RenderedFramesPerSecond == 0) {
+				if (pos.TotalSeconds > lastDur.TotalSeconds) {
+					if (FPSRendered == 0) {
 						if (CurrentIndex < Playlist.Count - 1) {
 							SeekToNextItem();
 						} else {
-							mediaElement.Position = TimeSpan.Zero;
+							Position = TimeSpan.Zero;
 							Pause();
 						}
 					}
 				}
-				TimeSpan dur = mediaElement.NaturalDuration.TimeSpan;
+			}
 
-				//set position text
-				PlaybackPositionText = (dur.Hours >= 1) ? string.Format("{0}:{1}:{2}", pos.Hours.ToString("00"), pos.Minutes.ToString("00"), pos.Seconds.ToString("00"))
-					: string.Format("{0}:{1}", pos.Minutes.ToString("00"), pos.Seconds.ToString("00"));
+			//set position text
+			PlaybackPositionText = (lastDur.Hours >= 1) 
+				? string.Format("{0}:{1}:{2}", pos.Hours.ToString("00"), pos.Minutes.ToString("00"), pos.Seconds.ToString("00"))
+			    : string.Format("{0}:{1}", pos.Minutes.ToString("00"), pos.Seconds.ToString("00"));
+		}
 
-				//make sure playlist is synced
-				if (chapters != null && CurrentChapterIndex >= 0 && CurrentChapterIndex < chapters.Count && chapters.SelectedIndex != CurrentChapterIndex) {
-					// set the currently playing chapter on the list box without triggering our events
-					chapters.SelectionChanged -= OnListBoxChaptersSelectionChanged;
-					chapters.SelectedIndex = CurrentChapterIndex;
-					chapters.SelectionChanged += OnListBoxChaptersSelectionChanged;
+		private void CheckSizing() {
+			
+			MediaElementSize = new Size(mediaElement.ActualWidth, mediaElement.ActualHeight);
 
-					// move that into view
-					chapters.ScrollIntoView(CurrentItem.Chapters[CurrentChapterIndex]);//listBoxChapters.Items[currentlyPlayingChapter]);
-				}
+			//check browser size, in case our parent wants to resize us dynamically
+			Size newBrowserSize = new Size(BrowserScreenInfo.ClientWidth, BrowserScreenInfo.ClientHeight);
+			if (newBrowserSize != BrowserSize) {
+				BrowserSize = newBrowserSize;
+				if (BrowserSizeChanged != null) BrowserSizeChanged(this, new EventArgs());
+				AdjustPlayerSize(PlayerSizeChangeType.Size);
 
-				UpdateUIStatistics();
-				UpdateDebugPanel();
+			} else if (mediaElement.ActualHeight > this.ActualHeight) {
+				AdjustPlayerSize(PlayerSizeChangeType.Size);
+			}
 
-				//update download stuff
-				if (updateDownloading) {
-					updateDownloading = false;
+			if (lastMediaHeight != MediaElement.ActualHeight) {
+				lastMediaHeight = MediaElement.ActualHeight;
+				if (SizeChanged != null) SizeChanged(this, null);
+			}
 
-					DownloadPercent = mediaElement.DownloadProgress * 100;
-					DownloadOffsetPercent = mediaElement.DownloadProgressOffset * 100;
-				}
-
-				//update buffering
-				if (updateBuffering) {
-					updateBuffering = false;
-
-					BufferingControlVisibility = (mediaElement.BufferingProgress < 1) ? Visibility.Visible : Visibility.Collapsed;
-					BufferingPercent = mediaElement.BufferingProgress * 100;
-				}
-
-				//Catch single clicks for play pause
-				if (waitOnClick && DateTime.Now - lastClick >= TimeSpan.FromMilliseconds(250)) {
-					waitOnClick = false;
-					TogglePlayPause();
-				}
-
-				//hide controls if fullscreeen and mouse stops moving
-				if (ShowControls && Application.Current.Host.Content.IsFullScreen && DateTime.Now - lastMouseMove > TimeSpan.FromSeconds(5)) {
-					ShowControls = false;
-				}
-
-				//check browser size, in case our parent wants to resize us dynamically
-				Size newBrowserSize = new Size(BrowserScreenInfo.ClientWidth, BrowserScreenInfo.ClientHeight);
-				if (newBrowserSize != BrowserSize) {
-					BrowserSize = newBrowserSize;
-					if (BrowserSizeChanged != null) BrowserSizeChanged(this, new EventArgs());
-					AdjustPlayerSize(PlayerSizeChangeType.Size);
-				}
-
-				if (mediaElement.ActualHeight > this.ActualHeight) {
-					AdjustPlayerSize(PlayerSizeChangeType.Size);
-				}
-				if (lastMediaHeight != MediaElement.ActualHeight) {
-					lastMediaHeight = MediaElement.ActualHeight;
-					if (SizeChanged != null) SizeChanged(this,null);
-				}
-
-				timerIsUpdating = false;
-
-			} catch (Exception ex) {
-				log.Output(OutputType.Error, "UI Timer Error: ", ex);
+			//check controlbox width (event isnt reliable)
+			if (controlBox.Visibility == Visibility.Visible && controlBox.ActualWidth != MainBorder.ActualWidth - (MainBorder.BorderThickness.Right + MainBorder.BorderThickness.Left)) {
+				OnControlBoxSizeChanged(null, null);
 			}
 		}
 
-		private void UpdateUIStatistics() {
-			FPSRendered = mediaElement.RenderedFramesPerSecond;
-			FPSDropped = mediaElement.DroppedFramesPerSecond;
-			FPSTotal = FPSDropped + FPSRendered;
-			MediaElementSize = new Size(mediaElement.ActualWidth, mediaElement.ActualHeight);
+		private void SyncChapters() {
+			//make sure playlist is synced
+			if (chapters != null && CurrentChapterIndex >= 0 && CurrentChapterIndex < chapters.Count && chapters.SelectedIndex != CurrentChapterIndex) {
+				// set the currently playing chapter on the list box without triggering our events
+				chapters.SelectionChanged -= OnListBoxChaptersSelectionChanged;
+				chapters.SelectedIndex = CurrentChapterIndex;
+				chapters.SelectionChanged += OnListBoxChaptersSelectionChanged;
+
+				// move that into view
+				chapters.ScrollIntoView(CurrentItem.Chapters[CurrentChapterIndex]);//listBoxChapters.Items[currentlyPlayingChapter]);
+			}
 		}
 
 		private void UpdateDebugPanel() {
-			if (DateTime.Now - lastDebugUpdate > TimeSpan.FromSeconds(3)) {
-				lastDebugUpdate = DateTime.Now;
+			if ((currentStats == null || currentStats.LastUpdated > lastDebugUpdate) && sw.Throttle("debugUpdate",3)) {
+				//lastDebugUpdate = DateTime.Now;
 				try {
 
-					//check adaptive rate, right now just put in our rendered fps
-					StringBuilder sb = new StringBuilder();
-					string state = (mediaElement == null) ? "" : " (" + mediaElement.CurrentState + ")";
-					sb.AppendFormat("OpenVideoPlayer v{0}{1}", Version, state);
+					if (qualityGauge != null) {
+						int dropPerc = (FPSTotal > 0) ? (int)Math.Round(100 * (FPSDropped / FPSTotal), 0) : 0;
 
-					if (isPlaying) sb.AppendFormat("\n{0}/{1} FPS (Drop/Total), Res: {2}", FPSDropped, FPSTotal, StringTools.SizetoString(VideoResolution));
+						if (AlternateMediaSource != null && currentStats != null) {
+							//TODO - option for update here
+							qualityGauge.Levels = currentStats.Segments.Length;
+							qualityGauge.Value = currentStats.BitratePercent;
+							qualityGauge.Foreground = (/*(VideoResolution.Height < 300 && currentStats.CapBitrateSize.Height > 300) || */dropPerc >= 25) ? qualityGauge.Red : (dropPerc >= 14) ? qualityGauge.Yellow : (VideoResolution.Height >= 480 || VideoResolution.Height >= currentStats.CapBitrateSize.Height) ? qualityGauge.Green : qualityGauge.White;
 
-					if (mediaElement.DownloadProgress > 0 && mediaElement.DownloadProgress < 1) {
-						sb.AppendFormat("\nDownload progress: {0}%", (int)(100 * mediaElement.DownloadProgress));
-					}
+							double qw = (qualityGauge.Levels * qualityGauge.GridThickness) + qualityGauge.Margin.Left + qualityGauge.Margin.Right;
+							//if (qw < 24) qw = 24;
+							if (qw != qualityGauge.ActualWidth) qualityGauge.Width = qw;
 
-					if (AlternateMediaSource != null) {
-						//if (AdaptiveCurrentBitrate > -1) 
-						sb.AppendFormat("\nCurrent Bitrate: {0}", StringTools.FriendlyBitsPerSec((int)AlternateMediaSource.CurrentBitrate));
-
-						if (!string.IsNullOrEmpty(bitrateString)) sb.AppendFormat("\n{0} kbps", bitrateString);
-
-						//if (AdaptiveAvailableBandwidth > -1) 
-						sb.AppendFormat("\nAvailable bandwidth:  {0}", StringTools.FriendlyBitsPerSec((int)AlternateMediaSource.CurrentBandwidth));
-						//if (AdaptiveBufferLength >= TimeSpan.Zero) 
-						IBufferInfo buffer = AlternateMediaSource.BufferInfo(MediaStreamType.Video);
-						sb.AppendFormat("\nCurrent Buffer: {0}, {1} sec", StringTools.FriendlyBytes((long)buffer.Size), Math.Round(buffer.Time.TotalSeconds, 1));
-
-						if (qualityGauge != null) {
-							IAdaptiveSegment[] segs = AlternateMediaSource.AvailableSegments(MediaStreamType.Video);
-							//TODO! Q guage even with non-adaptive
-							if (segs.Length > 0) {
-								//TODO - option for update here
-								qualityGauge.Levels = segs.Length;
-								qualityGauge.Thickness = 3.0;
-								qualityGauge.GridThickness = 4.0;
-								qualityGauge.Width = (qualityGauge.Levels * qualityGauge.GridThickness) + qualityGauge.Margin.Left + qualityGauge.Margin.Right;
-
-								double max = segs[segs.Length - 1].Bitrate; // -bitrates[0];
-								double capbr = (AlternateMediaSource.SegmentCapIndex > -1) ? segs[AlternateMediaSource.SegmentCapIndex].Bitrate : 0;
-								Size capRes = segs[AlternateMediaSource.SegmentCapIndex].Resolution;
-								if (max > 0) qualityGauge.Value = (double)AlternateMediaSource.CurrentBitrate / ((capbr > 0 && capbr < max) ? capbr : max);
-								int dropPerc = (FPSTotal > 0) ? (int)Math.Round(100 * (FPSDropped / FPSTotal), 0) : 0;
-								int qualPercent = (int)Math.Round(qualityGauge.Value * 100, 0);
-
-								string maxStr = (capbr > 0 && capbr < max) ? string.Format("Capped at {0} ({1})\n", StringTools.SizetoString(capRes), StringTools.FriendlyBitsPerSec((int)capbr)) : "";
-
-								string tag = string.Format("{0} :: {1}x{2}\n{8}Bitrate: {3} ({4}% of max)\nAvailable bandwidth: {9}\nFramedrop: {5}% ({6}/{7} FPS)",
-														   ((VideoResolution.Height >= 480) ? "High-Definition".ToUpper() : "Standard-Definition".ToUpper()),
-														   VideoResolution.Width, VideoResolution.Height,
-														   StringTools.FriendlyBitsPerSec((int)AlternateMediaSource.CurrentBitrate),
-														   qualPercent, dropPerc, FPSDropped, FPSTotal, maxStr, StringTools.FriendlyBitsPerSec((int)AlternateMediaSource.CurrentBandwidth));
-
-								qualityGauge.Foreground = ((VideoResolution.Height < 300 && capRes.Height > 300) || dropPerc >= 25) ? qualityGauge.Red : (dropPerc >= 14) ? qualityGauge.Yellow : (VideoResolution.Height >= 480 || VideoResolution.Height >= capRes.Height) ? qualityGauge.Green : qualityGauge.White;
-								qualityGauge.Tag = tag;
-
-								//update tooltip in action - hack, shouldn't have to look at content, maybe use tag?
-								if (toolTip.Visibility == Visibility.Visible && toolTip.Text != null && toolTip.Text.ToLower().Contains("definition")) {
-									toolTip.Text = tag;
-								}
-							}
-						}
-					} else {
-						if (qualityGauge != null) {
-							
-							int dropPerc = (FPSTotal > 0) ? (int) Math.Round(100*(FPSDropped/FPSTotal), 0) : 0;
-							//int qualPercent = (int) Math.Round(qualityGauge.Value*100, 0);
-							//qualityGauge.Value = 1.0;
-							//qualityGauge.GridThickness = qualityGauge.Vertical ? qualityGauge.Height - 6 : qualityGauge.Width - 6;
-							//qualityGauge.Thickness = qualityGauge.GridThickness - 1;
+						} else {
 							qualityGauge.Levels = 1;
-
-							string tag = string.Format("{0} :: {1}x{2}\nFramedrop: {3}% ({4}/{5} FPS)",
-							                           ((VideoResolution.Height >= 480) ? "High-Definition".ToUpper() : "Standard-Definition".ToUpper()),
-							                           VideoResolution.Width, 
-													   VideoResolution.Height,
-													   dropPerc, 
-													   FPSDropped, 
-													   FPSTotal
-													   );
-
-							qualityGauge.Foreground = ((VideoResolution.Height < 300) || dropPerc >= 25) ? qualityGauge.Red : (dropPerc >= 14) ? qualityGauge.Yellow : (VideoResolution.Height >= 480) ? qualityGauge.Green : qualityGauge.White;
-							qualityGauge.Tag = tag;
-
-							//update tooltip in action - hack, shouldn't have to look at content, maybe use tag?
-							if (toolTip.Visibility == Visibility.Visible && toolTip.Text != null && toolTip.Text.ToLower().Contains("definition")) {
-								toolTip.Text = tag;
-							}
+							qualityGauge.Width = 24;
+							qualityGauge.Foreground = (/*(VideoResolution.Height < 300) || */dropPerc >= 25) ? qualityGauge.Red : (dropPerc >= 14) ? qualityGauge.Yellow : (VideoResolution.Height >= 480) ? qualityGauge.Green : qualityGauge.White;
 						}
+
+						qualityGauge.Tag = lastQualityTag;
 					}
 
-					stats.Text = sb.ToString();
+					//update tooltip in action 
+					if (toolTip.Visibility == Visibility.Visible && toolTip.Tag == qualityGauge) {
+						if (lastQualityTag != null) toolTip.Text = lastQualityTag;
+					}
+
+					if(lastStats!=null) stats.Text = lastStats;
 
 					//log.Output(OutputType.Debug, "Update debug took : " + (DateTime.Now - lastDebugUpdate).TotalMilliseconds + "ms");
 				} catch (Exception ex) {
@@ -2000,7 +1996,7 @@ namespace org.OpenVideoPlayer.Controls {
 			}
 		}
 
-	
+
 		#endregion
 	}
 }

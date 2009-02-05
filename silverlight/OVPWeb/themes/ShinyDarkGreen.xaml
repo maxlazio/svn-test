@@ -1,7 +1,7 @@
 ﻿<!--
 // (c) Copyright Microsoft Corporation.
-// This source is subject to the Microsoft Public License (Ms-PL).
-// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// This source is subject to [###LICENSE_NAME###].
+// Please see [###LICENSE_LINK###] for details.
 // All other rights reserved.
 -->
 
@@ -14,8 +14,8 @@
   xmlns:input="clr-namespace:Microsoft.Windows.Controls;assembly=Microsoft.Windows.Controls.Input"
   xmlns:System_Windows_Controls_Primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls"
   xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data"
-  xmlns:System_Windows_Controls_Primitives1="clr-namespace:System.Windows.Controls.Primitives;assembly=System.Windows.Controls.Data"
-  xmlns:Player="clr-namespace:org.OpenVideoPlayer.Controls;assembly=OpenVideoPlayer" xmlns:Visuals="clr-namespace:org.OpenVideoPlayer.Controls.Visuals;assembly=OpenVideoPlayer">
+	xmlns:Player="clr-namespace:org.OpenVideoPlayer.Controls;assembly=OpenVideoPlayer" xmlns:Visuals="clr-namespace:org.OpenVideoPlayer.Controls.Visuals;assembly=OpenVideoPlayer"
+>
 
 
     <!--SHINY BLUE SETTINGS FOR CHARTS-->
@@ -131,13 +131,14 @@
     </RadialGradientBrush>
 
 
-    <!--SHINY BLUE-->
+    <!--SHINY DARK GREEN-->
     <Color x:Key="TextBrush">#FF000000</Color>
 
-    <Color x:Key="NormalBrushGradient1">#FFBAE4FF</Color>
-    <Color x:Key="NormalBrushGradient2">#FF398FDF</Color>
-    <Color x:Key="NormalBrushGradient3">#FF006DD4</Color>
-    <Color x:Key="NormalBrushGradient4">#FF0A3E69</Color>
+    <Color x:Key="NormalBrushGradient1">#FFCDE7C5</Color>
+    <Color x:Key="NormalBrushGradient2">#FF7FB974</Color>
+    <Color x:Key="NormalBrushGradient3">#FF458F37</Color>
+    <Color x:Key="NormalBrushGradient4">#FF2D5224</Color>
+
 
     <Color x:Key="NormalBorderBrushGradient1">#FFBBBBBB</Color>
     <Color x:Key="NormalBorderBrushGradient2">#FF737373</Color>
@@ -328,12 +329,12 @@
     </LinearGradientBrush>
 
 
-    <!--Start OVP Specific items...-->
+	<!--Start OVP Specific items...-->
 
-   
-    
-    <SolidColorBrush x:Key="Foreground" Color="#FF000000" />
-    <SolidColorBrush x:Key="Highlight" Color="#FF555555" />
+
+
+	<SolidColorBrush x:Key="Foreground" Color="#FF000000" />
+	<SolidColorBrush x:Key="Highlight" Color="#FF555555" />
 	<SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource Foreground}" />
 	<SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource Highlight}" />
 
@@ -355,89 +356,89 @@
 		</Setter>
 	</Style>
 
-    <Style TargetType="Visuals:ContentButtonPause">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonMute">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonFullScreen">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonLinkEmbed">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonOptions">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ContentControl">
-                    <Visuals:QualityGauge Width="22" Height="18" Padding="2" Levels="5" Vertical="True" x:Name="qualityGauge" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <Style TargetType="Visuals:ContentButtonPlay">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonNext">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonPrevious">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonPlaylist">
-			<Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
-    <Style TargetType="Visuals:ContentButtonChapters">
-			<Setter Property="Foreground" Value="{StaticResource Foreground}" />
-    </Style>
+	<Style TargetType="Visuals:ContentButtonPause">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonMute">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonFullScreen">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonLinkEmbed">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonOptions">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ContentControl">
+					<Visuals:QualityGauge Width="22" Height="18" Padding="2" Levels="5" Vertical="True" x:Name="qualityGauge" />
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="Visuals:ContentButtonPlay">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonNext">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonPrevious">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonPlaylist">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
+	<Style TargetType="Visuals:ContentButtonChapters">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+	</Style>
 
-    <Style TargetType="Visuals:QualityGauge">
-        <Setter Property="Foreground" Value="{StaticResource Foreground}" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Highlight" Value="{StaticResource Highlight}" />
-    </Style>
+	<Style TargetType="Visuals:QualityGauge">
+		<Setter Property="Foreground" Value="{StaticResource Foreground}" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Highlight" Value="{StaticResource Highlight}" />
+	</Style>
 
-    <Style TargetType="Visuals:ScrubberBar">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Slider">
-                    <Grid x:Name="Root">
-                        <Grid.Resources>
-                            <ControlTemplate x:Key="RepeatButtonTemplate">
-                                <Grid x:Name="Root" Opacity="0" Background="Transparent" />
-                            </ControlTemplate>
-                        </Grid.Resources>
-                        <Grid x:Name="HorizontalTemplate" Background="Transparent">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Rectangle Height="Auto" Margin="0,4,0,4" Fill="{StaticResource NormalBrush}" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
-                            </Rectangle>
-                            <RepeatButton x:Name="HorizontalTrackLargeChangeDecreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="0" />
-                            <Rectangle x:Name="LeftTrack" Fill="{StaticResource Foreground}" Grid.Column="0" Opacity=".7" Margin="0,7,0,7" Cursor="Hand">
-                            </Rectangle>
-                            <Thumb Height="Auto" x:Name="HorizontalThumb" Width="8" IsTabStop="True" Grid.Column="1" Visibility="Collapsed" />
-                            <RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="2" />
-                            <Rectangle x:Name="RightTrack" Fill="{StaticResource Foreground}" Margin="0,7,0,7" Height="Auto" Grid.Column="2" Cursor="Hand" Opacity="0.3">
-                            </Rectangle>
-													<Rectangle x:Name="Download" Margin="0,2,0,2" Fill="White" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+	<Style TargetType="Visuals:ScrubberBar">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Slider">
+					<Grid x:Name="Root">
+						<Grid.Resources>
+							<ControlTemplate x:Key="RepeatButtonTemplate">
+								<Grid x:Name="Root" Opacity="0" Background="Transparent" />
+							</ControlTemplate>
+						</Grid.Resources>
+						<Grid x:Name="HorizontalTemplate" Background="Transparent">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<Rectangle Height="Auto" Margin="0,4,0,4" Fill="{StaticResource NormalBrush}" Grid.Column="0" Grid.ColumnSpan="3" Stroke="{x:Null}" StrokeThickness="{TemplateBinding BorderThickness}" RadiusX="1" RadiusY="1">
+							</Rectangle>
+							<RepeatButton x:Name="HorizontalTrackLargeChangeDecreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="0" />
+							<Rectangle x:Name="LeftTrack" Fill="{StaticResource Foreground}" Grid.Column="0" Opacity=".7" Margin="0,7,0,7" Cursor="Hand">
+							</Rectangle>
+							<Thumb Height="Auto" x:Name="HorizontalThumb" Width="8" IsTabStop="True" Grid.Column="1" Visibility="Collapsed" />
+							<RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" IsTabStop="False" Template="{StaticResource RepeatButtonTemplate}" Grid.Column="2" />
+							<Rectangle x:Name="RightTrack" Fill="{StaticResource Foreground}" Margin="0,7,0,7" Height="Auto" Grid.Column="2" Cursor="Hand" Opacity="0.3">
+							</Rectangle>
+							<Rectangle x:Name="Download" Margin="0,2,0,2" Fill="White" VerticalAlignment="Bottom" HorizontalAlignment="Left"
 					 Grid.Column="0" Grid.ColumnSpan="3" Cursor="Hand" Opacity="0.4" Height="2" Width="0" />
-                        </Grid>
-                        <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
-                        </Grid>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+						</Grid>
+						<Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
+						</Grid>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 
 
-    <!--END OVP ITems -->
-    
+	<!--END OVP ITems -->
+	
 
     <!--Button-->
     <Style TargetType="Button">
@@ -1646,45 +1647,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <!--Listbox-->
-    <Style  TargetType="ListBox">
-        <Setter Property="Padding"
-            Value="1"/>
-        <Setter Property="Background"
-            Value="{StaticResource ShadeBrush}"/>
-        <Setter Property="Foreground"
-            Value="#FFFFFFff"/>
-        <Setter Property="HorizontalContentAlignment"
-            Value="Left"/>
-        <Setter Property="VerticalContentAlignment"
-            Value="Top"/>
-        <Setter Property="IsTabStop"
-            Value="False"/>
-        <Setter Property="BorderThickness"
-            Value="1"/>
-        <Setter Property="TabNavigation"
-            Value="Once"/>
-        <Setter Property="BorderBrush"
-            Value="{StaticResource NormalBorderBrush}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ListBox">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  CornerRadius="2"
-                  Background="{TemplateBinding Background}">
-                        <ScrollViewer BorderBrush="Transparent"
-                          BorderThickness="0"
-                          Padding="{TemplateBinding Padding}"
-                          x:Name="ScrollViewer"
-                          Style="{StaticResource System.Windows.Controls.ScrollViewer}">
-                            <ItemsPresenter/>
-                        </ScrollViewer>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+
     <!--LisboxItem-->
     <Style TargetType="ListBoxItem">
         <Setter Property="Padding"
@@ -1797,6 +1760,46 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <!--Listbox-->
+    <Style  TargetType="ListBox">
+        <Setter Property="Padding"
+            Value="1"/>
+        <Setter Property="Background"
+            Value="{StaticResource ShadeBrush}"/>
+        <Setter Property="Foreground"
+            Value="#FFFFFFff"/>
+        <Setter Property="HorizontalContentAlignment"
+            Value="Left"/>
+        <Setter Property="VerticalContentAlignment"
+            Value="Top"/>
+        <Setter Property="IsTabStop"
+            Value="False"/>
+        <Setter Property="BorderThickness"
+            Value="1"/>
+        <Setter Property="TabNavigation"
+            Value="Once"/>
+        <Setter Property="BorderBrush"
+            Value="{StaticResource NormalBorderBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBox">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="2"
+                  Background="{TemplateBinding Background}">
+                        <ScrollViewer BorderBrush="Transparent"
+                          BorderThickness="0"
+                          Padding="{TemplateBinding Padding}"
+                          x:Name="ScrollViewer"
+                          Style="{StaticResource System.Windows.Controls.ScrollViewer}">
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--TabControl-->
     <Style TargetType="basics:TabControl">
         <Setter Property="IsTabStop"
@@ -4995,6 +4998,7 @@
         </Setter>
     </Style>
 
+    <!-- new -->
 
 
     <!-- AutoCompleteBox -->
@@ -6052,7 +6056,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 
 
 </ResourceDictionary>

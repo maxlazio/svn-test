@@ -50,7 +50,7 @@ namespace org.OpenVideoPlayer.Connections {
 		/// <summary>
 		/// Register a Loaded event handler
 		/// </summary>
-		event ConnectionEvents.ConnectionEventHandler Loaded;
+		event ConnectionEventHandler Loaded;
 
 		/// <summary>
 		/// Register an Error event handler

@@ -37,18 +37,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.Controls, Version=2.0.21024.1838, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SilverlightToolkit_Dec08\Binaries\Microsoft.Windows.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Windows.Controls.Input, Version=2.0.21024.1838, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SilverlightToolkit_Dec08\Binaries\Microsoft.Windows.Controls.Input.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Windows.Controls.Theming, Version=2.0.21024.1838, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependancies\Microsoft.Windows.Controls.Theming.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
@@ -64,11 +52,13 @@
     <Compile Include="Controls\Menu.cs" />
     <Compile Include="Controls\MenuItem.cs" />
     <Compile Include="Controls\Visuals\Box.cs" />
+    <Compile Include="Controls\Visuals\BufferIcon.cs" />
     <Compile Include="Controls\Visuals\ContentControls.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\OpenVideoPlayerControl.cs" />
     <Compile Include="Controls\Visuals\ContentLinkEmbedBox.cs" />
+    <Compile Include="Controls\Visuals\ControlsPanel.cs" />
     <Compile Include="Controls\Visuals\CustomTooltip.cs" />
     <Compile Include="Controls\Visuals\IElementList.cs" />
     <Compile Include="Controls\Visuals\LogViewer.cs" />
@@ -100,6 +90,21 @@
       <Project>{C38C8454-8FDE-4274-842A-B0B9D1F7FE9F}</Project>
       <Name>OVPDefinitions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SilverlightToolkit\Controls.Input\Controls.Input.csproj">
+      <Project>{6FC39008-405B-405C-BAAE-BF20208F7635}</Project>
+      <Name>Controls.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SilverlightToolkit\Controls.Theming\Controls.Theming.csproj">
+      <Project>{94D59978-57A5-4EF9-8659-D33DD73A50C7}</Project>
+      <Name>Controls.Theming</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SilverlightToolkit\Controls\Controls.csproj">
+      <Project>{BDC7605E-4B2E-41B8-A5F6-4FBFD7651AC9}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\Visuals\buffer.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

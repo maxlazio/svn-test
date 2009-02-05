@@ -12,6 +12,9 @@
 
 
     <Color x:Key="Foreground">#FFCCCCCC</Color>
+	<Color x:Key="Highlight">#FF002255</Color>
+	<SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource Foreground}" />
+	<SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource Highlight}" />
 
     <Style TargetType="Visuals:ContentButtonPause">
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
@@ -45,16 +48,18 @@
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
     <Style TargetType="Visuals:ContentButtonPlaylist">
-        <Setter Property="Visibility" Value="Collapsed" />
+        <!--<Setter Property="Visibility" Value="Collapsed" />-->
+			<Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
     <Style TargetType="Visuals:ContentButtonChapters">
-        <Setter Property="Visibility" Value="Collapsed" />
+        <!--<Setter Property="Visibility" Value="Collapsed" />-->
+			<Setter Property="Foreground" Value="{StaticResource Foreground}" />
     </Style>
 
     <Style TargetType="Visuals:QualityGauge">
         <Setter Property="Foreground" Value="{StaticResource Foreground}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Highlight" Value="#FF555555" />
+        <Setter Property="Highlight" Value="{StaticResource HighlightBrush}" />
     </Style>
 
     <Style x:Key="ThumbStyle1" TargetType="Thumb">
@@ -188,6 +193,8 @@
                             		</LinearGradientBrush>
                             	</Rectangle.Fill>
                             </Rectangle>
+													<Rectangle x:Name="Download" Margin="2,8,2,2" Fill="{StaticResource ForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Left"
+					 Grid.Column="0" Grid.ColumnSpan="3" Cursor="Hand" Opacity="0.2" Height="3" Width="0" />
                         </Grid>
                         <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Background="{TemplateBinding Background}">
                            
@@ -299,6 +306,23 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Highlight" Value="Transparent" />
         <Setter Property="Foreground" Value="White" />
+				<!--<Setter Property="Highlight" Value="Transparent" />-->
     </Style>
+
+	<Style TargetType="Visuals:ControlsPanel">
+		<!--<Setter Property="Highlight" Value="{StaticResource Highlight}" />-->
+		<Setter Property="Highlight">
+			<Setter.Value>
+				<SolidColorBrush Color="Transparent" />
+			</Setter.Value>
+		</Setter>
+		<Setter Property="Background">
+			<Setter.Value>
+				<SolidColorBrush Color="Transparent" />
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	
 
 </ResourceDictionary>
