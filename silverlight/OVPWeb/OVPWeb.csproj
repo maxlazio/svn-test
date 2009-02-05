@@ -167,7 +167,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>del /q "$(ProjectDir)\Bin\OVPWeb.*"</PostBuildEvent>
-    <PreBuildEvent>"$(ProjectDir)\..\PreBuild.cmd" "$(ProjectDir)" "$(ConfigurationName)" "$(ProjectName)"</PreBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)\..\Other\PostBuild.cmd" "$(ProjectDir)" "$(ConfigurationName)" "$(ProjectName)"</PostBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)\..\Other\PreBuild.cmd" "$(ProjectDir)" "$(ConfigurationName)" "$(ProjectName)"</PreBuildEvent>
   </PropertyGroup>
 </Project>
