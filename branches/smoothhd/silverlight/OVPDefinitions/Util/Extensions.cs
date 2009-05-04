@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace org.OpenVideoPlayer.Util {
 	public static class Extensions {
@@ -20,6 +21,52 @@ namespace org.OpenVideoPlayer.Util {
 		/// <returns></returns>
 		public static double Sum(this Size s) {
 			return s.Height * s.Width;
+		}
+
+		public static int Search(this string source, string[] strings, bool caseSensitive) {
+			if (!caseSensitive) source = source.ToLower();
+			foreach (string s in strings) {
+				int i = source.IndexOf(s, caseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase);
+				if (i >= 0) return i;
+			}
+			return -1;
+		}
+
+		public static bool Contains(this string[] strings, string item, bool caseSensitive) {
+			foreach (string s in strings) {
+				if (string.Compare(s, item, caseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase) == 0) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static string Section(this string source, string start, string end) {
+			int s = source.IndexOf(start);
+			if (s >= 0) {
+				s += start.Length;
+				int e = source.IndexOf(end, s);
+				if (e > s) {
+					return source.Substring(s, e - s);
+				}
+			}
+			return "";
+		}
+
+		public static string SectionReplace(this string source, string start, string end, string replace) {
+			StringBuilder sb = new StringBuilder(512);
+			int s = source.IndexOf(start);
+			if (s >= 0) {
+				s += start.Length;
+				int e = source.IndexOf(end, s);
+				if (e > s) {
+					sb.Append(source.Substring(0, s));
+					sb.Append(replace);
+					sb.Append(source.Substring(e));
+					return sb.ToString();
+				}
+			}
+			return source;
 		}
 
 		/// <summary>

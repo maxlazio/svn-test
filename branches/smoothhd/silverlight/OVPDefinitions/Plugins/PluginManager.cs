@@ -16,6 +16,7 @@ using System.Xml.Linq;
 using System.Linq;
 using System.IO;
 using System.Windows.Resources;
+using System.Security.Cryptography;
 
 namespace org.OpenVideoPlayer {
 	public static class PluginManager {
@@ -27,10 +28,34 @@ namespace org.OpenVideoPlayer {
 
 		public static Dictionary<string, Type> PluginTypes = new Dictionary<string, Type>();
 
+		public static List<string> RequiredPlugins = new List<string>();
+
 		public static void LoadPlugin(Uri uri, string type) {
 			WebClient wc = new WebClient();
 			wc.OpenReadCompleted += OnAssemblyDownloaded;//"AdaptiveStreaming.dll"), "Microsoft.Expression.Encoder.AdaptiveStreaming.AdaptiveStreamingSource");
 			wc.OpenReadAsync(uri, new DownloadInfo(){ Type=type, Uri=uri, WebClient=wc});
+		}
+
+		public static void LoadPlugins(string initValue) {
+			if (!string.IsNullOrEmpty(initValue)) {
+				foreach (string s in initValue.Split(' ', ';')) {
+					bool required = required = s.EndsWith("!");
+					Uri u = (Uri.IsWellFormedUriString(s.Substring(0, s.Length - (required?1:0)), UriKind.Absolute) ? new Uri(s) : new Uri(HtmlPage.Document.DocumentUri, s));
+					if(required) {
+						RequiredPlugins.Combine(u.ToString());
+					}
+					PluginManager.LoadPlugin(u, null);
+				}
+			}
+		}
+
+		public static bool RequiredPluginsLoaded {
+			get { 
+				foreach(string s in RequiredPlugins) {
+					if(!PluginFiles.ContainsKey(s)) return false;
+				}
+				return true;
+			}
 		}
 
 		public static IPlugin CreatePlugin(string name){
@@ -40,6 +65,10 @@ namespace org.OpenVideoPlayer {
 		public static IPlugin CreatePlugin(Type type){
 			return Activator.CreateInstance(type) as IPlugin;
 		}
+
+		public static Dictionary<string, byte[]> PluginFiles = new Dictionary<string, byte[]>();
+
+		public static HashAlgorithm Hash = new SHA1Managed();
 
 		static void OnAssemblyDownloaded(object sender, OpenReadCompletedEventArgs e) {
 			DownloadInfo dl = e.UserState as DownloadInfo;
@@ -53,6 +82,9 @@ namespace org.OpenVideoPlayer {
 				}
 				if (e.Result == null) {
 					throw new Exception("Invalid result from Assembly request");
+				}
+				lock (Hash) {
+					PluginFiles.Add(dl.Uri.ToString(), Hash.ComputeHash(e.Result));
 				}
 
 				if(dl!=null && dl.Uri.ToString().ToLower().Contains(".dll")){
@@ -136,7 +168,12 @@ namespace org.OpenVideoPlayer {
 			}
 		}
 
-
+		public static void DoPluginLoaded(Assembly asm, IPlugin plugin, Type pType) {
+			if (PluginLoaded != null) {
+				PluginEventArgs args = (asm!=null && plugin!=null && pType !=null) ? new PluginEventArgs() { Assembly = asm, Plugin = plugin, PluginType = pType } : null;
+				PluginLoaded(null, args);
+			}
+		}
 	}
 
 	public class DownloadInfo {

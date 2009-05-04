@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Browser;
 
 namespace org.OpenVideoPlayer.Media {
 	/// <summary>
@@ -32,6 +33,7 @@ namespace org.OpenVideoPlayer.Media {
 		#endregion
 
 		#region Properties
+		[ScriptableMember]
 		/// <summary>
 		/// The title of the video
 		/// </summary>
@@ -42,7 +44,7 @@ namespace org.OpenVideoPlayer.Media {
 				OnPropertyChanged("Title");
 			}
 		}
-
+		[ScriptableMember]
 		/// <summary>
 		/// The author of the video
 		/// </summary>
@@ -53,7 +55,7 @@ namespace org.OpenVideoPlayer.Media {
 				OnPropertyChanged("Author");
 			}
 		}
-
+		[ScriptableMember]
 		public string Comments {
 			get { return comments; }
 			set {
@@ -63,7 +65,7 @@ namespace org.OpenVideoPlayer.Media {
 		}
 
 
-
+		[ScriptableMember]
 		/// <summary>
 		/// The description of the video
 		/// </summary>
@@ -74,7 +76,7 @@ namespace org.OpenVideoPlayer.Media {
 				OnPropertyChanged("Description");
 			}
 		}
-
+		[ScriptableMember]
 		/// <summary>
 		/// The length of the video, typically in seconds
 		/// </summary>
@@ -85,7 +87,7 @@ namespace org.OpenVideoPlayer.Media {
 				OnPropertyChanged("Length");
 			}
 		}
-
+		[ScriptableMember]
 		/// <summary>
 		/// The type of video
 		/// </summary>
@@ -95,12 +97,12 @@ namespace org.OpenVideoPlayer.Media {
 				//Do nothing
 			}
 		}
-
+		[ScriptableMember]
 		public DeliveryTypes DeliveryType {
 			get { return deliveryType; }
 			set { deliveryType = value; }
 		}
-
+		[ScriptableMember]
 		/// <summary>
 		/// The url of the video
 		/// </summary>
@@ -111,7 +113,7 @@ namespace org.OpenVideoPlayer.Media {
 				OnPropertyChanged("Url");
 			}
 		}
-
+		[ScriptableMember]
 		/// <summary>
 		/// The height of the video
 		/// </summary>
@@ -122,7 +124,7 @@ namespace org.OpenVideoPlayer.Media {
 				OnPropertyChanged("Height");
 			}
 		}
-
+		[ScriptableMember]
 		/// <summary>
 		/// The width of the video
 		/// </summary>
@@ -133,7 +135,7 @@ namespace org.OpenVideoPlayer.Media {
 				OnPropertyChanged("Width");
 			}
 		}
-
+		[ScriptableMember]
 		/// <summary>
 		/// Is the video Skippable
 		/// </summary>
