@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.Windows.Controls.Theming;
 using System.IO;
+using System.Windows.Browser;
 
 namespace org.OpenVideoPlayer.Controls {
 	/// <summary>
@@ -39,6 +40,7 @@ namespace org.OpenVideoPlayer.Controls {
 		}
 
 		public override void OnApplyTemplate() {
+
 			try {
 				base.OnApplyTemplate();
 
@@ -96,6 +98,9 @@ namespace org.OpenVideoPlayer.Controls {
 			if (element == null) return;
 			DateTime start = DateTime.Now;
 			try {
+				if (element is Control) {
+					((Control)element).ApplyTemplate();
+				}
 				if (recursive) {
 					if (element is Panel) {
 						foreach (FrameworkElement e in ((Panel) element).Children) {

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MAST xsi:schemaLocation="http://openvideoplayer.sf.net/mast http://openvideoplayer.sf.net/mast/mast.xsd" xmlns="http://openvideoplayer.sf.net/mast" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<triggers>
+		<trigger id="preroll" description="preroll before every item" >
+			<startConditions>
+				<condition type="event" name="OnItemStart" >
+					<!-- This child condition must also be true, so the preroll only triggers with content 1min or longer -->
+					<condition type="property" name ="Duration" operator="GEQ" value="1:00" />
+				</condition>
+				<condition type="property" name ="ItemCount" operator="MOD" value="4" /><!-- OR.. Trigger every fourth item, regardless of the duration limitation above.-->
+			</startConditions>
+			<endConditions>
+				<condition type="event" name="OnItemEnd" /> <!-- This 'resets' the trigger for the next clip-->
+			</endConditions>
+			<sources>
+				<source uri="http://api.atdmt.com/adserv.api/viewad/sa=135109908;sf=VAST_PreRoll_XML_V2;pf=FLV;br=500;strm=1" format="vast"	>
+					<sources /> <!--Child sources, in case we had any that were dependant on this one -->
+					<targets>
+						<target region ="VideoArea" type ="linear" >
+							<!--This is assumed already for linear, but has been explicitly defined here-->
+							<target region ="Banner1" type ="banner" /><!-- This child target (companion banner) will only be placed if the parent target succeeds -->
+						</target>
+					</targets>
+				</source>
+			</sources>
+		</trigger>
+	</triggers>
+</MAST>

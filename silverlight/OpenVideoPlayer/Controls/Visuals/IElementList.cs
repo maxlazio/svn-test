@@ -9,8 +9,10 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections;
+using System.Windows.Browser;
 
 namespace org.OpenVideoPlayer.Controls.Visuals {
+
 
 	/// <summary>
 	/// An interface used for a listitem, like playlist, logviewer etc.  
@@ -43,16 +45,36 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		/// <param name="o"></param>
 		void ScrollIntoView(object o);
 
+		[ScriptableMember]
 		/// <summary>
 		/// event fires when the selected item changes
 		/// </summary>
 		event SelectionChangedEventHandler SelectionChanged;
 
+		[ScriptableMember]
 		event SizeChangedEventHandler SizeChanged;
 
+		[ScriptableMember]
+		event ElementListEventHandler NewEntry;
+
+		//[ScriptableMember]
+		//event ElementListEventHandler StatsChanged;
 		/// <summary>
 		/// Implemented in some cases to refresh the view, if required
 		/// </summary>
 		void Refresh();
 	}
+
+
+	public delegate void ElementListEventHandler(object sender, ElementListEventArgs args);
+
+	[ScriptableType]
+	public class ElementListEventArgs: EventArgs{
+		[ScriptableMember]
+		public string Text { get; set; }
+
+		[ScriptableMember]
+		public object Entry{get;set;}
+	}
+
 }

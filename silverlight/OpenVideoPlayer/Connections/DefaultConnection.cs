@@ -7,6 +7,7 @@ using System.Text;
 using org.OpenVideoPlayer.EventHandlers;
 using org.OpenVideoPlayer.Media;
 using org.OpenVideoPlayer.Parsers;
+using org.OpenVideoPlayer.Util;
 
 namespace org.OpenVideoPlayer.Connections {
 	/// <summary>
@@ -106,6 +107,9 @@ namespace org.OpenVideoPlayer.Connections {
 				WebClient client = new WebClient();
 				client.DownloadStringCompleted += connect_DownloadStringCompleted;
 				client.DownloadStringAsync(uri);
+
+				//client.Headers[HttpRequestHeader.Host] = "www.test.com";
+
 				isConnected = true;
 			} catch (Exception ex) {
 				isConnected = false;
@@ -170,7 +174,7 @@ namespace org.OpenVideoPlayer.Connections {
 			}
 			
 			try {
-				System.Diagnostics.Debug.WriteLine("Load complete. parsing : " + _currentURI ?? "(null)");
+				OutputLog.StaticOutput("Conn",OutputType.Debug, "Load complete. parsing : " + _currentURI ?? "(null)");
 				Stream reader = new MemoryStream(Encoding.UTF8.GetBytes(e.Result));
 				parseStreamNow(reader);
 

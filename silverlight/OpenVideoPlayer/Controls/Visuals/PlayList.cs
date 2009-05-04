@@ -26,7 +26,8 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		public new FrameworkElement Parent { get { return base.Parent as FrameworkElement; } }
 		public void ScrollIntoView(object o) { listBox.ScrollIntoView(o); }
 		public event SelectionChangedEventHandler SelectionChanged;
-
+		public event ElementListEventHandler NewEntry;
+		//public event ElementListEventHandler StatsChanged;
 		internal void OnListBoxSelectionChanged(object sender, SelectionChangedEventArgs args) {
 			if (SelectionChanged != null) SelectionChanged(sender, args);
 		}
