@@ -2,8 +2,10 @@
 using System.Windows;
 using System.Reflection;
 using System.Diagnostics;
+using System.Windows.Browser;
+using org.OpenVideoPlayer;
 
-namespace OVPImplementation {
+namespace org.OpenVideoPlayer {
 	public partial class App : Application {
 
 		public App() {
@@ -34,6 +36,7 @@ namespace OVPImplementation {
 			if (RootVisual == null) {
 				RootVisual = new Page(sender, e);
 			}
+			HtmlPage.RegisterScriptableObject("page", RootVisual);
 		}
 
 		private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e) {

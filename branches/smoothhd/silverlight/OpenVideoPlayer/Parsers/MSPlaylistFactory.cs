@@ -16,9 +16,12 @@ namespace org.OpenVideoPlayer.Parsers
     {
         public IPlaylistParser getParser(Stream input, Uri uri)
         {
-            //Right now we don't support any other xml format but the default
-            //expression template format
-            return new MSPlaylistParser(uri.ToString());
+			if (uri.ToString().ToLower().Contains(".xml")) {
+
+				//Right now we don't support any other xml format but the default
+				//expression template format
+				return new MSPlaylistParser(uri.ToString());
+			} else return null;
         }
     }
 }

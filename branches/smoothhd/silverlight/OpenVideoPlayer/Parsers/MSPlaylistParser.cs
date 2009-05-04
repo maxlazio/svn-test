@@ -106,12 +106,12 @@ namespace org.OpenVideoPlayer.Parsers {
 				}
 
 				if (iTor.Current.Attribute("thumbSource") != null && iTor.Current.Attribute("thumbSource").Value != "") {
-					toAdd.Thumbnails.Add(new Thumbnail(Conversion.GetPathFromUri(new Uri(_sourceUri),
+					toAdd.Thumbnails.Add(new Thumbnail(Conversion.GetAbsoluteUri(new Uri(_sourceUri),
 																				 System.Uri.UnescapeDataString(iTor.Current.Attribute("thumbSource").Value)).ToString()));
 				}
 
 				if (iTor.Current.Attribute("mediaSource") != null) {
-					toAdd.Url = Conversion.GetPathFromUri(new Uri(_sourceUri),
+					toAdd.Url = Conversion.GetAbsoluteUri(new Uri(_sourceUri),
 														  System.Uri.UnescapeDataString(
 															iTor.Current.Attribute("mediaSource").Value)).ToString
 						();

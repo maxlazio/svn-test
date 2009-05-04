@@ -69,7 +69,7 @@ namespace OVPImplementation {
 			Player.AutoScalingMinimumSize = new Size(848, 480);
 
 			//events
-			Player.FullScreenChanged += new RoutedEventHandler(Player_FullScreenChanged);
+			Player.FullScreenChanged += new EventHandler(Player_FullScreenChanged);
 			//Player.ItemChanged += new RoutedEventHandler(Player_ItemChanged);
 			Player.PlaylistIndexChanging += new PlaylistIndexChangingEventHandler(Player_PlaylistIndexChanging);
 			Player.SizeChanged += new SizeChangedEventHandler(Player_SizeChanged);
@@ -141,7 +141,7 @@ namespace OVPImplementation {
 		#endregion
 
 		#region Player Events
-		void Player_FullScreenChanged(object sender, RoutedEventArgs e) {
+		void Player_FullScreenChanged(object sender, EventArgs e) {
 			if (lastFSMode == Application.Current.Host.Content.IsFullScreen) return;
 			lastFSMode = Application.Current.Host.Content.IsFullScreen;
 
@@ -515,6 +515,7 @@ namespace OVPImplementation {
 
 		#region Ad Handling
 		void PluginManager_PluginLoaded(object sender, PluginEventArgs args) {
+			if (args == null) return;
 			try {
 				if (args.PluginType.ToString().Contains("UIFAdConnector")) {
 					//hack in to the ad loading event so we can position the bug

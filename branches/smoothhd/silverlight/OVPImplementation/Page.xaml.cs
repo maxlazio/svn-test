@@ -3,9 +3,12 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using System.Windows.Browser;
+using org.OpenVideoPlayer.Controls;
 
 
-namespace OVPImplementation {
+namespace org.OpenVideoPlayer {
+	[ScriptableType]
 	public partial class Page : UserControl {
 
 		public Page(object sender, StartupEventArgs e) {
@@ -16,8 +19,15 @@ namespace OVPImplementation {
 			//StreamReader sr = new StreamReader(streamInfo.Stream);
 			//object o = XamlReader.Load(sr.ReadToEnd()); 
 
-			Player.OnStartup(sender, e);
-			Player.ApplyTemplate();
+			player.OnStartup(sender, e);
+			player.ApplyTemplate();
+
 		}
+
+		[ScriptableMember]
+		public OpenVideoPlayerControl Player {
+			get { return player; }
+		}
+
 	}
 }

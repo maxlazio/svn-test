@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta content="en-us" http-equiv="Content-Language" />
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>Akamai Support - Silverlight Test Player</title>
+<style type="text/css">
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: small;
+	background-color: #FFFFFF;
+	width: 800px;
+	height: 600px;
+}
+.style1 {
+	text-align: right;
+}
+.style2 {
+	border-collapse: collapse;
+	border-width: 0;
+}
+.style3 {
+	margin-left: 0px;
+}
+.style4 {
+	text-align: center;
+}
+</style>
+
+<script type="text/javascript" language="javascript">
+
+	function load() {
+		var auto = querySt('autostart');			
+		var url = querySt('url');
+		
+		if(url!="" && url!="undefined"){
+			document.getElementById('url').value = url;
+			
+			if(auto=="true" || auto=="1"){
+				testclick();
+			}
+		}
+	}
+	
+	/* These don't work properly, we can't override the host header
+	function overrideip() {
+		document.getElementById('override').checked = !document.getElementById('override').checked;
+		servertoggle();
+	}
+	
+	function servertoggle(){
+		document.getElementById('server').style.visibility = document.getElementById('override').checked ? 'visible' : 'hidden';
+	}//*/
+	
+	function samplechange(){
+		var sm = document.getElementById('sample');
+		var source = sm.value;//sm.options[sm.selectedIndex].text;
+		if(source!='...'){
+			document.getElementById('url').value = source;
+		}
+	}
+
+	function onSilverlightLoad() {
+		//alert('load');
+		var slApp = document.getElementById('slp');
+		if (slApp) {
+			if (slApp.content) {
+				slApp.content.page.Player.LogViewer.addEventListener("NewEntry", onNewLog);
+				slApp.content.page.Player.LogViewer.addEventListener("StatsChanged", onNewStats);
+				slApp.content.page.Player.addEventListener("MediaOpened", onNewMedia);
+				document.getElementById('logs').value = "Ready.\n";
+				//document.getElementById('ver').value = slApp.content.page.Player.Version;
+			}
+		}
+	}
+
+	function onNewLog(sender, args) {
+		var ta = document.getElementById('logs');
+		ta.value += args.Entry.ElapsedMin + "  " + args.Entry.Description + "\n";
+		ta.scrollTop = ta.scrollHeight;
+	}
+
+	function onNewStats(sender, args) {
+		//alert(args.Text);
+		document.getElementById('stats').value = args.Text;
+	}
+	
+	function onNewMedia(sender, args) {
+		var slApp = document.getElementById('slp');
+
+		document.getElementById('title').value = slApp.content.page.Player.CurrentItem.Title;
+		document.getElementById('desc').value = slApp.content.page.Player.CurrentItem.Description;
+		document.getElementById('vid').value = String(slApp.content.page.Player.VideoResolution).replace(',','x');// + ", " + slApp.content.page.Player.FPSTotal + " FPS";
+		document.getElementById('dur').value = slApp.content.page.Player.Duration;
+		switch(slApp.content.page.Player.CurrentItem.DeliveryType){
+			case 0: document.getElementById('del').value = "Streaming"; break;
+			case 1: document.getElementById('del').value = "Progressive";break;
+			case 2: document.getElementById('del').value = "Adaptive";break;
+		}
+	}
+	
+	function getUrl(){
+		var url = document.getElementById('url').value;
+		
+		/*
+		var ip = document.getElementById('server').value;
+		
+		if(document.getElementById('override').checked && ip!=""){
+			var prefix = url.indexOf("//");
+			var slash = url.indexOf("/", prefix + 2);
+			if(prefix > 0 && slash > prefix){
+				url = url.substring(0, prefix+2) + ip + url.substring(slash);
+			}
+		}//*/
+
+		return url;
+	}
+
+	function testclick() {
+		
+		var url = getUrl();
+
+		var tag =
+			'<object data="data:application/x-silverlight-2," type="application/x-silverlight-2" height="330" id="slp" style="margin: 0px; width: 438px" >' +
+			'\n  <param name="source" value="OVP.xap"/>' +
+			'\n  <param name="minRuntimeVersion" value="2.0.30923.0" />' +
+			'\n  <param name="onload" value="onSilverlightLoad" />' +
+			'\n  <param name="onerror" value="onSilverlightError" />' +
+			'\n  <param name="background" value="#EEEEEE" />' +
+			'\n  <param name="MaxFrameRate" value="30" />' +
+			'\n  <a href="http://go.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;">' +
+			'\n  <img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none"/></a>' +
+			'\n  <param name="initparams" value=' + "'" + 'showstatistics=false, showlogviewer=false, autoplay=true, muted=false, playlistoverlay=true, ' +
+			'\n  theme=themes/SupportPlayer.xaml, plugins=plugins/AdaptiveEdge.xap, stretchmode=Fit, stretchmodefullscreen=Fit, type=SupportPlayer, ' +
+			'\n  LogViewer.Transparent = false, source=' + 	url + "' />" +
+			'\n  </object>';
+
+		document.getElementById('container').innerHTML = tag;
+	}
+	
+	function tabclick(tab){
+		document.getElementById('tab1').style.visibility = (tab=='tab1') ? 'visible' : 'hidden';
+		document.getElementById('btab1').style.fontWeight = (tab=='tab1') ? 'bold' : 'normal';
+		document.getElementById('btab1').style.color = (tab=='tab1') ? 'black' : 'gray';
+
+		document.getElementById('tab2').style.visibility = (tab=='tab2') ? 'visible' : 'hidden';
+		document.getElementById('btab2').style.fontWeight = (tab=='tab2') ? 'bold' : 'normal';
+		document.getElementById('btab2').style.color = (tab=='tab2') ? 'black' : 'gray';
+	}
+
+	function showshare(){
+		var url = getUrl();
+		if(url==""){
+			alert('You must enter a URL to get a share link');
+		}else{
+			//alert('Copy and paste this link:\n\nhttp://support.akamai.com/silverlight/index.html?autostart=true&url=' + escape(url));
+			document.getElementById('shareurl').value = 'http://support.akamai.com/silverlight/index.html?autostart=true&url=' + escape(url);
+			document.getElementById('sharediv').style.visibility = 'visible';
+		}
+	}
+	
+	function hideshare(){
+		document.getElementById('sharediv').style.visibility = 'hidden';
+	}
+
+	function querySt(ji) {
+		hu = window.location.search.substring(1);
+		gy = hu.split("&");
+		for (i=0;i<gy.length;i++) {
+		ft = gy[i].split("=");
+		if (ft[0] == ji) {
+			return ft[1];
+		}
+		return "";
+	}
+}
+	
+</script>
+</head>
+
+<body onload="load();">
+<form >
+		<div id="sharediv" style="border: 1px solid black; visibility:hidden; position: absolute; background-color: #cccccc; font-size:x-small; width: 660px; height: 108px; z-index: 2; left: 55px; top: 26px;">
+		<span style="margin:10px;float:left">Copy and paste this link:</span><span style="margin:10px;float:right"> <a href="#" onclick="hideshare()" >(close)</a></span><br />
+		<textarea id="shareurl" style="font-size:x-small; margin-left:10px; width:640px;" rows="4"></textarea>
+		</div>
+
+<table  style="width: 800px;" class="style2" cellpadding="4" cellspacing="0">
+	<tr bgcolor="#C0D8E6">
+		<td colspan="3" style="height: 24px"><strong>&nbsp;Akamai Silverlight Test Player v1.0</strong></td>
+		<td class="style1" style="height: 24px; width: 442px;">
+		Client IP Address: &nbsp;<input type="text" style="background-color:#C0D8E6; border-style:none;" id="ip" />
+		 </td>
+	</tr>
+	<tr>
+		<td style=" height: 36px" colspan="3">
+		
+			&nbsp;Enter the Akamai URL to test, or select a sample:</td>
+		<td style="height: 36px; width: 442px;" class="style1">
+			<select name="sample" id="sample" style="width: 345px; height: 26px; " onchange="samplechange()">
+				<option value="..." selected="selected">...</option>
+				<option value="http://mediapm.edgesuite.net/ovp/content/test/adaptiveplaylists/supportplayer/elephantsdream.xml">AdaptiveEdge</option>						
+				<option value="http://products.edgeboss.net/wmedia/products/content/test/video/supportplayer/wms/fist_bump_500k.wvx" >StreamOS - Streaming</option>
+				<option value="http://products.edgeboss.net/download/products/content/test/video/supportplayer/wms/fist_bump_500k.wmv">StreamOS - Prog. DL</option>
+				<option value="http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15704&groupname=products">StreamOS RSS Feed - Streaming</option>
+				<option value="http://rss.streamos.com/streamos/rss/genfeed.php?feedid=15702&groupname=products">StreamOS RSS Feed - Prog. DL</option>
+				<option value="mms://a1591.v67128d.c67128.g.vm.akamaistream.net/7/1591/67128/v0001/mediapm.download.akamai.com/67129/ovp/content/test/video/supportplayer/wms/fist_bump_500k.wmv">AMD - Streaming</option>
+				<option value="http://mediapm.edgesuite.net/ovp/content/test/video/supportplayer/wms/fist_bump_500k.wmv">AMD - Prog. DL</option>
+				<option value="mms://a1.m.akastream.net/D/2047/5929/1/reflector:23292">AMD - Live</option>
+			</select>
+		&nbsp;<input name="share" id="share" type="button" onclick="showshare()" value="Share" style="width: 57px; height: 30px;" /> </td>
+	</tr>
+	<tr>
+		<td style="width: 174px" rowspan="2">
+		
+			&nbsp;
+		
+			<input name="test" id="test" type="button" style="font-size: x-large; width: 110px; height: 50px; " value="Test" onclick="testclick()" /></td>
+		<td style="height: 52px; " align="right" class="style1" colspan="3">
+		<input name="url" id="url" style="font: medium Arial, Helvetica, sans-serif; width: 630px; background: #FFCC33; height: 25px; vertical-align: middle;" type="text" class="style3" /></td>
+	</tr>
+	<tr>
+		<td valign="top" rowspan="2" colspan="2">
+		
+		<!--&nbsp;&nbsp;<input name="override" id="override" value="1" type="checkbox" onclick="servertoggle()"  />
+		<span onclick="overrideip()" style="">Override Server IP</span><br /> 
+		&nbsp;&nbsp;<input style="visibility: hidden;width: 140px" name="server" id="server"  type="text" />-->
+		</td>
+		
+		<td id="container" rowspan="4" bgcolor="#EEEEEE" class="style4" style=" padding: 0px; width: 442px">
+			<!--Silverlight object tag will go here-->
+		</td>
+		
+	</tr>
+	<tr>
+		<td style="width: 174px; height: 40px;"></td>
+	</tr>
+	<tr>
+		<td style="width: 174px; height: 20px;" class="style4" valign="bottom">
+			<input type="button" id="btab1" style="border-style: none; border-color: inherit; border-width: medium; background-color: #FFFFFF; font-weight: bold; width: 130px;" onclick="tabclick('tab1')" value="Metadata" />
+					</td>
+		<td style="width: 10px; height: 20px;" class="style4" valign="bottom">
+		|
+		</td>
+		<td style="width: 174px; height: 20px;" class="style4" valign="bottom">
+		&nbsp;<input type="button"  style=" border-style: none; border-color: inherit; border-width: medium; color: gray; background-color: #FFFFFF; width: 130px;" id="btab2" onclick="tabclick('tab2')" value="Debug Logs" /></td>
+	</tr>
+	<tr>
+		<td style="height: 260px;" colspan="3">
+			<hr style="height: 1px; margin: 2px;" />
+			<div style="height: 252px; overflow: hidden; width: 100%;">
+			<div style="position: relative; -background-color: fuchsia; font-size:x-small; width: 100%; height: 250px; z-index: 1; left: 1px; top: 0px;" id="tab1">
+				
+				<table style="background-color: #FFFFFF; background: #FFFFFF; width: 100%">
+				<!--	<tr>
+						<td colspan="2" style="font: small Arial, Helvetica, sans-serif; height: 0px"><strong>OpenVideoPlayer v</strong><input type="text" name="ver" id="ver" readonly="readonly" style="font-weight:bold; font-size: x-small;background-color:white; border-style: none;" /></td>
+					</tr>-->
+					<tr>
+						<td style="width: 80px; height: 14px;">Title:</td>
+						<td style="width: 260px; height: 14px;"><input type="text" readonly="readonly" name="title" id="title" style="width:100%; font-size: x-small; background-color:white; border-style: none;" /></td>
+					</tr>
+					<tr>
+						<td style="width: 80px; height: 16px;" valign="top">Description:</td>
+						<td style="width: 260px; height: 16px;">
+						<!--<input type="text" id="desc" style="width:100%; font-size: x-small; background-color:white; border-style: none;" />-->
+						<textarea id="desc" name="desc" readonly="readonly" style=" width:100%; font-size: x-small; background-color:white; border-style: none; height: 36px;" > </textarea>
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 80px; height: 14px;">Video:</td>
+						<td style="width: 260px; height: 14px;"><input type="text" readonly="readonly" id="vid" name="vid" style="width:100%; font-size: x-small; background-color:white; border-style: none;" /></td>
+					</tr>
+					<tr>
+						<td style="width: 80px; height: 15px;">Duration:</td>
+						<td style="width: 260px; height: 15px;"><input type="text" readonly="readonly" id="dur" name="dur" style="width:100%;  font-size: x-small;background-color:white; border-style: none;" /></td>
+					</tr>
+					<tr>
+						<td style="width: 80px; height: 14px;">Delivery:</td>
+						<td style="width: 260px; height: 14px;"><input type="text" readonly="readonly" id="del" name="dur" style="width:100%;  font-size: x-small;background-color:white; border-style: none;" /></td>
+					</tr>
+					<tr>
+						<td style="width: 80px; height: 14px;">
+						</td>
+						<td style="width: 260px; height: 14px;">		
+						</td>
+					</tr>
+					<tr>
+						<td style="width: 80px; height: 14px; vertical-align: top" valign="top">
+							<span style="font-size: x-small;">Statistics:</span>
+						</td>
+						<td style="width: 260px; height: 14px;">
+							
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" style="width: 80px; height: 14px; vertical-align: top" valign="top">
+						<textarea id="stats" name="stats" readonly="readonly" style=" margin-left: 20px; width: 320px; font-size: small; background-color: white; border-style: none; height: 96px;"> </textarea>
+						</td></tr>
+				</table>
+				</div>
+			<div style="position: relative; visibility: hidden; -background-color: aqua; width: 100%; height: 250px; z-index: 2; left: 0px; top: -250px;" id="tab2">
+			<textarea id="logs"  readonly="readonly" style="border-bottom: solid; border-left: none; border: 1px #aaaaaa; width: 99%; height: 248px; background-color: #FFFFFF; font-size: x-small; border-right-style: none; border-top-style: none;">.</textarea>
+			</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td style="width: 174px; height: 14px;"></td>
+		<td style="height: 14px;" colspan="2"></td>
+		<td style="height: 14px; width: 442px;">
+		<object data="data:application/x-silverlight-2," type="application/x-silverlight-2" id="slp2" width="1px" height="1px" style="width: 1px; height: 1px">
+				<param name="source" value="OVPUtility.xap" />
+				<param name="minRuntimeVersion" value="2.0.30923.0" />
+				<param name="initparams" value='url1=http://whatismyip.akamai.com, url1_target=ip' />
+			</object>
+			</td>
+	</tr>
+
+	<tr bgcolor="#C0D8E6">
+		<td style="width: 174px; height: 14px;"></td>
+		<td style="height: 14px;" colspan="2"></td>
+		<td style="height: 14px; width: 442px;">
+		</td>
+	</tr>
+</table>
+</form>
+</body>
+</html>

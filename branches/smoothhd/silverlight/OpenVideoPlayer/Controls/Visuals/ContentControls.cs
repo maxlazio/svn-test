@@ -20,7 +20,9 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 
 	public class ContentButtonOptions : ContentOverrideControl { }
 	public class ContentButtonPause : ContentOverrideControl { }
-	public class ContentButtonPlay : ContentOverrideControl { }
+	public class ContentButtonPlay : ContentOverrideControl {
+		//public ContentButtonPlay() { this.b}
+	}
 	public class ContentButtonNext : ContentOverrideControl { }
 	public class ContentButtonPrevious : ContentOverrideControl { }
 	public class ContentButtonMute : ContentOverrideControl { }

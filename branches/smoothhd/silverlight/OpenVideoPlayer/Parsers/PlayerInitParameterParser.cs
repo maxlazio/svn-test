@@ -32,6 +32,13 @@ namespace org.OpenVideoPlayer.Parsers {
 		/// <param name="e">Start up arguments</param>
 		/// <param name="player">the player to set values to</param>
 		public void ImportInitParams(StartupEventArgs e, OpenVideoPlayerControl player) {
+			StringBuilder initstring =new StringBuilder();
+			foreach (string param in e.InitParams.Keys) {
+				initstring.AppendFormat("{0}={1}\n", param, e.InitParams[param]);
+			}
+
+			log.Output(OutputType.Debug, "Loading Initial Parameters", initstring.ToString());
+
 			foreach (string param in e.InitParams.Keys) {
 				string key = param.ToLower();
 				ParseParameter(key, e.InitParams[param], player);
@@ -79,14 +86,15 @@ namespace org.OpenVideoPlayer.Parsers {
 						break;
 
 						//TODO - make proper properties for these
-					case "statsopacity":
-						((FrameworkElement)player.stats.Parent).Opacity = Convert.ToDouble(initValue);
-						break;
+					//case "statsopacity":
+					//	((FrameworkElement)player.stats.Parent).Opacity = Convert.ToDouble(initValue);
+					//	break;
 
 					case "logsopacity":
-						((FrameworkElement)player.logViewer.Parent).Opacity = Convert.ToDouble(initValue);
+						((FrameworkElement)player.LogViewer.Parent).Opacity = Convert.ToDouble(initValue);
 						break;
 
+					case "source":
 					case "playlist":
 					case "mediasource":
 					case "playlistsource":
@@ -96,12 +104,7 @@ namespace org.OpenVideoPlayer.Parsers {
 						break;
 
 					case "plugins":
-						if (!string.IsNullOrEmpty(initValue)) {
-							foreach (string s in initValue.Split(' ')) {
-								Uri u = (Uri.IsWellFormedUriString(s, UriKind.Absolute) ? new Uri(s) : new Uri(HtmlPage.Document.DocumentUri, s));
-								PluginManager.LoadPlugin(u, null);
-							}
-						}
+						PluginManager.LoadPlugins(initValue);
 						break;
 
 					case "type":
@@ -116,7 +119,9 @@ namespace org.OpenVideoPlayer.Parsers {
 						bool match = false;
 						foreach (IPlugin ip in player.Plugins) {
 							if (match = (key.StartsWith(ip.PlugInName.ToLower()) || key.StartsWith(ip.GetType().Name.ToLower()) || key.StartsWith(ip.GetType().FullName.ToLower()))) {
-								ReflectionHelper.SetValue(ip.GetType(), key.Substring(key.IndexOf('.') + 1), initValue);
+								if(!ReflectionHelper.SetValue(ip.GetType(), key.Substring(key.IndexOf('.') + 1), initValue)) {
+									ReflectionHelper.SetValue(ip, key.Substring(key.IndexOf('.') + 1), initValue);
+								}
 								break;
 							}
 						}
@@ -156,6 +161,7 @@ namespace org.OpenVideoPlayer.Parsers {
 
 				log.Output(OutputType.Info, "Downloaded theme: " + e.UserState);
 				
+
 				ControlBase.ApplyThemeToElement(_player.LayoutRoot, s, true);
 				ControlBase.ApplyThemeToElement(_player.Parent as FrameworkElement, s, true);
 
@@ -184,6 +190,22 @@ namespace org.OpenVideoPlayer.Parsers {
 			Stream sourceStream = null;
 			Uri sourceUri = null;
 
+			if (key == "source") {
+				if (initValue.Contains(".ism") ||
+				    initValue.Contains(".wmv") ||
+				    initValue.Contains(".wma") ||
+				    initValue.Contains("mms") ||
+				    initValue.Contains(".mp3") //todo - make sure we've coverred everything
+					) {
+					key = "mediasource";
+				}else if (initValue.Trim().StartsWith("<")) {
+					key = "playlist";
+				}else {
+					key = "playlistsource";
+				}
+			}
+		
+
 			if (key=="playlist") {
 				//load our local parser manager
 				parserMgr = getParserManager();
@@ -199,7 +221,7 @@ namespace org.OpenVideoPlayer.Parsers {
 				VideoItem vi = new VideoItem();
 				if (initValue.Contains(".ism")) {
 					vi.DeliveryType = DeliveryTypes.Adaptive;
-					if (!initValue.ToLower().Contains("/manifest")) {
+					if (!initValue.ToLower().Contains("/manifest") && !initValue.ToLower().Contains(".ismc")) {
 						initValue += "/manifest";
 					}
 				}
@@ -219,6 +241,8 @@ namespace org.OpenVideoPlayer.Parsers {
 				} else if (key == "refsource") {
 					parserMgr = getRefParserManager();
 				}
+
+				initValue = HttpUtility.UrlDecode(initValue);
 				//create a uri to use below.
 				sourceUri = (Uri.IsWellFormedUriString(initValue, UriKind.Absolute))
 								? new Uri(initValue)
@@ -270,6 +294,7 @@ namespace org.OpenVideoPlayer.Parsers {
 					if (!connection.Playlist[i].Url.Contains(".xml") || tryLoad.Contains(connection.Playlist[i].Url)) {
 						_playlist.Add(connection.Playlist[i]);
 						connection.Playlist.RemoveAt(i);
+						i--;
 					}
 				}
 
@@ -339,8 +364,8 @@ namespace org.OpenVideoPlayer.Parsers {
 
 			//Add expected parser factories here
 			parserFactories.Add(new MSPlaylistFactory());
-			parserFactories.Add(new RssFactory());
 			parserFactories.Add(new BossFactory());
+			parserFactories.Add(new RssFactory());
 
 			//load the parsers we've selected into the parser manager and return it
 			pm.LoadParsers(parserFactories.ToArray());

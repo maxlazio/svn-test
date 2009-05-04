@@ -68,6 +68,8 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 
 		void ScrubberBar_MouseMove(object sender, MouseEventArgs e) {
 			try {
+				if (!IsEnabled) return;
+
 				lastArgs = e;
 
 				if (Throttle == TimeSpan.Zero) {
@@ -106,6 +108,7 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		}
 
 		void TimerTick(object o) {
+			if (!IsEnabled) return;
 			if (!Monitor.TryEnter(tLock)) return;
 			try {
 				MouseEventArgs e = o as MouseEventArgs;
@@ -130,6 +133,7 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		}
 
 		private void OnMoveThumbToMouseHorizontal(object sender, MouseButtonEventArgs args) {
+			if (!IsEnabled) return;
 			if (ValueChangeRequest != null) {
 				Point pt = args.GetPosition(this);
 				double time = GetTimeValue(pt);
@@ -138,6 +142,7 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		}
 
 		private void OnMoveThumbToMouseVertical(object sender, MouseButtonEventArgs args) {
+			if (!IsEnabled) return;
 			if (ValueChangeRequest != null) {
 				Point pt = args.GetPosition(this);
 				double time = GetTimeValue(pt);
@@ -146,16 +151,19 @@ namespace org.OpenVideoPlayer.Controls.Visuals {
 		}
 
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
+			if (!IsEnabled) return;
 			base.OnMouseLeftButtonDown(e);
 			mouseIsDown = true;
 		}
 
 		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
+			if (!IsEnabled) return;
 			base.OnMouseLeftButtonUp(e);
 			mouseIsDown = false;
 		}
 
 		protected override void OnMouseLeave(MouseEventArgs e) {
+			if (!IsEnabled) return;
 			base.OnMouseLeave(e);
 			mouseIsDown = false;
 		}
