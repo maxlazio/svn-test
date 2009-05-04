@@ -4,7 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{3AEA2F9B-39D3-4D49-8105-091CD7DE6C37}"
 	ProjectSection(SolutionItems) = preProject
 		Docs\AdConnectors.txt = Docs\AdConnectors.txt
-		BuildingOVP.txt = BuildingOVP.txt
+		Docs\BuildingOVP.txt = Docs\BuildingOVP.txt
 		Docs\ChangeLog.txt = Docs\ChangeLog.txt
 		Docs\Deployment.txt = Docs\Deployment.txt
 		Docs\Implementation.txt = Docs\Implementation.txt
