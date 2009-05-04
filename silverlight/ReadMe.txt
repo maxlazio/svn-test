@@ -1,4 +1,4 @@
-openvideoplayer.sf.net
+http://openvideoplayer.sf.net
 
 Open Video Player is a community site dedicated to sharing best practices around video player development. You can download player source code, reference plug-ins for advertising technologies as well as get advice from a community of designers, developers and content owners. 
 
@@ -12,3 +12,4 @@ Docs\
 	-Deployment.txt
 	-Implementation.txt
 	-ChangeLog.txt
+	-BuildingOVP.txt

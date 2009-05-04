@@ -8,13 +8,12 @@ set configname=%configname:"=%
 set projname=%3
 set projname=%projname:"=%
 
-
 REM **** Automated Versioning *******
 type "%projectpath%properties\AssemblyInfo.cs" | find "//NOTE: Automatic Version"
 if ERRORLEVEL 1 goto skipVer
   set rev=0
-  for /f "skip=1" %%i in (%projectpath%..\Other\Version.txt) do set ver=%%i&echo v%%i
-  for /f "delims=Revision: " %%i in ('svn.exe info ^"%projectpath%..\Other\Version.txt^" ^| find "Revision:"') do echo %%i&set rev=%%i
+  for /f "skip=1" %%i in (%projectpath%..\Other\Version.txt) do set ver=%%i&echo Update to Version.txt: v%%i
+  for /f "delims=Revision: " %%i in ('svn.exe info ^"%projectpath%..\Other\Version.txt^" ^| find "Revision:"') do echo Subversion Revision: %%i&set rev=%%i
   set ver=%ver%.%rev%
   echo %projname% Version: %ver% 
   
