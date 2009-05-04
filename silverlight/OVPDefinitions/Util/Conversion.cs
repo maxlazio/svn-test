@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Media;
+using System.Windows.Browser;
 
 namespace org.OpenVideoPlayer.Util {
 	/// <summary>
@@ -48,36 +49,25 @@ namespace org.OpenVideoPlayer.Util {
 			return Stretch.None;
 		}
 
-		/// <summary>
-		/// Creates a URI from both a URI and a filename.  This is used to get an absolute path from a remote
-		/// source when only the relative path is given and also to give the absolute path directly when the
-		/// filename given is an absolute URI
-		/// </summary>
-		/// <param name="uri">The uri from which the filename is loaded</param>
-		/// <param name="fileName">The filename to load into a uri</param>
-		/// <returns>Resulting merged uri object</returns>
-		public static Uri GetPathFromUri(Uri uri, String fileName) {
-			//detect if the fileName is a well-formed uri
-			Uri u = new Uri(fileName);
 
-			
-		//	if (u.Host == "localhost" && u.Port == 80) {
-			if (!Uri.IsWellFormedUriString(fileName, UriKind.Absolute)) {
-				string f = Uri.EscapeUriString(fileName);
+		public static Uri GetAbsoluteUri(String uriString) {
+			return GetAbsoluteUri(HtmlPage.Document.DocumentUri, uriString);
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="base">The base uri to use if the string is not absolute</param>
+		/// <param name="uriString">The uri string, relative or absolute</param>
+		/// <returns>Resulting merged uri object</returns>
+		public static Uri GetAbsoluteUri(Uri @base, String uriString) {
+			if (!Uri.IsWellFormedUriString(uriString, UriKind.Absolute)) {
+				string f = Uri.EscapeUriString(uriString);
 				if (Uri.IsWellFormedUriString(f, UriKind.Absolute)) {
 					return new Uri(f);
 				}
-				return new Uri(uri, fileName);
-				//if the host is localhost we can assume innocuously that the url passed in was relative
-				//so add the source uri to get an absolute one
-				//UriBuilder urib = new UriBuilder(uri);
-				//urib.Path =
-				//    System.Uri.UnescapeDataString(
-				//        uri.AbsolutePath.Substring(0, uri.AbsolutePath.LastIndexOf("/", StringComparison.Ordinal)) +
-				//        "/" + fileName);
-				//return urib.Uri;
+				return new Uri(@base, uriString);
 			} else {
-				return new Uri(fileName);
+				return new Uri(uriString);
 			}
 		}
 

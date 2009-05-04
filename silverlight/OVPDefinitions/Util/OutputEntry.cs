@@ -11,8 +11,10 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
+using System.Windows.Browser;
 
 namespace org.OpenVideoPlayer.Util {
+	[ScriptableType]
 	public class OutputEntry {
 		#region Vars
 		public static DateTime Started = DateTime.Now;
@@ -22,21 +24,34 @@ namespace org.OpenVideoPlayer.Util {
 		public static string TimeTemplate = "hh:mm:ss";
 		public string Time {get {return Timestamp.ToString(TimeTemplate);}}
 
-		public string Elapsed {
+		[ScriptableMember]
+		public string ElapsedMin {
 			get { 
 				TimeSpan ts = (Timestamp - Started);
 				return string.Format("{0}:{1}.{2}", ((int)ts.TotalMinutes).ToString("00"), ts.Seconds.ToString("00"), (ts.Milliseconds / 100));
 			}
 		}
 
+		[ScriptableMember]
+		public string Elapsed {
+			get {
+				TimeSpan ts = (Timestamp - Started);
+				return string.Format("{0}s", ts.TotalSeconds.ToString("0.0"));
+			}
+		}
+
+		[ScriptableMember]
 		[DefaultValue(null)]
 		public string Source { get; set; }
 
+		[ScriptableMember]
 		public OutputType OutputType { get; set; }
 
+		[ScriptableMember]
 		[DefaultValue(null)]
 		public string Description { get; set; }
 
+		[ScriptableMember]
 		[DefaultValue(null)]
 		public string ExtendedDesc{get;set;}
 

@@ -115,9 +115,12 @@ namespace org.OpenVideoPlayer.Util {
 				} else if (mi[0].MemberType == MemberTypes.Method) {
 					if (value is object[]) {
 						//todo - adapt types
-						((MethodInfo)mi[0]).Invoke(target, value as object[]);
+						((MethodInfo) mi[0]).Invoke(target, value as object[]);
 						return true;
-					} else {
+					}else if (value == null) {
+						((MethodInfo)mi[0]).Invoke(target, null);
+						return true;
+				} else {
 						((MethodInfo) mi[0]).Invoke(target, new object[] {value});
 						return true;
 					}
@@ -126,11 +129,65 @@ namespace org.OpenVideoPlayer.Util {
 			return false;
 		}
 
-		public static void AttachEvent(object target, string eventName, object handler, string method) {
+
+		public static object Invoke(object target, string name, params object[] value) {
+			return InvokeInternal(target, null, name, value);
+		}
+
+		public static object Invoke(Type type, string name, params object[] value) {
+			return InvokeInternal(null, type, name, value);
+		}
+
+		static object InvokeInternal(object target, Type type, string name, params object[] value) {
+			MethodInfo[] mi = null;
+			if (type != null) {
+				mi = type.GetMethods(BindingFlags.Public | BindingFlags.Default | BindingFlags.Static | BindingFlags.IgnoreCase);
+				target = null;
+
+			} else if (target != null) {
+				mi = target.GetType().GetMethods(BindingFlags.Public | BindingFlags.Default | BindingFlags.IgnoreCase | BindingFlags.Instance);
+			}
+
+			if (mi != null && mi.Length > 0) {
+				foreach (MethodInfo m in mi) {
+					if (string.Compare(m.Name, name, StringComparison.CurrentCultureIgnoreCase) == 0) {
+						ParameterInfo[] pi = m.GetParameters();
+						if (pi.Length == value.Length) {
+							bool jump = false;
+							for (int x = 0; x < pi.Length; x++) {
+								if (!pi[x].ParameterType.IsInstanceOfType(value[x])) {
+									jump = true;
+									break;
+								}
+							}
+							if(!jump) {
+								//if we made it here, the method matched.
+								return m.Invoke(target, value);
+							}
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+
+		private static Dictionary<Delegate, EventInfo> WiredEvents = new Dictionary<Delegate, EventInfo>();
+
+		public static Delegate AttachEvent(object target, string eventName, object handler, string method) {
 			Type targetType = (target is Type) ? (Type)target : target.GetType();
-			EventInfo e = targetType.GetEvent(eventName);
+			EventInfo e = targetType.GetEvent(eventName, BindingFlags.Public | BindingFlags.Default | BindingFlags.IgnoreCase | BindingFlags.Instance);
 			Delegate eh = Delegate.CreateDelegate(e.EventHandlerType, handler, method, true, true);
 			e.AddEventHandler(target, eh);
+			WiredEvents.Combine(eh, e);
+			return eh;
+		}
+	
+		public static void DetachEvent(object receiver, Delegate handler) {
+			if (WiredEvents.ContainsKey(handler)) {
+				EventInfo e = WiredEvents[handler];
+				e.RemoveEventHandler(receiver, handler);
+			}
 		}
 
 		public static Version GetAssemblyVersion() {

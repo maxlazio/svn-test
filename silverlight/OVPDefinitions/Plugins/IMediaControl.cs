@@ -46,18 +46,7 @@ namespace org.OpenVideoPlayer {
 		/// </summary>
 		void SeekToPreviousItem();
 
-		/// <summary>
-		/// Increments the volume by the given positive or negative number
-		/// </summary>
-		/// <param name="incrementValue">amount to increment by</param>
-		void VolumeIncrement(double incrementValue);
-
-		///<summary>
-		/// Shows or hides the debug panel
-		/// </summary>
-		//void ToggleStatPanel();
-
-		//bool InAd { get; set; }
+		double Volume { get; set; }
 
 		TimeSpan Position { get; set; }
 
@@ -66,19 +55,47 @@ namespace org.OpenVideoPlayer {
 		PlaylistCollection Playlist { get; set; }
 		int CurrentIndex { get; set; }
 
+		IMediaItem CurrentItem{get;}
+
 		StartupEventArgs StartupArgs { get; }
 
 		Panel LayoutRoot { get; }
+		Panel VideoArea { get; }
+
+		bool AdMode { get; set; }
+
+		Size VideoResolution { get; }
+		Size MediaElementSize { get; }
 
 		//event RoutedEventHandler ItemChanged;
 		event PlaylistIndexChangingEventHandler PlaylistIndexChanging;
 		event EventHandler BrowserSizeChanged;
 		event SizeChangedEventHandler SizeChanged;
+		event EventHandler FullScreenChanged;
+		event EventHandler MediaOpened;
+		event EventHandler VolumeChanged;
+		event EventHandler MediaCommand;
+		event EventHandler MediaEnded;
 
 		MediaElement MediaElement{get;}
 
 		bool ControlsEnabled { get; set; }
 
 		IDictionary<string, FrameworkElement> Containers { get; set; }
+
+		IPlugin[] Plugins { get; }
+	}
+
+	public enum MediaCommandType {
+		Play,
+		Pause,
+		Stop,
+		Seek,
+		//Next,
+		//Previous,
+	}
+
+	public class MediaCommandEventArgs : EventArgs {
+		public MediaCommandType Command { get; set; }
 	}
 }
