@@ -48,17 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="clientaccesspolicy.xml" />
-    <Content Include="content\uif\cont.png" />
-    <Content Include="content\uif\cont18.png" />
-    <Content Include="content\uif\htrick.png" />
-    <Content Include="content\uif\olay.png" />
-    <Content Include="content\uif\olay18.png" />
     <Content Include="content\smoothhd\bg-bottom.jpg" />
     <Content Include="content\smoothhd\bg-top.jpg" />
     <Content Include="content\smoothhd\feeds.txt" />
-    <Content Include="content\uif\tres.png" />
-    <Content Include="content\uif\tres18.png" />
-    <Content Include="content\uif\adtags.xml" />
     <Content Include="crossdomain.xml" />
     <Content Include="smoothhd.html" />
     <Content Include="index.html" />
@@ -72,76 +64,54 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="themes\ShinyDarkGreen.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="content\smoothhd\roganfeed.txt" />
-    <Content Include="content\uif\credits.png" />
     <Content Include="themes\BureauBlack.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\BureauBlue.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\Default.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\ExpressionDark.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\ExpressionLight.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\RainierOrange.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\RainierPurple.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\ShinyBlue.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\ShinyRed.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\SmoothHD.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="themes\WhistlerBlue.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="content\mast.xml" />
-    <Content Include="content\support\clipboard.swf" />
-    <Content Include="content\support\SLBridge.xap" />
-    <Content Include="content\transparent.png" />
-    <Content Include="content\vast.xml" />
     <Content Include="OVPUtility.xap" />
     <Content Include="themes\SupportPlayer.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="content\ovpvpaidbridge.js" />
-    <Content Include="content\uif\JScript1.js" />
     <Content Include="support.html" />
     <Content Include="themes\mix.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
