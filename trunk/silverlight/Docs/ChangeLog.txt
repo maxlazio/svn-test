@@ -1,5 +1,7 @@
 *** Version 2.2.0 ***
-2009-05-01	Nick Brookins <nbrookin at akamai d0t com>
+2009-05-03	Nick Brookins <nbrookin at akamai d0t com>
+
+- Merged code back into trunk, had still been working from smoothhd branch
 
 - Lots of little bugfixes
     > Fixed Autostart=false issue where stream would never start
@@ -8,21 +10,21 @@
     > fixed some issues with pausing/stopping and not being able to restart
 
 - Minor new features
+    > Some pretty big improvements to the log/stats area
     > New setting 'AutoHideNextAndPrevious' - which hides those buttons when there isn't content to move to in playlist (on by default)
     > New setting 'CheckServerIP' - which tries to request the Edge server and Client IPs for diagnostics.  
       Note: only works with certain server configurations. (on by default, fails silently if not supported)
-      
-      -logging..
-    
-    - AdaptiveEdge / SmoothStreaming
-       > Added support for 'CustomHttpErrors', if supported by server.  
+   
+    > AdaptiveEdge / SmoothStreaming
+       - Added support for 'CustomHttpErrors', if supported by server.  
          Lets us get the actual HTTP status code (400, 404, 500, etc) - which is normally not available in Silverlight
-       > Add property (int) 'DropBitrateOnSeek' the bitrate to drop to on seek (if lower than current).  -1 (default) means keep current bitrate
+       - Add property (int) 'DropBitrateOnSeek' the bitrate to drop to on seek (if lower than current).  -1 (default) means keep current bitrate
          Can sometimes make seeks more responsive, although can be jarring making the low bitrate more noticable.
          
-    - Akamai support player
-       > Removed override IP option, as we can't change the hostheader in silverlight to make it work properly
-       > Added timestamp to log output
+    > Akamai support player
+       - Removed override IP option, as we can't change the hostheader in silverlight to make it work properly
+       - Added timestamp to log output
+
 
 *** Version 2.1.80 ***
 2009-03-18	Nick Brookins <nbrookin at akamai d0t com>
