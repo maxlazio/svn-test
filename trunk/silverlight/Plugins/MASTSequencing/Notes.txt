@@ -1,0 +1,32 @@
+﻿NOTE : This is ALL Prerelease / Beta, based on an incomplete spec!  Please wait for the first official OVP release of MAST before implementing this in production!
+
+
+Changes to generated xml parsers:
+	
+- In trigger, add: 
+		public partial class Trigger : IMastTrigger { //needs to implement interface
+		
+		[XmlIgnore]
+		public List<IMastSource> Sources { get { return new List<IMastSource>(sources.ToArray()); } }
+		
+- In source, add:
+		public partial class Source : IMastSource { //needs to implement interface
+		
+		[XmlIgnore]
+		public List<IMastTarget> Targets { get { return new List<IMastTarget>(targets.ToArray()); } }
+		[XmlIgnore]
+		public List<IMastSource> Sources { get { return new List<IMastSource>(sources.ToArray()); } }
+		
+- In target, add:
+		public partial class Target : IMastTarget { //needs to implement interface
+		
+		[XmlIgnore]
+		public List<IMastTarget> Targets { get { return new List<IMastTarget>(target.ToArray()); } }
+		[XmlIgnore]
+		public object Instance { get; set; }
+
+- change for silverlight compat. - find/replace
+
+	System.Xml.XmlTextReader xmlTextReader = new System.Xml.XmlTextReader(stringReader);
+		with:
+	System.Xml.XmlReader xmlTextReader = System.Xml.XmlReader.Create(stringReader);
