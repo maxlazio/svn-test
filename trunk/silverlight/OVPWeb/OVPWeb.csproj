@@ -12,6 +12,7 @@
     <AssemblyName>OVPWeb</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <SilverlightApplicationList>{9A28153F-C605-49C1-90B7-1B04E7D5064E}|..\OVPImplementation\OVPImplementation.csproj||False,{39848300-3356-4580-B74A-BBE94C5A577A}|..\OVPUtility\OVPUtility.csproj||False</SilverlightApplicationList>
+    <TargetFrameworkSubset>Client</TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -141,7 +142,6 @@
     <Content Include="content\support\SLBridge.xap" />
     <Content Include="content\transparent.png" />
     <Content Include="content\vast.xml" />
-    <Content Include="mix.html" />
     <Content Include="OVPUtility.xap" />
     <Content Include="themes\SupportPlayer.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -151,11 +151,7 @@
   <ItemGroup>
     <Content Include="content\ovpvpaidbridge.js" />
     <Content Include="content\uif\JScript1.js" />
-    <Content Include="other\demo.html" />
-    <Content Include="other\ovp-lab-playlist.xml" />
-    <Content Include="other\rogan.html" />
-    <Content Include="other\support.html" />
-    <Content Include="other\test.html" />
+    <Content Include="support.html" />
     <Content Include="themes\mix.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
