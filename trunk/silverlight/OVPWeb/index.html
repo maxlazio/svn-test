@@ -127,7 +127,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 			if (pluginlink.length > 0){
 				 pluginlink = ', plugins=' + pluginlink;			
 			}else if (sourceType=="playlistsource"){
-			 	document.getElementById('pluginlinks').value = 'plugins/AdaptiveEdge.xap';
+			 	//document.getElementById('pluginlinks').value = 'plugins/AdaptiveEdge.xap';
 				pluginlink = ', plugins=plugins/AdaptiveEdge.xap';	
 			}
 			
@@ -199,7 +199,7 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 						<tr>
 							<td style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3; vertical-align: middle; " class="style8" colspan="2">
 								[
-							<a class="style4" href="http://sourceforge.net/projects/openvideoplayer">Visit this project on SourceForge</a> ]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+							<a class="style4" href="http://openvideoplayer.sf.net/">Visit this project on SourceForge</a> ]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
 					</td>
 						</tr>
 					</table>
@@ -390,8 +390,8 @@ textarea.bordered[disabled] {background:#C9E1FA; color:#000000; font-weight:bold
 					<select id="sourceType" onchange="OnChange();" class="bordered" style="width: 120px" name="sourceType">
 						<option value="Link to a MediaRSS Feed">FeedSource</option>
 						<option value="Link to a reference file, such as asx or wax">RefSource</option>
-						<option value="Link to a Microsoft xml playlist from Expression Encoder" selected="selected">PlayListSource</option>
-						<option value="Direct http or mms link to a media source">MediaSource</option>
+						<option value="Link to a Microsoft xml playlist from Expression Encoder">PlayListSource</option>
+						<option value="Direct http or mms link to a media source" selected="selected">MediaSource</option>
 						<option value="Directly embed playlist text">PlayList</option>
 					</select></td>
 				<td colspan="2" style="border-color: #0395d3; font-family: Arial,Verdana; color: #0395d3;   vertical-align: bottom; height: 26px;" class="style3">
