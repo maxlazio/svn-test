@@ -20,11 +20,11 @@ OVP is pretty easy to build, but here are a few notes to help get started.
 
 > Plugins do not automatically build, to prevent issues with dependencies for plugins that might npt be available.  If you change anything in a plugin, make sure you rebuild it seperately.  The included plugins have a postbuild command to copy their output to OVPWeb/plugins
 
-> OVPWeb is set to use a local installation of IIS for debugging, this has worked the best for us.  If you have IIS installed it will prompt you to create the virtual directory, and everything should work fine.  If you don't have IIS, you can go to the OVPWeb project properties and on the web tab set it to use the VS.NEt Development Server.
+> OVPWeb is set to use a local installation of IIS for debugging, this has worked the best for us.  If you have IIS installed it will prompt you to create the virtual directory, and everything should work fine.  If you don't have IIS, you can go to the OVPWeb project properties and on the web tab set it to use the VS.NEt Development Server
 
 > There are build scripts that do a few things, including setting the version for all projects automatically, based on the contents of Vertion.txt and the SVN revision.  While it's nice to have SVN installed for this and for working from the respoitory on SourceForge, it's not neccesary and should work fine without it.  The 4th section of the version will be the SVN revision, if installed when you build. (ie. v2.2.0.64, where 64 is the SVN revision.)
 
 > The build scripts may not run correctly if you have a space in your path to the project, most common if someone puts it in My Documents.  If this happens I'd just recommend moving it to a shorter simpler place.  I tried to get quotes around the right places to fix this, but I haven't fully tested it.
 
-
+> After a build, a deploy folder is created in OVPWeb with all of the files that may need to be deployed to a webserver.  This is pretty much the same content that's already in the root of OVPWeb, but excluding the .svn metadata folders, project folders, and any other uneeded stuff - making it easy to just ftp the whole thing.
 

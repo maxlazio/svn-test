@@ -24,6 +24,7 @@
     > Akamai support player
        - Removed override IP option, as we can't change the hostheader in silverlight to make it work properly
        - Added timestamp to log output
+       - Fixed share link, didn't always work
 
 
 *** Version 2.1.80 ***

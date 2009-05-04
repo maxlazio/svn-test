@@ -11,8 +11,6 @@ set projname=%projname:"=%
 
    REM Handle deploy folder
    if %projname%==OVPWeb (   
-      rd /q /s "%projectpath%\bin"
-      rd /q /s "%projectpath%\obj"
       rd /q /s "%projectpath%\deploy"
       mkdir "%projectpath%\deploy\plugins"
       
@@ -33,4 +31,7 @@ set projname=%projname:"=%
       copy /y "%projectpath%\*.html"  "%projectpath%\deploy\"
       copy /y "%projectpath%\*.xml"  "%projectpath%\deploy\"
       copy /y "%projectpath%\*.xap"  "%projectpath%\deploy\"
+      
+      rem rd /q /s "%projectpath%\obj"
+      rem rd /q /s "%projectpath%\bin"
    )
