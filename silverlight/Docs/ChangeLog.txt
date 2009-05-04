@@ -1,0 +1,247 @@
+*** Version 2.2.0 ***
+2009-05-01	Nick Brookins <nbrookin at akamai d0t com>
+
+- Lots of little bugfixes
+    > Fixed Autostart=false issue where stream would never start
+    > Fixed some intermittent issues where live streams would pause shortly after starting
+    > removed some redundant play and seek events that slowed stream start-up sometimes
+    > fixed some issues with pausing/stopping and not being able to restart
+
+- Minor new features
+    > New setting 'AutoHideNextAndPrevious' - which hides those buttons when there isn't content to move to in playlist (on by default)
+    > New setting 'CheckServerIP' - which tries to request the Edge server and Client IPs for diagnostics.  
+      Note: only works with certain server configurations. (on by default, fails silently if not supported)
+      
+      -logging..
+    
+    - AdaptiveEdge / SmoothStreaming
+       > Added support for 'CustomHttpErrors', if supported by server.  
+         Lets us get the actual HTTP status code (400, 404, 500, etc) - which is normally not available in Silverlight
+       > Add property (int) 'DropBitrateOnSeek' the bitrate to drop to on seek (if lower than current).  -1 (default) means keep current bitrate
+         Can sometimes make seeks more responsive, although can be jarring making the low bitrate more noticable.
+         
+    - Akamai support player
+       > Removed override IP option, as we can't change the hostheader in silverlight to make it work properly
+       > Added timestamp to log output
+
+*** Version 2.1.80 ***
+2009-03-18	Nick Brookins <nbrookin at akamai d0t com>
+
+- Interim non-official release for MIX presentation (http://openvideoplayer.sf.net/mix for more details)
+    > Includes pre-release of MAST, VAST, and VPAID Ad support
+    > Planned for official release with OVP v2.3
+    
+
+*** Version 2.1.70 ***
+2009-02-05	Nick Brookins <nbrookin at akamai d0t com>
+
+- General changes
+	> InitParams now resolves any player property automatically
+	> distinct option for scaling in fullscreen mode
+
+- Theme work
+	> Theme specify on config page
+	> Allow themes to be loaded from remote xaml, instead of only embedded resources
+	> 200% increase in template load speed by caching resource dictionaries
+	> New throttling in ScrubberBar to cut down on excessive requests during dragging
+	
+- UI Updates
+	> gear icon on standard (not adaptive) content instead of quality meter
+	> close credits on change of channel for rogan content
+	> log errors from adaptive better
+	> fix download progress bar, integrated with scrubber bar for easier usage and templating
+	> add buffer control spinner for buffering video feedback
+	
+- SmoothHD
+	> Add Randomize button on front page
+	> new randomization algorthm that overrides playlist behavior
+	> New 'ad' link that forwards to rogan content
+	> seperate playlist for rogan page
+	> hide channel playlist when only one channel is available
+	
+- Bugfixes:
+	> Fixed layout issue with playlist for both overlay and side by side modes
+	> Fixed rare issue with content urls with spaces or from localhost
+
+
+*** Version 2.1.30 ***
+2009-01-13	Nick Brookins <nbrookin at akamai d0t com>
+
+- Many updates to Adaptive implementation
+	> Refined Adaptive code into new AdaptiveEdge plugin that wraps the Microsoft and Akamai Heuristics
+		- Changed IAdaptiveSource to IAlternateSource and generalized usage
+		- Future possibility of a plugin for new container format, protocol, etc..
+		- More loosely connected with player, now implemented as XAP, named AdaptiveEdge.xap		
+		- Now uses one instance of plugin, as opposed to reloading it for every content item
+	> Now support InitialBitrate, allowing a rate higher than the lowest to be used initially
+		- Enables carrying current bitrate between playlist items, instead of resetting to lowest each time
+		- Preserves bitrate across seeks, for a less jarring experience
+	> Player no longer automatically tries to load adaptive code autmatically, must specify
+		- specify in InitParam as: plugins=plugins/AdaptiveEdge.xap 
+
+
+*** Version 2.1.20 ***
+2008-12-30	Nick Brookins <nbrookin at akamai d0t com>
+
+- Overhauled PluginManager with many new capabilities
+	> Now supports xap or dll assemblies
+	> Allows name-spaced initparams to be passed into loaded plugins (eg. UIFAdConnector:GlobalAdTags=... )
+	> New InitParam to control plugin loading, syntax: plugins=<path to plugin1> <path to plugin2> etc
+  
+- Added EyeWonder UIF Advertisement integration plugin (not yet in sourceforge, waiting on permission)
+    > implemented Rogan content into smoothhd
+    > used UIF for ad integration with Rogan channel as demonstration
+    > specify in InitParam as: plugins=plugins/UIFAdConnector.xap 
+	> Currently uses overloaded playlist item comments to control ad loading from an initial doc, specified in initparams
+	
+- Updates to dynamic scaling
+	> All options are configurable, including minimum size, margin, etc
+	> Now allows forcing aspect ratio
+	> Now fully implemented in player, not a page (smmothhd.com) specific implementation
+
+
+*** Version 2.1.10 ***
+2008-12-15	Nick Brookins <nbrookin at akamai d0t com>
+  
+- SmoothHD Specific Update
+
+- Reskinned OVP v2.1 to emulate look and feel of existing SmoothHD 
+    > SmoothHD will now inherits features such as draggable slider, controls in Fullscreen,
+       click video to pause, dbl-click FS, etc.. - this in itself should take care of the major UI complaints 
+    > Playlists and manifests are now feeds from StreamOS (previously hardcoded xml), the content hasn't moved 
+    > Fit player into background more cleanly, and added click spots for all logos, like IIS and Akamai 
+	> The inital usercontrol to load in the silverlight app is controlled by InitParam: type=SmoothHdPage
+		- Allows us to put multiple page implementations in the app and control them from HTML, 
+			as opposed to needing a new project or commenting things out, etc.
+   
+- improved install experience: page is now html other than player and playlist 
+    > If SL not installed, page and links are intact, but player area has an install link, and requirements text.
+    > previously was all silverlight, would show nothing but install button if not installed 
+
+
+*** Version 2.1.00 ***
+2008-12-10	Nick Brookins <nbrookin at akamai d0t com>
+
+- Completed intiial work on template/skinning system for OVP v2.1 
+    > No player code changes needed for styling
+    > look and feel is handled by a xaml template outside of the player dll 
+   
+- Added Quality Meter 
+   > The number of bars indicates how close to the full bitrate you are receiving 
+   > The color is white by default and goes green if the content is HD (480 lines or more) 
+   > Color goes yellow with over 10% framedrop, and red at over 25% drop or less than 240 lines/res 
+   > Tooltip shows more details, including resolution, bitrate in use, and framedrop (if any) 
+   
+- added new heuristic for resolution cap based on player window size
+   > added ability to adaptive code to report the current resolution correctly
+   > now will cap to 848x480 unless fullscreen, saving bandwidth and cycles
+   > if capped will report in tooltip
+
+- Dynamic player scaling
+    > When bitrate-in-use or browser size changes, an algorithm determines the best size of the player 
+    > It will only choose from HD resolutions, 480p or greater, leaving the minimum still at 848x480
+    > The client must have the bandwidth capability, CPU, and browser real-estate to justify upsizing
+    > Fullscreen still works as before, and will fill the screen regardless of the content being received
+
+- New ControlBase class provides a base class that will automatically bind template to fields and events
+- New custom controls for logviewer, playlist, chapters box, stat box, tooltip, and others
+  
+
+*** Version 2.0.60 ***
+2008-12-02	Nick Brookins <nbrookin at akamai d0t com>
+
+- Created new custom controls Menu and MenuItem, simplifies player greatly.
+- Tweaked namespaces to get all controls together
+- Created ThemeManager, implementing ImplicitStyleManager, to allow for runtime theme changing
+- Added new StartUp Param for theme, must be resource URI such as: 'OVPImplementation;component/themes/Default.xaml'
+  (standard Silverlight syntax)  Themes must be xaml files in a referenced assembly, compiled as a resource.
+- Removed explicit styles on buttons, controls allowing external themes
+- created 'CustomContentControl' with derived class for content of each control
+  As styles can be keyed by type, this allows overriding button/control content 
+  without overriding the entire player template!
+- Fix to volumebar when muted, volume change unmutes
+- Changed to dynamic stackcontrol for button container
+- Added Previous and Next button
+- New parser to resolve xml playlist links in MediaRSS Feeds
+- fix for controlbar sizing in fullscreen
+- rearranged parameter parser to allow for utility usage outside of player
+- Added support for external playlists, can be plugged into player
+
+  
+
+*** Version 2.0.30 ***
+2008-11-26	Nick Brookins <nbrookin at akamai d0t com>
+
+- implemented playlist downloading in connection class where it belonged
+- new bindtemplate() that is more dynamic
+- Fixed url encoding issue so percentages work for height/width on Mac.
+- Fixed bug (typo) that was causing crash when loading adaptive dll
+- various styling improvements
+- some improvements to options menu, zorder, etc
+- new log viewer control, still a work in progress
+- Added new 'Fill' stretch mode, maps to Silverlight's UniformToFill.  Like stretch, but preserves aspect by clipping
+- shrink duration and position text to MM:SS unless clip is over an hour, then show HH:MM:SS
+
+
+*** Version 2.0.26 ***
+2008-11-19	Nick Brookins <nbrookin at akamai d0t com>
+
+- Tweaked the project to eliminate several files/folders, including Bin, ClientBin, and Silverlight.js
+- New prebuild.cmd pre build script updates versions on all projects, including subversion revision.
+
+
+*** Version 2.0.24 ***
+2008-11-19	Nick Brookins <nbrookin at akamai d0t com>
+
+// Code changes (from v1.8)
+- Based on final Silverlight v2.0 runtime
+	
+*- Support for MediaRSS, Reference files, and direct media content
+- Add support for a single source, as well as a playlist
+- Fixes for Seek bar / duration to support live content
+	
+*- Completed configuration tool
+- Error box if content can't be played
+- More stats incl. bitrates avail. and in use (video only), measured bandwidth, resolution, and buffer values
+*- New options menu with scaling and debug statistics toggle
+*- Allow runtime changes to scaling mode, matched terminology to flash ver.
+   
+- Hide controls in full screen mode, show if mouse is near bottom
+- Double-click on surface causes fullscreen toggle
+- Single click on surface toggles pause
+- allow click anywhere on volume bar for value change  (instead of having to precisely grab the indicator)
+- allow sliding the volume / seek bar with mouse 
+    
+*- Playlist Side by Side as well as overlay
+- Support for link/embed
+
+
+// UI / Template changes
+- Tooltip for Seek bar, shows the time you are hovering over
+- Tooltip for Volume bar with current value
+- Tweaks to other tooltips, making them conditional (play/pause, mute/unmute, FullScreen/Restore)
+- gray mute button on click
+- 'Paused box' in middle of media surface
+- Translucent background for stats box
+    
+- increase text size on time indicators on each side of seek bar
+- modded buttons to look more like flash version
+- Blacked out background of frame, behind player
+   
+   
+// Known issues list
+- sometimes clicks aren't registered in the options menu 
+	* This'll be fixed later when it is made into a custom menu control
+- Issues with ShowPlaylist and ShowChapters options because feeds load async
+	* Dropped them from the config tool for now, will add later
+- Need better/more consistent error handling, anything not caught currently wipes out the player with a big error.  
+	* Good enough for now, but I'd like to catch these internally and give a silverlight error overlay on the player, reserving the big ugly errors for actual problems with silverlight itself.  
+- Unit tests are very behind, and will need to be caught up with soon
+
+
+// Planned for future release
+- 'video size' option, as opposed to just player size
+- Colors and themes
+- Overlay mode for player controls - currently always below player, but will hide on fullscreen
+- Debug logs - proving difficult in silverlight, there is no debug/trace listener.  
+	* Will have to roll own debugging system / attach to tracer in adaptive code.
