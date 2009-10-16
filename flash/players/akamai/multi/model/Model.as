@@ -72,6 +72,8 @@ package model {
 		private var _itemArray:Array;
 		private var _UIready:Boolean;
 		private var _autoStart:Boolean;
+		private var _loadImage:String;
+		private var _enableFullscreen:Boolean;
 		private var _controlBarVisible:Boolean;
 		private var _playlistVisible:Boolean;
 		private var _link:String;
@@ -119,6 +121,7 @@ package model {
 		public const EVENT_PROGRESS:String = "EVENT_PROGRESS";
 		public const EVENT_PLAY:String = "EVENT_PLAY";
 		public const EVENT_PAUSE:String = "EVENT_PAUSE";
+		public const EVENT_STOP:String = "EVENT_STOP";
 		public const EVENT_SEEK:String = "EVENT_SEEK";
 		public const EVENT_BUFFER_FULL:String = "EVENT_BUFFER_FULL";
 		public const EVENT_END_OF_ITEM:String = "EVENT_END_OF_ITEM";
@@ -143,6 +146,7 @@ package model {
 		public const EVENT_AD_START:String = "EVENT_AD_START";
 		public const EVENT_AD_END:String = "EVENT_AD_END";
 		public const EVENT_SET_CUEPOINT_MGR:String = "EVENT_SET_CUEPOINT_MGR";
+		public const EVENT_STREAM_NOT_FOUND:String = "EVENT_STREAM_NOT_FOUND";
 
 
 		// Error constants
@@ -191,7 +195,9 @@ package model {
 			_frameColor = flashvars.frameColor == undefined ? DEFAULT_FRAMECOLOR:flashvars.frameColor.toString();
 			_controlbarFontColor = flashvars.fontColor == undefined ? DEFAULT_CONTROLBAR_FONT_COLOR:flashvars.fontColor.toString();
 			_themeColor = flashvars.themeColor == undefined ? DEFAULT_THEMECOLOR:flashvars.themeColor.toString();
-			_autoStart = flashvars.autostart == undefined?true:flashvars.autostart.toString().toLowerCase() == "true";
+			_autoStart = flashvars.autostart == undefined ? true:flashvars.autostart.toString().toLowerCase() == "true";
+			_loadImage = flashvars.loadImage == undefined ? "assets/defaultLoadImage.png" : flashvars.loadImage.toString();
+			_enableFullscreen = flashvars.enableFullscreen == undefined?true:flashvars.enableFullscreen.toString().toLowerCase() == "true";
 			_link = flashvars.link == undefined?"":unescape(flashvars.link.toString());
 			_embed = flashvars.embed == undefined?"":unescape(flashvars.embed.toString());
 			if (flashvars.scaleMode == undefined) {
@@ -246,6 +252,18 @@ package model {
 			
 		public function cuePointReached(data:Object):void {
 			dispatchEvent(new OvpEvent(OvpEvent.NETSTREAM_CUEPOINT, data));
+		}
+		
+		public function switchRequested(data:Object):void {
+			dispatchEvent(new OvpEvent(OvpEvent.SWITCH_REQUESTED, data));
+		}
+		
+		public function switchAcknowledged(data:Object):void {
+			dispatchEvent(new OvpEvent(OvpEvent.SWITCH_ACKNOWLEDGED, data));
+		}
+		
+		public function switchComplete(data:Object):void {
+			dispatchEvent(new OvpEvent(OvpEvent.SWITCH_COMPLETE, data));
 		}
 		
 		public function UIready(): void {
@@ -304,28 +322,38 @@ package model {
 			sendEvent(EVENT_PLAY_START);
 		}
 		
+		public function streamNotFound():void {
+			sendEvent(EVENT_STREAM_NOT_FOUND);
+		}
+		
 		public function get seekTarget():Number{
 			return _seekTarget;
 		}
+		
 		public function set seekTarget(seekTarget:Number):void {
 			_seekTarget = seekTarget;
 		}
+		
 		public function get time():Number {
 			return _time;
 		}
+		
 		public function set time(time:Number):void {
 			_time = isNaN(time) ? 0:time;
 			sendEvent(EVENT_PROGRESS);
 		}
+		
 		public function debug(obj:String):void {
 			if (obj != null && obj != "") {
 				_debugTrace = "[" + getTimer() + "] " + obj.toString() + "\n" + _debugTrace;
 				dispatchEvent(new Event(EVENT_UPDATE_DEBUG));
 			}
 		}
+		
 		public function get debugTrace():String {
 			return _debugTrace;
 		}
+		
 		public function get isFullScreen():Boolean {
 			return _isFullScreen;
 		}
@@ -496,6 +524,12 @@ package model {
 		public function get autoStart():Boolean {
 			return _autoStart;
 		}
+		public function get loadImage():String {
+			return _loadImage;
+		}
+		public function get enableFullscreen():Boolean {
+			return _enableFullscreen;
+		}
 		public function get fontColor():Number {
 			return FONT_COLOR;
 		}
@@ -513,11 +547,18 @@ package model {
 			sendEvent(EVENT_PROGRESS);	
 		}
 		public function play():void {
+			_autoStart = true;
 			sendEvent(EVENT_PLAY);	
 		}
+		
 		public function pause():void {
 			sendEvent(EVENT_PAUSE);	
 		}
+		
+		public function stop():void {
+			sendEvent(EVENT_STOP);
+		}
+		
 		public function enableControls():void {
 			sendEvent(EVENT_ENABLE_CONTROLS);
 		}
