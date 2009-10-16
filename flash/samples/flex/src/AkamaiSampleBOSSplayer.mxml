@@ -413,7 +413,7 @@
 			}
 			// Changes the stream volume
 			private function changeVolume(event:SliderEvent):void {
-				if (_ns is AkamaiConnection) 
+				if (_ns is AkamaiNetStream) 
 					_ns.volume = event.value;
 			}
 			// Writes trace statements to the output display
