@@ -275,6 +275,7 @@ package org.openvideoplayer.net
 					dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.INVALID_INDEX)));
 				} else {
 					debug("Manually switching up");
+					_reason = "Manual switch request.";					
 					switchToIndex(_streamIndex + 1,false);
 				}
 			}
@@ -295,6 +296,7 @@ package org.openvideoplayer.net
 					dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.INVALID_INDEX)));
 				} else {
 					debug("Manually switching down");
+					_reason = "Manual switch request.";					
 					switchToIndex(_streamIndex - 1,false);
 				}
 			}
@@ -315,6 +317,7 @@ package org.openvideoplayer.net
 					dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.INVALID_INDEX)));
 				} else {
 					debug("Manually switching to index " + index);
+					_reason = "Manual switch request.";
 					switchToIndex(index,false);
 				}
 			}
@@ -342,13 +345,19 @@ package org.openvideoplayer.net
 		 * Catches onPlayStatus callbacks. Do not call this function directly. If you want the callback information, listen
 		 * to the OvpEvent.NETSTREAM_PLAYSTATUS event. 
 		 */	
-		override public function onPlayStatus(info:Object):void { 
+		override protected function onPlayStatus(info:Object):void { 
         	
 			switch(info.code) {
 				case "NetStream.Play.TransitionComplete":
 					_renderingIndex  = _pendingTransitionsArray[0];
 					debug("Transition complete to index " + _renderingIndex + " at " + Math.round(_dsi.getRateAt(_renderingIndex )) +  " kbps");
 					_pendingTransitionsArray.shift();
+					
+					// dispatch the switching complete message
+					var data:Object = new Object();
+					data.renderingIndex = _renderingIndex;
+  		 			data.renderingBitrate = Math.round(_dsi.getRateAt(_renderingIndex ));
+  		 			dispatchEvent(new OvpEvent(OvpEvent.SWITCH_COMPLETE, data));
 					break;
 				
 				case "NetStream.Play.Complete":
@@ -450,8 +459,19 @@ package org.openvideoplayer.net
 			nso.oldStreamName = _oldStreamName;
 			nso.transition = firstPlay ? NetStreamPlayTransitions.RESET:NetStreamPlayTransitions.SWITCH;
 			debug("Switching to index " + targetIndex + " at " + Math.round(_dsi.getRateAt(targetIndex)) + " kbps");
+			
+			// dispatch the switch requested event
+			var data:Object = new Object();
+  		 	data.targetIndex = targetIndex;	
+  		 	data.streamName = nso.streamName;
+  		 	data.firstPlay = firstPlay;
+  		 	data.reason = this._reason;
+			
+			dispatchEvent(new OvpEvent(OvpEvent.SWITCH_REQUESTED, data));
+			
 			super.play2(nso);
 			_oldStreamName = _dsi.getNameAt(targetIndex);
+			
 			if (!firstPlay && targetIndex < _streamIndex && !_useManualSwitchMode) {
 				// this is a failure for the current stream so lets tag it as such
 				_dsi.incrementFailCountAt(_streamIndex);
@@ -472,6 +492,7 @@ package org.openvideoplayer.net
 		 */
 		private function checkRules(e:TimerEvent):void {
 			var newIndex:int = int.MAX_VALUE;
+			_reason = "";
 			
 			for (var i:int = 0; i < _switchingRules.length; i++) {
 				var x:int =  _switchingRules[i].getNewIndex();
@@ -512,6 +533,11 @@ package org.openvideoplayer.net
 						setRateLimits(_streamIndex);
 						_metricsProvider.currentIndex = _streamIndex;
 						_pendingTransitionsArray.push(_streamIndex);
+						
+						// dispatch the switch acknowledged event
+		 				var data:Object = new Object;
+		 				data.nsInfo = e.info;
+						dispatchEvent(new OvpEvent(OvpEvent.SWITCH_ACKNOWLEDGED, data));				
 					break;
 					case "NetStream.Play.Failed":
 						_switchUnderway  = false;

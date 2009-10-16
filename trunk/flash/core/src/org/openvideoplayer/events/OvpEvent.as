@@ -276,11 +276,66 @@ package org.openvideoplayer.events
   		public static const ONFI:String = "onfi";
   		
   		/**
+  		 * Some FLV files have this callback embedded.
+  		 */
+  		public static const ONLASTSECOND:String = "onLastSecond";
+  		
+  		/**
   		 * Closed caption event. The data property will be a Caption object.
   		 * 
   		 * @see org.openvideoplayer.cc.Caption
   		 */
   		public static const CAPTION:String = "caption";
+  		
+		/** 
+		 * For dynamic streaming, dispatched when either a manual switch has been requested or a 
+		 * switching rule has requested a switch to a new index. 
+		 * 
+		 * The <code>data</code> object for the event will contain these items:
+  		 * <ul>
+  		 * <li>data.targetIndex;	// The index we are trying to switch to.</li>
+  		 * <li>data.streamName;		// The stream name we are trying to switch to.</li>
+  		 * <li>data.firstPlay;		// True if this is the initial play request for the dynamic streaming profile.</li>
+  		 * <li>data.reason;			// A textual description of the reason for the switch request.</li>
+  		 * </ul>
+		 */
+		public static const SWITCH_REQUESTED:String = "switchRequested";
+		
+		/** 
+		 * For dynamic streaming, dispatched when the NetStream object receives a "NetStream.Play.Transition" event meaning the 
+		 * server has acknowledged the switch request and is in the process of switching streams. 
+		 * 
+		 * The <code>data</code> object for the event will contain:
+  		 * <ul>
+  		 * <li>data.nsInfo;		// the info property from the NetStatusEvent object</li>
+  		 * </ul>
+		 */
+		public static const SWITCH_ACKNOWLEDGED:String = "switchAcknowledged";
+		
+		/** 
+		 * For dynamic streaming, dispatched when the NetStream object receives a "NetStream.Play.TransitionComplete" event
+		 * meaning the switch is complete and is visible to the user.
+		 * 
+		 * The <code>data</code> object for the event will contain:
+  		 * <ul>
+  		 * <li>data.renderingIndex;		// the index of the switching profile that is currently rendering.</li>
+  		 * <li>data.renderingBitrate;	// the bitrate of the currently rendering stream
+  		 * </ul>
+		 */
+		public static const SWITCH_COMPLETE:String = "switchComplete";
+
+  		/**
+  		 * The RTMP protocol allows arbitrarily-named data messages to be embedded in both live and ondemand streams.
+  		 * Typically, to listen for these, a public callback function must be created on the client object associated with the NetStream.
+  		 * To avoid the rigidity of this system, with OVP you are able to subscribe to the DATA_MESSAGE event, which will carry the name and value
+  		 * associated with any non-standard data message. Standard data messages not included in this event (since they have their own custome events)
+  		 * include onMetaData, onCuePoint, onPlayStatus, onXMPData, onImageData, onTextData, onFI, onId3 and onLastSecond. 
+  		 * <ul>
+  		 * <li>data.name; // the name of the data message, as a String</li>
+  		 * <li>data.value; // sthe payload value of the dat message, as an object</li>
+  		 * </ul>
+  		 */
+  		public static const DATA_MESSAGE:String = "datamessage";
 	 		
 	
 		private var _data:Object;

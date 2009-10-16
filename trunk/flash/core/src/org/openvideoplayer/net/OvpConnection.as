@@ -224,7 +224,7 @@ package org.openvideoplayer.net
 		/**
 		 * @private
 		 */
-		protected const VERSION:String = "1.1";
+		protected const VERSION:String = "2.1.0";
 		
 		//-------------------------------------------------------------------
 		// 
@@ -594,7 +594,8 @@ package org.openvideoplayer.net
 		 */
 		public function call(command:String, responder:Responder, ...arguments):void {
 			if (_nc && (_nc is NetConnection)) {
-				_nc.call(command, responder, arguments);
+				var args:Array = [command, responder].concat( arguments );
+				_nc.call.apply( _nc, args );
 			}
 		}
 		
@@ -915,7 +916,6 @@ package org.openvideoplayer.net
 			switch (event.info.code) {
 				case "NetConnection.Connect.InvalidApp":
 				case "NetConnection.Connect.Rejected":
-					handleRejectedOrInvalid(event);
     				break;
 				case "NetConnection.Call.Failed":
 					if (event.info.description.indexOf("_checkbw") != -1) {
@@ -973,7 +973,7 @@ package org.openvideoplayer.net
 		 * @private
 		 */
 		public function onFCSubscribe(info:Object):void {
-			_nc.dispatchEvent(new OvpEvent(OvpEvent.FCSUBSCRIBE,info)); 		
+			dispatchEvent(new OvpEvent(OvpEvent.FCSUBSCRIBE,info)); 		
 		}
 	
 		/**
@@ -981,7 +981,7 @@ package org.openvideoplayer.net
 		 */
 		public function onFCUnsubscribe(info:Object):void {
 			if (info.code == "NetStream.Play.Stop") {
-				_nc.dispatchEvent(new OvpEvent(OvpEvent.FCUNSUBSCRIBE,info)); 
+				dispatchEvent(new OvpEvent(OvpEvent.FCUNSUBSCRIBE,info)); 
 			}
 		}
 		
