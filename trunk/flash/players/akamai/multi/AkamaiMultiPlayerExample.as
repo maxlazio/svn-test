@@ -1,98 +1,1 @@
-﻿//
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions are 
-// met:
-//
-//    * Redistributions of source code must retain the above copyright 
-//		notice, this list of conditions and the following disclaimer.
-//    * Redistributions in binary form must reproduce the above 
-//		copyright notice, this list of conditions and the following 
-//		disclaimer in the documentation and/or other materials provided 
-//		with the distribution.
-//    * Neither the name of the openvideoplayer.org nor the names of its 
-//		contributors may be used to endorse or promote products derived 
-//		from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-package 
-{
-	import flash.display.*;
-	import flash.events.Event;
-	import flash.events.FullScreenEvent;
-	import flash.system.Capabilities;
-	import flash.geom.Rectangle;
-	
-	/**
-	 * This example illustrates the invocation of the Akamai Multi Player in a Flash CS4 project. Note that control
-	 * of the fullscreen behavior is externalized, since in many instances the player component itself may not be the only display object
-	 * on stage and therefore other layout and positioning methods may have to be called when moving to fullscreen.
-	 * 
-	 * <p/>
-	 * Due to Dynamic Streaming Support, this project must be compiled for Flash Player 10 or higher. 
-	 * 
-	 * @see AkamaiMultiPlayer
-	 */
-	public class AkamaiMultiPlayerExample extends MovieClip 
-	{
-		
-		private var player:AkamaiMultiPlayer;
-		
-		public function AkamaiMultiPlayerExample():void {
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.align = StageAlign.TOP_LEFT;
-			stage.addEventListener(Event.RESIZE, resize);
-			stage.addEventListener(FullScreenEvent.FULL_SCREEN, exitFullScreen);
-		
-			player  = new AkamaiMultiPlayer(stage.stageWidth, stage.stageHeight, loaderInfo.parameters);
-			
-			// If you want to rely on the src coming in as a flash var,  then comment-out the next line
-			player.setNewSource("http://mediapm.edgesuite.net/ovp/content/demo/smil/elephants_dream.smil");
-			
-			player.addEventListener("toggleFullscreen", handleFullscreen);
-			addChild(player);
-			
-		}
-		private function resize(e:Event):void {
-			player.resizeTo(stage.stageWidth, stage.stageHeight);
-		}
-		private function handleFullscreen(e:Event):void {
-			if (stage.displayState == StageDisplayState.NORMAL) {
-				try {
-					player.resizeTo(Capabilities.screenResolutionX,Capabilities.screenResolutionY);
-					stage.fullScreenSourceRect = new Rectangle(0, 0, Capabilities.screenResolutionX,Capabilities.screenResolutionY);
-					stage.displayState = StageDisplayState.FULL_SCREEN;
-					stage.addEventListener(FullScreenEvent.FULL_SCREEN, exitFullScreen);
-					
-				} 
-				catch (e:SecurityError) {
-					// Fullscreen not available.
-				}
-			} else {
-				stage.displayState = StageDisplayState.NORMAL;
-				exitFullScreen(null);
-			}
-		}
-		private function exitFullScreen(e:FullScreenEvent):void
-		{
-			if (stage.displayState == StageDisplayState.NORMAL)
-			{
-				stage.fullScreenSourceRect = null;
-				player.resizeTo(stage.stageWidth,stage.stageHeight);
-			}
-		}
-	}
-	
-}
+﻿//// Copyright (c) 2009, the Open Video Player authors. All rights reserved.//// Redistribution and use in source and binary forms, with or without // modification, are permitted provided that the following conditions are // met:////    * Redistributions of source code must retain the above copyright //notice, this list of conditions and the following disclaimer.//    * Redistributions in binary form must reproduce the above //copyright notice, this list of conditions and the following //disclaimer in the documentation and/or other materials provided //with the distribution.//    * Neither the name of the openvideoplayer.org nor the names of its //contributors may be used to endorse or promote products derived //from this software without specific prior written permission.//// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT // OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.//package {	import flash.events.*;	import flash.display.*;	import flash.geom.Rectangle;	import flash.media.Video;	import flash.system.Capabilities;	/**	 * This example illustrates the invocation of the Akamai Multi Player in a Flash CS4 project. Note that control	 * of the fullscreen behavior is externalized, since in many instances the player component itself may not be the only display object	 * on stage and therefore other layout and positioning methods may have to be called when moving to fullscreen.	 *	 * <p/>	 * Due to Dynamic Streaming Support, this project must be compiled for Flash Player 10 or higher.	 *	 * @see AkamaiMultiPlayer	 */	public class AkamaiMultiPlayerExample extends MovieClip {		private var player:AkamaiMultiPlayer;		private var _video:Video;		/**		 * Constructor		 */		public function AkamaiMultiPlayerExample():void {			stage.addEventListener( FullScreenEvent.FULL_SCREEN , exitFullScreen );			stage.scaleMode = StageScaleMode.NO_SCALE;			stage.align = StageAlign.TOP_LEFT;			player = new AkamaiMultiPlayer(stage.stageWidth,stage.stageHeight,loaderInfo.parameters);			// If you want to rely on the src coming in as a flash var,  then comment-out the next line			player.setNewSource( "http://mediapm.edgesuite.net/ovp/content/demo/smil/elephants_dream.smil" );			player.addEventListener( "toggleFullscreen" , handleFullscreen );			addChild( player );		}				private function handleFullscreen( e : Event ):void {			if (stage.displayState==StageDisplayState.NORMAL) {				_video = new Video();				_video=player.video;				_video.width=_video.videoWidth;				_video.height=_video.videoHeight;				_video.smoothing=false;				_video.x=0;				_video.y=0;				stage.addChild( _video );				stage.fullScreenSourceRect=new Rectangle(0,0,_video.videoWidth,_video.videoHeight);				stage.displayState=StageDisplayState.FULL_SCREEN;			} else {				exitFullScreen();			}		}		private function exitFullScreen( e : FullScreenEvent = null ):void {			if (e && !e.fullScreen) {				player.resizeTo( stage.stageWidth , stage.stageHeight );				stage.displayState=StageDisplayState.NORMAL;			}		}	}}

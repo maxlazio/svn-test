@@ -33,6 +33,7 @@ package view {
 	import flash.events.*;
 	import flash.geom.*;
 	import flash.media.Video;
+	import flash.net.URLRequest;
 	import model.Model;
 	import controller.*
 	import ui.*;
@@ -42,6 +43,8 @@ package view {
 	public class VideoView extends MovieClip {
 		private var _model:Model;
 		private var _video:Video;
+		private var _defaultImage:Loader;
+		private var _playButton:PlayButton;
 		private var _innerShadow:InnerShadow;
 		private var _background:MovieClip;
 		private var _controller:VideoController;
@@ -49,9 +52,15 @@ package view {
 		private var _availableVideoHeight:Number
 		private var _lastVideoWidth:Number;
 		private var _lastVideoHeight:Number;
+		
+		//transforms used for play button overlay
+		private var _themeTransform:ColorTransform;
+		private var _b6b6b6Transform:ColorTransform;
+		
 		public function VideoView(model:Model):void {
 			_model = model;
 			_model.addEventListener(_model.EVENT_RESIZE, resize);
+			_model.addEventListener(_model.EVENT_PLAY, removeDefaultImage);
 			_controller = new VideoController(_model,this);
 			createChildren();
 		}
@@ -79,14 +88,61 @@ package view {
 			_innerShadow.x = _innerShadow.y = 3;
 			addChild(_innerShadow);
 			
-			_lastVideoWidth = 400;
-			_lastVideoHeight = 300;
+			if ( !_model.autoStart )
+			{
+				_defaultImage = new Loader();
+				_defaultImage.x = video.x;
+				_defaultImage.y = video.y;
+				_defaultImage.load( new URLRequest( _model.loadImage ) );
+				addChild( _defaultImage );
+				
+				// Define color transforms
+				_themeTransform = new ColorTransform();
+				_themeTransform.color = _model.themeColor;
+				_b6b6b6Transform = new ColorTransform();
+				_b6b6b6Transform.color = 0xB6B6B6;
+				
+				_playButton = new PlayButton();
+				_playButton.addEventListener(MouseEvent.MOUSE_OVER,playMouseOver);
+				_playButton.addEventListener(MouseEvent.MOUSE_OUT,playMouseOut);
+				_playButton.addEventListener(MouseEvent.MOUSE_DOWN,playMouseDown);
+				_playButton.addEventListener(MouseEvent.MOUSE_UP,playMouseUp);
+				_playButton.addEventListener(MouseEvent.CLICK,doPlay);
+				_playButton.scaleX = 3;
+				_playButton.scaleY = 3;
+				_playButton.alpha = .75;
+				addChild( _playButton );
+				
+			}
+			
+			
+			_lastVideoWidth = 0;
+			_lastVideoHeight = 0;
 		}
 		public function scaleVideo(width:Number,height:Number):void {
 			_lastVideoWidth = width;
 			_lastVideoHeight  = height;
-				switch (_model.scaleMode) {
-					case _model.SCALE_MODE_FIT:
+			
+			switch (_model.scaleMode) {
+				case _model.SCALE_MODE_FIT:
+					if (width/height >= _availableVideoWidth/_availableVideoHeight) {
+						video.width = _availableVideoWidth;
+						video.height = _availableVideoWidth*height/width;
+					} else {
+						video.width = _availableVideoHeight*width/height;
+						video.height = _availableVideoHeight;
+					}
+					break;
+				case _model.SCALE_MODE_STRETCH:
+					video.width = _availableVideoWidth;
+					video.height = _availableVideoHeight;
+					break;
+				case _model.SCALE_MODE_NATIVE:
+					video.width = width;
+					video.height = height;
+					break;
+				case _model.SCALE_MODE_NATIVE_OR_SMALLER:
+					if (width > _availableVideoWidth || height  > _availableVideoHeight) {
 						if (width/height >= _availableVideoWidth/_availableVideoHeight) {
 							video.width = _availableVideoWidth;
 							video.height = _availableVideoWidth*height/width;
@@ -94,35 +150,27 @@ package view {
 							video.width = _availableVideoHeight*width/height;
 							video.height = _availableVideoHeight;
 						}
-						break;
-					case _model.SCALE_MODE_STRETCH:
-						video.width = _availableVideoWidth;
-						video.height = _availableVideoHeight;
-						break;
-					case _model.SCALE_MODE_NATIVE:
+					} else {
 						video.width = width;
 						video.height = height;
-						break;
-					case _model.SCALE_MODE_NATIVE_OR_SMALLER:
-						if (width > _availableVideoWidth || height  > _availableVideoHeight) {
-							if (width/height >= _availableVideoWidth/_availableVideoHeight) {
-								video.width = _availableVideoWidth;
-								video.height = _availableVideoWidth*height/width;
-							} else {
-								video.width = _availableVideoHeight*width/height;
-								video.height = _availableVideoHeight;
-							}
-						} else {
-							video.width = width;
-							video.height = height;
-						}
-						break;
-				}
-				//_video.smoothing = (width != video.width || height != video.height) && (_model.isFullScreen == false);
-				//_model.debug("Smoothing = " + _video.smoothing);
-				//_video.smoothing  = false;
-				video.x = 3 + ((_availableVideoWidth - video.width)/2);
-				video.y = 3 + ((_availableVideoHeight- video.height)/2);
+					}
+					break;
+			}
+			//_video.smoothing = (width != video.width || height != video.height) && (_model.isFullScreen == false);
+			//_model.debug("Smoothing = " + _video.smoothing);
+			//_video.smoothing  = false;
+			video.x = 3 + ((_availableVideoWidth - video.width)/2);
+			video.y = 3 + ((_availableVideoHeight- video.height)/2);
+			
+			if ( _defaultImage != null ) {
+				_defaultImage.x = 3;
+				_defaultImage.y = 3;
+				_defaultImage.width = _availableVideoWidth;
+				_defaultImage.height = _availableVideoHeight;
+				
+				_playButton.x = _defaultImage.x + ((_availableVideoWidth - _playButton.width ) /2);
+				_playButton.y = _defaultImage.y + ((_availableVideoHeight - _playButton.height ) /2);
+			}
 				
 		}
 		private function resize(e:Event):void  {
@@ -137,6 +185,41 @@ package view {
 			_background.graphics.drawRect(3,3,_model.availableVideoWidth,_model.availableVideoHeight);
 			_background.graphics.endFill();
 			scaleVideo(_lastVideoWidth, _lastVideoHeight);
+		}
+		public function invokeResize() : void {
+			if ( _lastVideoWidth == 0 || isNaN( _lastVideoWidth ) || _lastVideoHeight == 0 || isNaN( _lastVideoHeight ) ) {
+				scaleVideo(video.videoWidth, video.videoHeight);
+			}
+		}
+		private function removeDefaultImage(e:Event) : void {
+			if ( _defaultImage != null )
+			{
+				_defaultImage.unloadAndStop();
+				removeChild( _defaultImage );
+				_defaultImage = null;
+				
+				removeChild( _playButton );
+			}
+		}
+		private function playMouseOver(e:MouseEvent):void {
+				e.currentTarget.highlight.alpha = .45;
+		}
+		private function playMouseOut(e:MouseEvent):void {
+			e.currentTarget.highlight.alpha = 0;
+		}
+		private function playMouseDown(e:MouseEvent):void {
+			e.currentTarget.x += 1;
+			e.currentTarget.y += 1;
+			_model.playClickSound();
+		}
+		private function playMouseUp(e:MouseEvent):void {
+			e.currentTarget.x -= 1;
+			e.currentTarget.y -= 1;
+		}
+		private function doPlay(e:MouseEvent):void {
+			_playButton.visible = false;
+			_model.play();
+			_model.showPauseButton();
 		}
 	}
 }

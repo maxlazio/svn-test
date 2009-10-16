@@ -49,7 +49,7 @@ package view{
 			createChildren();
 		}
 		private function createChildren():void {
-			_muteState = _model.volume == 0;
+			_muteState = _model.volume == 0 ? true : false;
 			_lastVolume = 1;
 			this.graphics.beginFill(_model.frameColor);
 			this.graphics.drawRect(20,1,71,10);
