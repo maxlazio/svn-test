@@ -55,6 +55,7 @@ package org.openvideoplayer.parsers {
 		private var _hostName:String;
 		private var _streamName:String;
 		private var _dsi:DynamicStreamItem;
+		private var _protocol:String;
 
 		public function DynamicSmilParser():void {
 				super();
@@ -83,6 +84,15 @@ package org.openvideoplayer.parsers {
 		public function get dsi():DynamicStreamItem{
 			return _dsi;
 		}
+		
+		/**
+		 * The stream protocol
+		 * 
+		 */
+		public function get protocol():String {
+			return _protocol;
+		}
+		
 
 		/** Parses the SMIL file into useful properties
 		 * @private
@@ -93,6 +103,7 @@ package org.openvideoplayer.parsers {
 			} else {
 				var ns:Namespace = _xml.namespace();
 				_hostName = _xml.ns::head.ns::meta.@base.slice(_xml.ns::head.ns::meta.@base .indexOf("://")+3);
+    			_protocol = _xml.ns::head.ns::meta.@base.slice(0,_xml.ns::head.ns::meta.@base .indexOf("://")).toLowerCase();
 				_dsi = parseDsi(_xml);
 				_streamName = _dsi.streams[0].name;
 				dispatchEvent(new OvpEvent(OvpEvent.PARSED));

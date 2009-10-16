@@ -441,7 +441,7 @@ package com.akamai.net {
 		/**
 		 *  @private
 		 */
-		override public function onMetaData(info:Object):void {
+		override protected function onMetaData(info:Object):void {
 			if (!isNaN(Number(info["aktimeoffset"]))) {
 				_segmentStartTime = Number(info["aktimeoffset"]);
 				_segmentDuration = Number(info["duration"]);
@@ -465,7 +465,7 @@ package com.akamai.net {
 		/**
 		 *  @private
 		 */
-		override public function onCuePoint(info:Object):void {
+		override protected function onCuePoint(info:Object):void {
 			if (_clientProxy.hasOwnProperty("onCuePoint")) {
 				_clientProxy.onCuePoint(info);
 			}
@@ -474,7 +474,7 @@ package com.akamai.net {
 		/**
 		 *  @private
 		 */
-		override public function onImageData(info:Object):void {
+		override protected function onImageData(info:Object):void {
 			if (_clientProxy.hasOwnProperty("onImageData")) {
 				_clientProxy.onImageData(info);
 			}
@@ -483,7 +483,7 @@ package com.akamai.net {
 		/**
 		 *  @private
 		 */
-		override public function onTextData(info:Object):void {
+		override protected function onTextData(info:Object):void {
 			if (_clientProxy.hasOwnProperty(".onTextData")) {
 				_clientProxy.onTextData(info);
 			}
