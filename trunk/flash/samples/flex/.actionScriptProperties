@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionScriptProperties mainApplicationPath="AkamaiSampleMediaRSS.mxml" version="3">
+<compiler additionalCompilerArguments="-locale en_US" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersion="10.0.0" htmlPlayerVersionCheck="true" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
+<compilerSourcePath/>
+<libraryPath defaultLinkType="1">
+<libraryPathEntry kind="4" path=""/>
+<libraryPathEntry kind="3" linkType="1" path="/ovp_core_2_1_0/bin/ovp_core_2_1_0.swc" useDefaultLinkType="false"/>
+</libraryPath>
+<sourceAttachmentPath/>
+</compiler>
+<applications>
+<application path="SampleMultiBitRate.mxml"/>
+<application path="SampleHTTPBandwidthEstimate.mxml"/>
+<application path="SampleCaptioning.mxml"/>
+<application path="SampleAsCuePoints.mxml"/>
+<application path="AkamaiSampleSoSplayer.mxml"/>
+<application path="AkamaiSampleRandomSeek.mxml"/>
+<application path="AkamaiSampleLiveMultiBitRate.mxml"/>
+<application path="AkamaiSampleLive.mxml"/>
+<application path="AkamaiSampleBOSSplayer.mxml"/>
+<application path="AkamaiSampleAMDOnDemand.mxml"/>
+<application path="AkamaiSampleMediaRSS.mxml"/>
+</applications>
+<modules/>
+<buildCSSFiles/>
+</actionScriptProperties>

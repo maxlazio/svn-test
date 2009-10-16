@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	 //
+	 // Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+	 //
+	 // Redistribution and use in source and binary forms, with or without
+	 // modification, are permitted provided that the following conditions are
+	 // met:
+	 //
+	 //    * Redistributions of source code must retain the above copyright
+	 //		notice, this list of conditions and the following disclaimer.
+	 //    * Redistributions in binary form must reproduce the above
+	 //		copyright notice, this list of conditions and the following
+	 //		disclaimer in the documentation and/or other materials provided
+	 //		with the distribution.
+	 //    * Neither the name of the openvideoplayer.org nor the names of its
+	 //		contributors may be used to endorse or promote products derived
+	 //		from this software without specific prior written permission.
+	 //
+	 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	 // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+	 // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+	 // OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+	 // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+	 // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	 // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+	 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+	 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+	 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+	 //
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" implements="org.openvideoplayer.plugins.IOvpPlayer" layout="absolute" backgroundColor="#000000" applicationComplete="initApp()">
+
+	<mx:Style source="SampleAdvertising.css"/>
+
+	<mx:Script>
+		<![CDATA[
+			import org.openvideoplayer.advertising.IVPAID;
+			import mx.events.SliderEvent;
+			import flash.events.NetStatusEvent;
+			import mx.controls.Alert;
+			import mx.collections.*;
+			import mx.events.FlexEvent;
+			import mx.managers.SystemManager;
+
+			import org.openvideoplayer.plugins.*;
+			import org.openvideoplayer.net.*;
+			import org.openvideoplayer.events.*;
+			import org.openvideoplayer.net.OvpCuePointManager;
+
+			[Event(name="cuepoint", type="org.openvideoplayer.plugins.OvpPlayerEvent")]
+			[Event(name="error", type="org.openvideoplayer.plugins.OvpPlayerEvent")]
+			[Event(name="statechange", type="org.openvideoplayer.plugins.OvpPlayerEvent")]
+
+			private var _video:Video;
+			private var _linearAdMC:MovieClip;
+			private var _nc:OvpConnection;
+			private var _ns:OvpNetStream;
+			private var _lastHostname:String;
+			private var _scrubberDragging:Boolean;
+			private var _playBtnStatePlaying:Boolean;
+			private var _waitForSeek:Boolean;
+			private var _streamLength:Number;
+			private var _pluginFiles:Array;
+			private var _plugins:Array;
+			private var _pluginsLoaded:int;
+			private var _metadata:Object;
+			private var _cuePointMgr:OvpCuePointManager;
+			private var _filename:String;
+			private var _state:String;
+			[Bindable]
+			private var _hostname:String;
+			[Bindable]
+			private var _streamname:String;
+			[Bindable]
+			private var _pdlFile:String;
+			private var _inAdMode:Boolean;
+
+			private const _DEFAULT_HOSTNAME_:String = "cp67126.edgefcs.net/ondemand";
+			private const _DEFAULT_STREAMNAME_:String = "mediapm/ovp/content/test/video/Akamai_10_Year_F8_512K";
+			private const _DEFAULT_PDL_URL_:String = "http://products.edgeboss.net/download/products/content/demo/video/oomt/big_buck_bunny_700k.flv";
+
+
+			// ----------------------------------------------------------------
+			//
+			// IOvpPlayer Implementation
+			//
+			// ----------------------------------------------------------------
+
+			public function get plugins():Array {
+				return this._plugins;
+			}
+
+			public function get flashvars():Object {
+				return this.parameters;
+			}
+
+			public function get currentBitrate():int {
+				if (_metadata && _metadata.videodatarate) {
+					return _metadata.videodatarate;
+				}
+				return 0;
+			}
+
+			public function get duration():Number {
+				var dur:Number = _streamLength;
+				debugTrace("...in duration() - about to return: " + dur);
+				return dur;
+			}
+
+			public function get position():int {
+				if (this._ns) {
+					return this._ns.time;
+				}
+				return 0;
+			}
+
+			public function get fullScreen():Boolean {
+				return false;
+			}
+
+			public function get captionsActive():Boolean {
+				return false;
+			}
+
+			public function get hasVideo():Boolean {
+				return true;
+			}
+
+			public function get hasAudio():Boolean {
+				return true;
+			}
+
+			public function get hasCaptions():Boolean {
+				return false;
+			}
+
+			public function get itemCount():int {
+				return 1;
+			}
+
+			public function get itemsPlayed():int {
+				return 0;
+			}
+
+			public function get playerWidth():int {
+				return uiCtrl_playerContainer.width;
+			}
+
+			public function get playerHeight():int {
+				return uiCtrl_playerContainer.height;
+			}
+
+			public function get contentWidth():int {
+				debugTrace("contentWidth returning " + this._video.width);
+				return _video.width;
+			}
+
+			public function get contentHeight():int {
+				debugTrace("contentHeight returning " + this._video.height);
+				return _video.height;
+			}
+
+			public function get contentTitle():String {
+				return "";
+			}
+
+			public function get contentURL():String {
+				return this._filename;
+			}
+
+			public function set advertisingMode(value:Boolean):void {
+				this.debugTrace("...in advertisingMode : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
+
+				debugTrace("advertisingMode set to " + value);
+				if (value == true) {
+					_inAdMode = true;
+
+					if (_ns) {
+						_ns.pause();
+						_ns.volume = uiCtrl_volume.value;
+					}
+
+					uiCtrl_stopAdBtn.visible = uiCtrl_stopAdBtn.includeInLayout = true;
+					_video.visible = false;
+					_linearAdMC.visible = true;
+					enableUIControls(false);
+					dispatchEvent(new OvpPlayerEvent(OvpPlayerEvent.VOLUME_CHANGE, Number(uiCtrl_volume.value)));
+				} else {
+					_inAdMode = false;
+					if (this._playBtnStatePlaying) {
+						_ns.resume();
+					}
+					_video.visible = true;
+					_linearAdMC.visible = false;
+					uiCtrl_stopAdBtn.visible = uiCtrl_stopAdBtn.includeInLayout = false;
+					enableUIControls();
+				}
+			}
+
+			public function getSpriteById(id:String):Sprite {
+				this.debugTrace("...in getSpriteById : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
+
+				if (id.toLowerCase() == "linearadmc") {
+					_linearAdMC.visible = true;
+					this.debugTrace("In SampleAdvertising.getSpriteById() - about to return " + _linearAdMC.name);
+					return _linearAdMC;
+				}
+				return null;
+			}
+
+			public function addCuePoint(cuePoint:Object):void {
+				this._cuePointMgr.addCuePoint(cuePoint);
+			}
+
+			public function pausePlayer():void {
+				this._ns.pause();
+			}
+
+			public function resumePlayer():void {
+				this._ns.resume();
+			}
+
+			public function startPlayer():void {
+				playVideo(_filename);
+			}
+
+			public function stopPlayer():void {
+				this._ns.pause();
+			}
+
+
+			//-------------------------------------------------------------------
+			//
+			// Private
+			//
+			//-------------------------------------------------------------------
+
+			/**
+			 * Initialize the application
+			 */
+			private function initApp():void {
+				_scrubberDragging = false;
+				_playBtnStatePlaying = false;
+				_waitForSeek = false;
+				_streamLength = 0;
+				_cuePointMgr = new OvpCuePointManager();
+				_state = "";
+				_hostname = new String(this._DEFAULT_HOSTNAME_);
+				_streamname = new String(this._DEFAULT_STREAMNAME_);
+				_pdlFile = new String(this._DEFAULT_PDL_URL_);
+				currentState = "pdl";
+				_inAdMode = false;
+				_lastHostname = "";
+
+				uic.setActualSize(480, 270);
+				_video = new Video(480, 270);
+				_video.x = 0;
+				_video.y = 0;
+				uic.addChild(_video);
+
+				_linearAdMC = new MovieClip();
+				_linearAdMC.x = 0;
+				_linearAdMC.y = 0;
+				_linearAdMC.name = "_linearAdMC";
+				uic.addChild(_linearAdMC);
+
+				// Load plug-ins specified in the FlashVars			
+				_pluginFiles = new Array();
+				_plugins = new Array();
+				_pluginsLoaded = 0;
+
+				var pluginsStr:String = this.parameters.plugins;
+
+				_pluginFiles = pluginsStr.split(",");
+				loadPlugins();
+			}
+
+			private function loadPlugins():void {
+				for (var i:int = 0; i < _pluginFiles.length; i++) {
+					var url:String = _pluginFiles[i];
+
+					if (url.search(/.swf$/i) == -1) {
+						url += ".swf";
+					}
+
+					var loader:Loader = new Loader();
+					var req:URLRequest = new URLRequest(url);
+					var context:LoaderContext = new LoaderContext();
+
+					// We have to load these into the same Application Domain so the plug-ins can call methods here and we
+					// can listen for events fired by plug-ins
+					context.applicationDomain = /*new ApplicationDomain(*/ ApplicationDomain.currentDomain /*)*/;
+					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onSwfLoadComplete);
+					loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onSwfLoadFailure);
+					loader.load(req, context);
+				}
+			}
+
+			/**
+			 * All plugins loaded successfully, enable the load buttons
+			 */
+			private function handleAllPluginsLoaded():void {
+
+				this.addEventListener(OvpPlayerEvent.DEBUG_MSG, onDebugMessage, false, 0, true);
+
+				debugTrace(_pluginsLoaded + " plug-ins loaded.");
+
+				this.uiCtrl_loadPDLBtn.enabled = this.uiCtrl_loadStreamBtn.enabled = true;
+
+				updateState(OvpPlayerEvent.WAITING);
+			}
+
+			private function updateState(state:String):void {
+				if (_state != state) {
+					_state = state;
+					dispatchEvent(new OvpPlayerEvent(OvpPlayerEvent.STATE_CHANGE, _state));
+				}
+			}
+
+			private function createConnection(hostname:String):void {
+				this.uiCtrl_playerContainer.visible = false;
+				_video.clear();
+				_video.attachNetStream(null);
+
+				if (_ns) {
+					_ns.close();
+					_ns = null;
+				}
+
+				// Can we re-use the net connection?
+				if (_nc && _nc.connected && (_lastHostname == hostname)) {
+					connectedHandler();
+				} else {
+					if (!_nc) {
+						// Create the connection object and add the necessary event listeners
+						_nc = new OvpConnection();
+						_nc.addEventListener(OvpEvent.ERROR, errorHandler, false, 0, true);
+						_nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler, false, 0, true);
+						_nc.addEventListener(OvpEvent.STREAM_LENGTH, streamLengthHandler, false, 0, true);
+					} else if (_nc.connected) {
+						_nc.close();
+					}
+
+					if (hostname && hostname.length) {
+						_nc.connect(hostname);
+					} else {
+						_nc.connect(null);
+					}
+
+					_lastHostname = hostname;
+				}
+			}
+
+			/**
+			 * Perform a seek operation
+			 */
+			private function doSeek():void {
+				updateState(OvpPlayerEvent.SEEKING);
+				_ns.seek(uiCtrl_scrubber.value);
+			}
+
+			/**
+			 * Starts the video playing when everything is ready
+			 */
+			private function playVideo(name:String):void {
+				this.debugTrace("...in playVideo : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
+				updateState(OvpPlayerEvent.START_NEW_ITEM);
+
+
+				_playBtnStatePlaying = true;
+				uiCtrl_playBtn.label = "pause";
+
+				if (!this._inAdMode) {
+					_ns.play(name);
+				}
+				this._video.visible = false;
+				this.uiCtrl_playerContainer.visible = true;
+			}
+
+			private function showScrubTime(val:String):String {
+				var sec:Number = Number(val);
+				var h:Number = Math.floor(sec / 3600);
+				var m:Number = Math.floor((sec % 3600) / 60);
+				var s:Number = Math.floor((sec % 3600) % 60);
+				return (h == 0 ? "" : (h < 10 ? "0" + h.toString() + ":" : h.toString() + ":")) + (m < 10 ? "0" + m.toString() : m.toString()) + ":" + (s < 10 ? "0" + s.toString() : s.toString());
+			}
+
+			private function showVolume(val:String):String {
+				return ("Volume: " + Math.round(Number(val) * 100) + "%");
+			}
+
+			/**
+			 * This method is called from the netStatusHandler below when we receive a good connection
+			 */
+			private function connectedHandler():void {
+				debugTrace("Successfully connected to: " + _nc.netConnection.uri);
+				this.debugTrace("...in connectedHandler : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
+
+				uiCtrl_playBtn.enabled = true;
+
+				// Instantiate an OvpNetStream object
+				_ns = new OvpNetStream(_nc);
+
+				// Tell it we want pause and resume events for progressive files
+				_ns.createProgressivePauseEvents = true;
+
+				// Add the necessary listeners
+				_ns.addEventListener(NetStatusEvent.NET_STATUS, streamStatusHandler, false, 0, true);
+				_ns.addEventListener(OvpEvent.NETSTREAM_PLAYSTATUS, streamPlayStatusHandler, false, 0, true);
+				_ns.addEventListener(OvpEvent.NETSTREAM_METADATA, metadataHandler, false, 0, true);
+				_ns.addEventListener(OvpEvent.NETSTREAM_CUEPOINT, cuepointHandler, false, 0, true);
+				_ns.addEventListener(OvpEvent.STREAM_LENGTH, streamLengthHandler, false, 0, true);
+
+				_ns.addEventListener(OvpEvent.PROGRESS, update, false, 0, true);
+
+				// Give the video object our net stream object
+				_video.attachNetStream(_ns);
+
+				_ns.volume = 0;
+
+				// Give the cue point manager the OvpNetStream object so it can start monitoring
+				_cuePointMgr.netStream = _ns;
+
+				if (this.currentState == "pdl") {
+					playVideo(_filename);
+				} else {
+					debugTrace("Port: " + _nc.actualPort);
+					debugTrace("Protocol: " + _nc.actualProtocol);
+					debugTrace("IP address: " + _nc.serverIPaddress);
+
+					// Request stream length
+					_nc.requestStreamLength(_filename);
+				}
+			}
+
+			private function enableUIControls(enable:Boolean = true):void {
+				this.debugTrace("...in enableUIControls : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
+
+				this.uiCtrl_playBtn.enabled = this.uiCtrl_scrubber.enabled =
+					this.uiCtrl_loadPDLBtn.enabled = this.uiCtrl_loadStreamBtn.enabled =
+					this.uiCtrl_pdlRB.enabled = this.uiCtrl_streamingRB.enabled = this.uiCtrl_timeDisplay.enabled =
+					this.uiCtrl_pdlUrl.enabled = this.uiCtrl_hostName.enabled = this.uiCtrl_streamName.enabled = enable;
+			}
+
+			//-------------------------------------------------------------------
+			//
+			// Event Handlers
+			//
+			//-------------------------------------------------------------------
+
+			private function cuepointHandler(e:OvpEvent):void {
+				dispatchEvent(new OvpPlayerEvent(OvpPlayerEvent.CUEPOINT, e.data));
+			}
+
+			private function onSwfLoadFailure(e:IOErrorEvent):void {
+				Alert.show("Plug-in load failure: " + e.text);
+			}
+
+			private function onSwfLoadComplete(e:Event):void {
+				var content:DisplayObject = e.target.content;
+
+				// If we don't add it as a child to something, it won't be in the
+				// display list and the stage property will be null
+				this.plugin_container.addChild(content);
+
+				this._plugins.push(content);
+
+				// If the plug-in was written in Flex, content will be the SystemManager
+				// and we need to wait for the Application object to finish loading
+				if (content is SystemManager) {
+					var sysmgr:SystemManager = (content as SystemManager);
+					sysmgr.addEventListener(FlexEvent.APPLICATION_COMPLETE, flexPlugInAppComplete);
+				} else {
+					if (content is IOvpPlugIn) {
+						loadPlugin(content as IOvpPlugIn);
+					}
+				}
+			}
+
+			/**
+			 * Called when a plug-in written in Flex has completed loading
+			 */
+			private function flexPlugInAppComplete(e:FlexEvent):void {
+				debugTrace("in flexPlugInAppComplete...");
+				var sysmgr:SystemManager = (e.currentTarget as SystemManager);
+				var swfApp:Application = (sysmgr.application as Application);
+
+				if (swfApp is IOvpPlugIn) {
+					loadPlugin(swfApp as IOvpPlugIn);
+				}
+			}
+
+			/**
+			 * Load plugin
+			 */
+			private function loadPlugin(plugIn:IOvpPlugIn):void {
+				plugIn.ovpPlugInTracingOn = true;
+				plugIn.initOvpPlugIn(this);
+				_pluginsLoaded++;
+				if (_pluginsLoaded == _pluginFiles.length) {
+					handleAllPluginsLoaded();
+				}
+			}
+
+			/**
+			 * Handles the OvpEvent.PROGRESS event fired by the OvpNetStream class
+			 */
+			private function update(e:OvpEvent):void {
+				uiCtrl_timeDisplay.text = _ns.timeAsTimeCode + "|" + _nc.streamLengthAsTimeCode(_streamLength);
+				if (!_scrubberDragging && !_waitForSeek) {
+					uiCtrl_scrubber.value = _ns.time;
+				}
+				if (currentState == "pdl") {
+					this.uiCtrl_progressBar.setProgress(_ns.bytesLoaded, _ns.bytesTotal);
+				}
+			}
+
+			/**
+			 * Handles all OvpEvent.ERROR events
+			 */
+			private function errorHandler(e:OvpEvent):void {
+				Alert.show("Error #" + e.data.errorNumber + ": " + e.data.errorDescription, "ERROR", Alert.OK);
+			}
+
+			/**
+			 * Handles NetStatusEvent.NET_STATUS events fired by the OvpConnection class
+			 */
+			private function netStatusHandler(e:NetStatusEvent):void {
+				debugTrace(e.info.code);
+				switch (e.info.code) {
+					case "NetConnection.Connect.Rejected":
+						debugTrace("Rejected by server. Reason is " + e.info.description);
+						break;
+					case "NetConnection.Connect.Success":
+						connectedHandler();
+						break;
+				}
+			}
+
+			/**
+			 * Handles the NetStatusEvent.NET_STATUS events fired by the OvpNetStream class
+			 */
+			private function streamStatusHandler(e:NetStatusEvent):void {
+				debugTrace("streamStatusHandler() - event.info.code=" + e.info.code);
+				switch (e.info.code) {
+					case "NetStream.Play.StreamNotFound":
+						updateState(OvpPlayerEvent.WAITING);
+						dispatchEvent(new OvpPlayerEvent(OvpPlayerEvent.ERROR, "stream not found"));
+						break;
+					case "NetStream.Play.Start":
+						updateState(OvpPlayerEvent.BUFFERING);
+						if (this._inAdMode) {
+							_ns.pause();
+						}
+						break;
+					case "NetStream.Play.Stop":
+						// See if a PDL file has ended (streaming end is handled in streamPlayStatusHandler)
+						if (_ns.isProgressive && (this.duration >= (_ns.time - 1))) {
+							updateState(OvpPlayerEvent.COMPLETE);
+						}
+						break;
+					case "NetStream.Buffer.Full":
+						// _waitForSeek is used to stop the uiCtrl_scrubber from updating
+						// while the stream transtions after a seek
+						_waitForSeek = false;
+						if (this._state != OvpPlayerEvent.PAUSED) {
+							updateState(OvpPlayerEvent.PLAYING);
+							_ns.volume = uiCtrl_volume.value;
+							this._video.visible = true;
+						}
+						break;
+					case "NetStream.Pause.Notify":
+						updateState(OvpPlayerEvent.PAUSED);
+						break;
+					case "NetStream.Unpause.Notify":
+						updateState(OvpPlayerEvent.PLAYING);
+						break;
+					case "NetStream.Seek.Notify":
+						updateState(this._state != OvpPlayerEvent.PAUSED ? OvpPlayerEvent.SEEKING : OvpPlayerEvent.PAUSED);
+						break;
+				}
+			}
+
+			/**
+			 * Handles the OvpEvent.NETSTREAM_PLAYSTATUS events fired by the OvpNetStream class
+			 */
+			private function streamPlayStatusHandler(e:OvpEvent):void {
+				debugTrace("streamPlayStatusHandler() - e.data.code=" + e.data.code);
+				switch (e.data.code) {
+					case "NetStream.Play.Complete":
+						updateState(OvpPlayerEvent.COMPLETE);
+						break;
+				}
+			}
+
+			/**
+			 * Handles the OvpEvent.NETSTREAM_METADATA events fired by the OvpNetStream class
+			 */
+			private function metadataHandler(e:OvpEvent):void {
+				this.debugTrace("...in metadataHandler : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
+
+				for (var propName:String in e.data) {
+					debugTrace("metadata: " + propName + " = " + e.data[propName]);
+				}
+				_metadata = e.data;
+
+				_video.x = 0;
+				_video.y = 0;
+				_video.width = e.data.width;
+				uic.width = e.data.width + 6;
+				_video.height = e.data.height;
+				uic.height = e.data.height + 6;
+				uic.visible = true;
+
+				uiCtrl_videoContainer.width = e.data.width + 11;
+				uiCtrl_videoContainer.height = e.data.height + 11;
+			}
+
+			/**
+			 * Handles uiCtrl_scrubber events (an HSlider object)
+			 */
+			private function toggleDragging(state:Boolean):void {
+				_scrubberDragging = state;
+				if (!state) {
+					_waitForSeek = true;
+					doSeek();
+				}
+			}
+
+			/**
+			 * Handles play button events
+			 */
+			private function onClickPlay(event:MouseEvent):void {
+				if (_playBtnStatePlaying) {
+					_ns.pause();
+					uiCtrl_playBtn.label = "play";
+					updateState(OvpPlayerEvent.PAUSED);
+				} else {
+					_ns.resume();
+					uiCtrl_playBtn.label = "pause";
+					updateState(OvpPlayerEvent.PLAYING);
+				}
+				_playBtnStatePlaying = !_playBtnStatePlaying;
+			}
+
+			private function streamLengthHandler(e:OvpEvent):void {
+				debugTrace("Stream length is " + e.data.streamLength);
+				uiCtrl_scrubber.maximum = e.data.streamLength;
+				_streamLength = e.data.streamLength;
+
+				if (this.currentState == "streaming") {
+					playVideo(_filename);
+				}
+			}
+
+			/**
+			 * Handles the Load button click for progressive downloads
+			 */
+			private function onClickLoadPDL(event:MouseEvent):void {
+				this.debugTrace("...in onClickLoadPDL : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
+
+				_filename = this.uiCtrl_pdlUrl.text;
+				this.createConnection(null);
+			}
+
+			/**
+			 * Handles the load button click for streams
+			 */
+			private function onClickLoadStream(event:MouseEvent):void {
+				_filename = this.uiCtrl_streamName.text;
+				this.createConnection(uiCtrl_hostName.text);
+			}
+
+			/**
+			 * Handles the progressive download radio button click
+			 */
+			private function onClickRbPDL(event:MouseEvent):void {
+				if (!uiCtrl_pdlRB.enabled || currentState == "pdl") {
+					return;
+				}
+				currentState = "pdl";
+			}
+
+			/**
+			 * Handles the streaming radio button click
+			 */
+			private function onClickRbStreaming(event:MouseEvent):void {
+				if (!uiCtrl_streamingRB.enabled || currentState == "streaming") {
+					return;
+				}
+
+				currentState = "streaming";
+			}
+
+			private function stopPlayback():void {
+				if (_ns && _playBtnStatePlaying) {
+					this.onClickPlay(null); // cause the video to pause
+				}
+				updateState(OvpPlayerEvent.COMPLETE);
+			}
+
+			private function onChangeVolume(e:SliderEvent):void {
+				if (_ns) {
+					_ns.volume = e.value;
+					dispatchEvent(new OvpPlayerEvent(OvpPlayerEvent.VOLUME_CHANGE, Number(e.value)));
+				}
+			}
+
+			private function onClickStopAd(e:Event):void {
+				// Look for plug-ins that implement IVPAID and tell them to stop playing their ads
+				for (var i:int = 0; i < this._plugins.length; i++) {
+					var plugInSprite:Object;
+					var sysmgr:SystemManager = (_plugins[i] as SystemManager);
+
+					if (sysmgr) {
+						// The plug-in was written in Flex
+						var swfApp:Application = (sysmgr.application as Application);
+						plugInSprite = swfApp;
+					} else {
+						plugInSprite = _plugins[i];
+					}
+
+					if ((plugInSprite is IVPAID) || plugInSprite.hasOwnProperty("getVPAID")) {
+						var vpaid:IVPAID = plugInSprite.getVPAID() as IVPAID;
+						vpaid.stopAd();
+					}
+				}
+
+			}
+
+			//-------------------------------------------------------------------
+			//
+			// Helper Methods
+			//
+			//-------------------------------------------------------------------
+
+			private function debugTrace(... arguments):void {
+				text_debug.text += "\nSampleAdvertising - " + arguments;
+			}
+
+			private function onDebugMessage(event:OvpPlayerEvent):void {
+				text_debug.text += "\n" + event.data as String;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="uiCtrl_mainContainer" paddingLeft="60" paddingTop="60">
+		<mx:HBox width="100%">
+			<mx:Label styleName="title" text="OVP Advertising Sample implementing VAST and VPAID Standards"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:RadioButton id="uiCtrl_pdlRB" label="Progressive Download" selected="true" click="onClickRbPDL(event)" buttonMode="true" groupName="rbVideoType" useHandCursor="true"/>
+			<mx:RadioButton id="uiCtrl_streamingRB" label="Streaming Video" selected="false" click="onClickRbStreaming(event)" buttonMode="true" groupName="rbVideoType" useHandCursor="true"/>
+		</mx:HBox>
+		<mx:HBox id="uiCtrl_pdlContainer">
+			<mx:Label styleName="label" text="URL: "/>
+			<mx:TextInput id="uiCtrl_pdlUrl" text="{this._pdlFile}" editable="true"/>
+			<mx:Button id="uiCtrl_loadPDLBtn" label="load" click="onClickLoadPDL(event)" buttonMode="true" useHandCursor="true"/>
+		</mx:HBox>
+		<mx:HBox id="uiCtrl_streamingContainer" includeInLayout="false" visible="false">
+			<mx:Label styleName="label" text="Host Name: "/>
+			<mx:TextInput id="uiCtrl_hostName" text="{_hostname}" editable="true"/>
+			<mx:Label styleName="label" text="Stream Name: "/>
+			<mx:TextInput id="uiCtrl_streamName" text="{_streamname}" editable="true"/>
+			<mx:Button id="uiCtrl_loadStreamBtn" label="load" click="onClickLoadStream(event)" buttonMode="true" useHandCursor="true"/>
+		</mx:HBox>
+		<mx:Spacer height="20"/>
+		<mx:HBox id="uiCtrl_playerContainer" visible="false">
+			<mx:VBox horizontalAlign="center">
+				<mx:VBox backgroundColor="#333333" horizontalAlign="center" verticalGap="0">
+					<mx:VBox id="uiCtrl_videoContainer" horizontalScrollPolicy="off" verticalScrollPolicy="off" height="281" width="491" backgroundColor="#242424" horizontalAlign="center"
+						paddingLeft="5" paddingTop="5">
+						<mx:UIComponent id="uic" visible="false"/>
+						<!-- <mx:UIComponent id="linearAdMC" visible="false" includeInLayout="true" /> -->
+					</mx:VBox>
+					<mx:HRule width="100%" strokeColor="black" strokeWidth="1"/>
+					<mx:HBox paddingBottom="3" paddingLeft="6" paddingTop="3">
+						<mx:Button id="uiCtrl_playBtn" enabled="false" label="pause" click="onClickPlay(event)" buttonMode="true" useHandCursor="true"/>
+						<mx:VBox verticalAlign="middle">
+							<mx:HSlider id="uiCtrl_scrubber" allowTrackClick="true" dataTipFormatFunction="showScrubTime" enabled="false" width="300" thumbPress="toggleDragging(true)"
+								thumbRelease="toggleDragging(false)"/>
+							<mx:ProgressBar id="uiCtrl_progressBar" indeterminate="false" label="Loading Video..." labelPlacement="center" minimum="0" mode="manual" width="300"/>
+						</mx:VBox>
+						<mx:VBox verticalGap="0">
+							<mx:Text id="uiCtrl_timeDisplay" text="00:00|00:00"/>
+							<mx:HSlider id="uiCtrl_volume" allowTrackClick="true" dataTipFormatFunction="showVolume" enabled="true" maximum="1" minimum="0" value="1" width="75"
+								thumbRelease="onChangeVolume(event)"/>
+						</mx:VBox>
+					</mx:HBox>
+					<mx:Button id="uiCtrl_stopAdBtn" includeInLayout="false" visible="false" label="Stop Ad" click="onClickStopAd(event)"/>
+				</mx:VBox>
+			</mx:VBox>
+			<mx:Spacer width="10"/>
+			<mx:TextArea id="text_debug" height="{uiCtrl_videoContainer.height}" width="{uiCtrl_videoContainer.width}" valueCommit="text_debug.verticalScrollPosition = text_debug.maxVerticalScrollPosition" backgroundAlpha="0.0"
+							borderThickness="0" color="0xFFFFFF"/>
+		</mx:HBox>
+
+
+	</mx:VBox>
+
+	<mx:UIComponent id="plugin_container" includeInLayout="false" visible="false"/>
+
+	<mx:states>
+		<mx:State name="pdl">
+			<mx:SetProperty value="true" name="visible" target="{uiCtrl_pdlContainer}"/>
+			<mx:SetProperty value="true" name="includeInLayout" target="{uiCtrl_pdlContainer}"/>
+			<mx:SetProperty value="true" name="visible" target="{uiCtrl_progressBar}"/>
+			<mx:SetProperty value="false" name="visible" target="{uiCtrl_streamingContainer}"/>
+			<mx:SetProperty value="false" name="includeInLayout" target="{uiCtrl_streamingContainer}"/>
+		</mx:State>
+		<mx:State name="streaming">
+			<mx:SetProperty value="false" name="visible" target="{uiCtrl_pdlContainer}"/>
+			<mx:SetProperty value="false" name="includeInLayout" target="{uiCtrl_pdlContainer}"/>
+			<mx:SetProperty value="false" name="visible" target="{uiCtrl_progressBar}"/>
+			<mx:SetProperty value="true" name="visible" target="{uiCtrl_streamingContainer}"/>
+			<mx:SetProperty value="true" name="includeInLayout" target="{uiCtrl_streamingContainer}"/>
+		</mx:State>
+	</mx:states>
+
+</mx:Application>

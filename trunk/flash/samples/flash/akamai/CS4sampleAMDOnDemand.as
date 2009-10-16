@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2009, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
@@ -70,8 +70,11 @@ package {
 		
 		
 		// Constants - replace these with references to your own content
+		// The connection auth param is only required if you are viewing a secure stream and is set to an empty string by default
+  		// If required, it should be in following form -- private const CONNECTION_AUTH_PARAMS = "auth=xxxx&aifp=yyyy&slist=zzzz";
 		private const HOSTNAME:String = "cp27886.edgefcs.net/ondemand"; 
 		private const FILENAME:String = "14808/nocc_small307K";
+		private const CONNECTION_AUTH_PARAMETERS:String = "";
 				
 		// Constructor
 		public function CS4sampleAMDOnDemand():void {
@@ -178,6 +181,7 @@ package {
 			_nc.addEventListener(OvpEvent.STREAM_LENGTH,streamlengthHandler);
 			_nc.addEventListener(NetStatusEvent.NET_STATUS,netStatusHandler);
 			_nc.addEventListener(OvpEvent.ERROR,onError);
+			_nc.connectionAuth = CONNECTION_AUTH_PARAMETERS;
 			_nc.connect(HOSTNAME);			
 		}
 		

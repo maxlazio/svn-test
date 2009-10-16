@@ -196,10 +196,12 @@
 				_ns.addEventListener(OvpEvent.COMPLETE,completeHandler); 
 				_ns.addEventListener(OvpEvent.PROGRESS,update); 
 				_ns.addEventListener(NetStatusEvent.NET_STATUS,streamStatusHandler);
-				_ns.addEventListener(OvpEvent.NETSTREAM_PLAYSTATUS,streamPlayStatusHandler);
 				_ns.addEventListener(OvpEvent.NETSTREAM_METADATA,metadataHandler);
 				_ns.addEventListener(OvpEvent.NETSTREAM_CUEPOINT,cuepointHandler);
-				_ns.addEventListener(OvpEvent.STREAM_LENGTH,streamLengthHandler); 				
+				_ns.addEventListener(OvpEvent.STREAM_LENGTH,streamLengthHandler);
+				_ns.addEventListener(OvpEvent.SWITCH_REQUESTED, switchRequestedHandler);
+				_ns.addEventListener(OvpEvent.SWITCH_ACKNOWLEDGED, switchAcknowledgedHandler);
+				_ns.addEventListener(OvpEvent.SWITCH_COMPLETE, switchCompleteHandler);		
 				
 				_ns.maxBufferLength = 2;
 
@@ -212,6 +214,25 @@
 				write("Protocol: " + _nc.actualProtocol);
 				write("Server IP address: " + _nc.serverIPaddress);
 				_nc.requestStreamLength(_smilMetafile.streamName);
+			}
+			
+			private function switchRequestedHandler(e:OvpEvent):void {
+				showTransitionMsg(_SWITCH_REQUEST_MSG_);
+
+				var msg:String = "Requesting switch to index: "+e.data.targetIndex+", reason: "+ (e.data.firstPlay ? "play starting" : e.data.reason);
+				write(msg);								
+			}
+			
+			private function switchAcknowledgedHandler(e:OvpEvent):void {
+				showTransitionMsg(_SWITCH_UNDERWAY_MSG_);
+			}
+			
+			private function switchCompleteHandler(e:OvpEvent):void {
+				multiBRCtrls.visible = true;
+				showTransitionMsg(_SWITCH_COMPLETE_MSG_, _TRANSITION_MSG_DISPLAY_TIME_);
+				
+				var msg:String = "Switch complete to index: "+e.data.renderingIndex+ ", bitrate: "+ e.data.renderingBitrate;
+				write(msg);
 			}
 			
 			// Handles all error events
@@ -251,29 +272,19 @@
 						// while the stream transtions after a seek
 						_waitForSeek = false;
 						break;
-					case "NetStream.Play.Transition":
-						showTransitionMsg(_SWITCH_UNDERWAY_MSG_);
-						break;						
 				}
 			}
-			
-			// Receives all onPlayStatus events dispatched by the active NetStream
-			private function streamPlayStatusHandler(e:OvpEvent):void {
-				if (e.data.code == "NetStream.Play.TransitionComplete") {
-					multiBRCtrls.visible = true;
-					showTransitionMsg(_SWITCH_COMPLETE_MSG_, _TRANSITION_MSG_DISPLAY_TIME_);
-				}
-				trace("In FLEXsampleMultiBitRate.streamPlayStatusHandler() - e.data.code="+e.data.code);
-				write(e.data.code);
-			}
-					
+								
 			// Receives all onMetadata events dispatched by the active NetStream
 			private function metadataHandler(e:OvpEvent):void {
+				/*
 				write("========== Metadata found in stream  ===========");
 				for (var propName:String in e.data) {
 					write("  "+propName+" = "+e.data[propName]);
 				}
 				write("========== End of Stream Metadata  ===========");
+				*/
+				
 				// Adjust the video dimensions on the stage if they do not match the metadata
 				if ((Number(e.data["width"]) != _video.width)  || (Number(e.data["height"]) != _video.height)) {
 					scaleVideo(Number(e.data["width"]),Number(e.data["height"]));
@@ -419,7 +430,7 @@
 			}
 			
 			private function debugMsgHandler(event:OvpEvent):void {
-				write(String(event.data));	
+				//write(String(event.data));	
 			}
 			
 			private function autoScroll():void {
@@ -478,13 +489,11 @@
 			}
 			
 			private function onClickSwitchDown(event:MouseEvent):void {
-				showTransitionMsg(_SWITCH_REQUEST_MSG_);
 				_lastSwitch = -1;					
 				_ns.switchDown();
 			}
 			
 			private function onClickSwitchUp(event:MouseEvent):void {
-				showTransitionMsg(_SWITCH_REQUEST_MSG_);
 				_lastSwitch = 1;					
 				_ns.switchUp();
 			}

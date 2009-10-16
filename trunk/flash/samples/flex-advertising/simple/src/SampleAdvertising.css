@@ -1,0 +1,65 @@
+
+global {
+   	color: #FFFFFF;
+   	fontFamily: "Verdana";
+   	fontSize: 11px;
+   	fontWeight: normal;
+	disabledColor: #3d3d3d;   
+}
+
+.title {
+	fontSize: 20px;
+	fontWeight: normal;
+}
+
+.timeCode {
+	fontSize: 10px;
+	color: #999999;
+}
+
+.label {
+	fontSize: 10px;
+	color: #aaaaaa;
+}
+
+Button {
+	themeColor: "haloSilver";
+}
+
+HSlider {
+	themeColor: "haloSilver";
+    dataTipOffset: 12;
+}
+
+
+ToolTip {
+	color: #ffffff;
+	backgroundColor: #333333;
+}
+
+.dataTip {
+    backgroundColor: black;
+}
+
+TextInput {
+	color: #333333;
+	themeColor: "haloSilver";
+}
+
+ProgressBar {
+	color: #333333;
+}
+	
+
+.captionStyle {
+	paddingLeft: 5;
+	paddingRight: 5;
+	paddingTop: 5;
+	alpha: 0;
+	background-color: #000000;
+	background-alpha: 0.66;
+	textAlign: "center";
+	fontSize: 13px;
+}
+
+

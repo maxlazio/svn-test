@@ -104,7 +104,7 @@ live streaming and progressive playback.
 				// Initialize various properties and handlers
 				stage.addEventListener(Event.RESIZE,handleResize);
 				stage.addEventListener(FullScreenEvent.FULL_SCREEN,handleReturnFromFullScreen);
-				_timer = new Timer(100,1);
+				_timer = new Timer(500,1);
 				_timer.addEventListener(TimerEvent.TIMER_COMPLETE,scaleVideo);
 				_path = loaderInfo.parameters.url == undefined ? this.SAMPLES[0].data : loaderInfo.parameters.url;
 				// Start the ball rolling
