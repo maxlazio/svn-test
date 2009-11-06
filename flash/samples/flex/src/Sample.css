@@ -74,6 +74,7 @@ HSlider {
 	alpha: 0;
 	background-color: #000000;
 	background-alpha: 0.5;
+	textAlign: center;
 }
 
 .cuePointText {

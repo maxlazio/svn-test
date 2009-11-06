@@ -224,7 +224,7 @@ package org.openvideoplayer.net
 		/**
 		 * @private
 		 */
-		protected const VERSION:String = "2.1.0";
+		protected const VERSION:String = "2.1.1";
 		
 		//-------------------------------------------------------------------
 		// 
