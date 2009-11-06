@@ -321,9 +321,12 @@ package com.akamai.net
 		 * @private
 		 */
 		private function resetAllLiveTimers():void {
-			_liveStreamTimer.reset();
-			_liveStreamRetryTimer.reset();
-			_liveFCSubscribeTimer.reset();
+			if (_useFCSubscribe)
+			{
+				_liveStreamTimer.reset();
+				_liveStreamRetryTimer.reset();
+				_liveFCSubscribeTimer.reset();
+			}
 			_bufferFailureTimer.reset();
 			
 		}

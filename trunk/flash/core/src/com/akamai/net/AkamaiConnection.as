@@ -158,10 +158,9 @@ package com.akamai.net
 			var temp:String = super.serverVersion(serverVersionInfo);
 					
 			// If the server version is less than 3.5 the FCSubscribe call is required
-			if ((serverVersionInfo.major < 3) || (serverVersionInfo.major == 3 && serverVersionInfo.minor < 6)) {
+			if ((serverVersionInfo.major < 3) || (serverVersionInfo.major == 3 && serverVersionInfo.minor < 5)) {
 				return true;
 			}
-			
 			return false;
 		}
 		

@@ -30,7 +30,8 @@
 	 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 //
 -->
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" implements="org.openvideoplayer.plugins.IOvpPlayer" layout="absolute" backgroundColor="#000000" applicationComplete="initApp()">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" implements="org.openvideoplayer.plugins.IOvpPlayer" 
+	layout="absolute" backgroundColor="#000000" applicationComplete="initApp()">
 
 	<mx:Style source="SampleAdvertising.css"/>
 
@@ -76,10 +77,12 @@
 			[Bindable]
 			private var _pdlFile:String;
 			private var _inAdMode:Boolean;
-
+			
 			private const _DEFAULT_HOSTNAME_:String = "cp67126.edgefcs.net/ondemand";
 			private const _DEFAULT_STREAMNAME_:String = "mediapm/ovp/content/test/video/Akamai_10_Year_F8_512K";
 			private const _DEFAULT_PDL_URL_:String = "http://products.edgeboss.net/download/products/content/demo/video/oomt/big_buck_bunny_700k.flv";
+			private const _DEFAULT_VIDEO_WIDTH_:int = 480;
+			private const _DEFAULT_VIDEO_HEIGHT_:int = 269;
 
 
 			// ----------------------------------------------------------------
@@ -171,21 +174,25 @@
 			}
 
 			public function set advertisingMode(value:Boolean):void {
-				this.debugTrace("...in advertisingMode : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
-
 				debugTrace("advertisingMode set to " + value);
+				
 				if (value == true) {
 					_inAdMode = true;
-
-					if (_ns) {
-						_ns.pause();
-						_ns.volume = uiCtrl_volume.value;
-					}
-
 					uiCtrl_stopAdBtn.visible = uiCtrl_stopAdBtn.includeInLayout = true;
 					_video.visible = false;
 					_linearAdMC.visible = true;
 					enableUIControls(false);
+					
+					if (_ns) {
+						_ns.volume = uiCtrl_volume.value;
+						if (_ns.time > 0) {
+							// If we are playing, pause. Otherwise look for the NetStream.Play.Start in 
+							// the streamStatusHandler method and pause if we are in ad mode. This seems
+							// to work well for both progressive download and streaming over rtmp.
+							_ns.pause();
+						}
+					}
+										
 					dispatchEvent(new OvpPlayerEvent(OvpPlayerEvent.VOLUME_CHANGE, Number(uiCtrl_volume.value)));
 				} else {
 					_inAdMode = false;
@@ -200,10 +207,9 @@
 			}
 
 			public function getSpriteById(id:String):Sprite {
-				this.debugTrace("...in getSpriteById : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
-
 				if (id.toLowerCase() == "linearadmc") {
 					_linearAdMC.visible = true;
+					
 					this.debugTrace("In SampleAdvertising.getSpriteById() - about to return " + _linearAdMC.name);
 					return _linearAdMC;
 				}
@@ -254,10 +260,7 @@
 				_inAdMode = false;
 				_lastHostname = "";
 
-				uic.setActualSize(480, 270);
-				_video = new Video(480, 270);
-				_video.x = 0;
-				_video.y = 0;
+				_video = new Video();
 				uic.addChild(_video);
 
 				_linearAdMC = new MovieClip();
@@ -265,7 +268,9 @@
 				_linearAdMC.y = 0;
 				_linearAdMC.name = "_linearAdMC";
 				uic.addChild(_linearAdMC);
-
+				
+				initVideoContainer();	
+				
 				// Load plug-ins specified in the FlashVars			
 				_pluginFiles = new Array();
 				_plugins = new Array();
@@ -277,6 +282,20 @@
 				loadPlugins();
 			}
 
+			private function initVideoContainer():void {
+				// Set default video and container dimensions in case we don't get
+				// the metadata callback right away
+				_video.x = 0;
+				_video.y = 0;
+				_video.width = _DEFAULT_VIDEO_WIDTH_;
+				uic.width = _DEFAULT_VIDEO_WIDTH_;
+				_video.height = _DEFAULT_VIDEO_HEIGHT_;
+				uic.height = _DEFAULT_VIDEO_HEIGHT_;
+				uic.visible = true;
+				uiCtrl_videoContainer.width = _DEFAULT_VIDEO_WIDTH_ + 11;
+				uiCtrl_videoContainer.height = _DEFAULT_VIDEO_HEIGHT_ + 11;				
+			}
+			
 			private function loadPlugins():void {
 				for (var i:int = 0; i < _pluginFiles.length; i++) {
 					var url:String = _pluginFiles[i];
@@ -365,18 +384,17 @@
 			 * Starts the video playing when everything is ready
 			 */
 			private function playVideo(name:String):void {
-				this.debugTrace("...in playVideo : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
-				updateState(OvpPlayerEvent.START_NEW_ITEM);
-
+				if (!_inAdMode) {
+					_ns.play(name);
+				}
 
 				_playBtnStatePlaying = true;
 				uiCtrl_playBtn.label = "pause";
 
-				if (!this._inAdMode) {
-					_ns.play(name);
-				}
-				this._video.visible = false;
+				_video.visible = false;
 				this.uiCtrl_playerContainer.visible = true;
+				
+				updateState(OvpPlayerEvent.START_NEW_ITEM);
 			}
 
 			private function showScrubTime(val:String):String {
@@ -396,7 +414,6 @@
 			 */
 			private function connectedHandler():void {
 				debugTrace("Successfully connected to: " + _nc.netConnection.uri);
-				this.debugTrace("...in connectedHandler : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
 
 				uiCtrl_playBtn.enabled = true;
 
@@ -436,8 +453,6 @@
 			}
 
 			private function enableUIControls(enable:Boolean = true):void {
-				this.debugTrace("...in enableUIControls : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
-
 				this.uiCtrl_playBtn.enabled = this.uiCtrl_scrubber.enabled =
 					this.uiCtrl_loadPDLBtn.enabled = this.uiCtrl_loadStreamBtn.enabled =
 					this.uiCtrl_pdlRB.enabled = this.uiCtrl_streamingRB.enabled = this.uiCtrl_timeDisplay.enabled =
@@ -551,7 +566,7 @@
 						break;
 					case "NetStream.Play.Start":
 						updateState(OvpPlayerEvent.BUFFERING);
-						if (this._inAdMode) {
+						if (_inAdMode) {
 							_ns.pause();
 						}
 						break;
@@ -599,7 +614,6 @@
 			 * Handles the OvpEvent.NETSTREAM_METADATA events fired by the OvpNetStream class
 			 */
 			private function metadataHandler(e:OvpEvent):void {
-				this.debugTrace("...in metadataHandler : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
 
 				for (var propName:String in e.data) {
 					debugTrace("metadata: " + propName + " = " + e.data[propName]);
@@ -659,8 +673,7 @@
 			 * Handles the Load button click for progressive downloads
 			 */
 			private function onClickLoadPDL(event:MouseEvent):void {
-				this.debugTrace("...in onClickLoadPDL : _video.x=" + _video.x + ", _video.y=" + _video.y + ", _linearAdMC.x=" + _linearAdMC.x + ", _linearAdMC.y=" + _linearAdMC.y + "uic.x=" + uic.x + ", uic.y=" + uic.y);
-
+				initVideoContainer();
 				_filename = this.uiCtrl_pdlUrl.text;
 				this.createConnection(null);
 			}
@@ -669,6 +682,7 @@
 			 * Handles the load button click for streams
 			 */
 			private function onClickLoadStream(event:MouseEvent):void {
+				initVideoContainer();
 				_filename = this.uiCtrl_streamName.text;
 				this.createConnection(uiCtrl_hostName.text);
 			}
@@ -738,6 +752,7 @@
 
 			private function debugTrace(... arguments):void {
 				text_debug.text += "\nSampleAdvertising - " + arguments;
+				trace("SampleAdvertising - "+arguments);
 			}
 
 			private function onDebugMessage(event:OvpPlayerEvent):void {
@@ -773,7 +788,6 @@
 					<mx:VBox id="uiCtrl_videoContainer" horizontalScrollPolicy="off" verticalScrollPolicy="off" height="281" width="491" backgroundColor="#242424" horizontalAlign="center"
 						paddingLeft="5" paddingTop="5">
 						<mx:UIComponent id="uic" visible="false"/>
-						<!-- <mx:UIComponent id="linearAdMC" visible="false" includeInLayout="true" /> -->
 					</mx:VBox>
 					<mx:HRule width="100%" strokeColor="black" strokeWidth="1"/>
 					<mx:HBox paddingBottom="3" paddingLeft="6" paddingTop="3">

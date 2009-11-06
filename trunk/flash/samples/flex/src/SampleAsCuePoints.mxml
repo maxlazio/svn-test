@@ -137,9 +137,9 @@
 
 		// Handles the displaying of ActionScript cue points
 		private function showCuePoint():void {
-			_cuePointDisplayX = this.container2.x + this.videoContainer.x + (this.videoContainer.width/2) - (this._currentCuePointText.length/2);
+			_cuePointDisplayX = container2.x + videoContainer.x + 5;//this.container2.x + this.videoContainer.x + (this.videoContainer.width/2) - (this._currentCuePointText.length/2);
 			_cuePointDisplayY = (this.container2.y + this.videoContainer.height + this.videoContainer.y) - 36;	
-			
+			cuePointControl.width = _video.width;
 			fadeIn.play([cuePointControl]);
 		}
 		
@@ -471,7 +471,7 @@
 	</mx:VBox>
 
 	<mx:HBox id="cuePointControl" x="{this._cuePointDisplayX}" y="{this._cuePointDisplayY}" styleName="cuePointContainerStyle">
-		<mx:Label id="cuePointLabel" text="{_currentCuePointText}" />							
+		<mx:Label id="cuePointLabel" text="{_currentCuePointText}" textAlign="center" width="100%" />							
 	</mx:HBox>
 	
 	<mx:states>

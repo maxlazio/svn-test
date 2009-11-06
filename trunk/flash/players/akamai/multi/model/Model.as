@@ -198,8 +198,8 @@ package model {
 			_autoStart = flashvars.autostart == undefined ? true:flashvars.autostart.toString().toLowerCase() == "true";
 			_loadImage = flashvars.loadImage == undefined ? "assets/defaultLoadImage.png" : flashvars.loadImage.toString();
 			_enableFullscreen = flashvars.enableFullscreen == undefined?true:flashvars.enableFullscreen.toString().toLowerCase() == "true";
-			_link = flashvars.link == undefined?"":unescape(flashvars.link.toString());
-			_embed = flashvars.embed == undefined?"":unescape(flashvars.embed.toString());
+			_link = flashvars.link == undefined?"":flashvars.link.toString();
+			_embed = flashvars.embed == undefined?"":flashvars.embed.toString();
 			if (flashvars.scaleMode == undefined) {
 				_scaleMode  = SCALE_MODE_FIT;
 			} else {
