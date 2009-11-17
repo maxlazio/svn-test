@@ -86,7 +86,6 @@ package controller{
 			_adPlaying = false;
 			_startPlayPending = false;
 			_needToSetCuePointMgr = false;
-
 			initializeChildren();
 		}
 		private function initializeChildren():void {
@@ -95,7 +94,6 @@ package controller{
 			_model.addEventListener(_model.EVENT_PAUSE, pauseHandler);
 			_model.addEventListener(_model.EVENT_SEEK, seekHandler);
 			_model.addEventListener(_model.EVENT_NEW_SOURCE, newSourceHandler);
-			_model.addEventListener(_model.EVENT_STOP_PLAYBACK, stopPlaybackHandler);
 			_model.addEventListener(_model.EVENT_SWITCH_UP, switchUpHandler);
 			_model.addEventListener(_model.EVENT_SWITCH_DOWN, switchDownHandler);
 			_model.addEventListener(_model.EVENT_TOGGLE_AUTO_SWITCH, toggleSwitchHandler);
@@ -119,11 +117,6 @@ package controller{
 			_progressTimer = new Timer(100);
 			_progressTimer.addEventListener(TimerEvent.TIMER, progressHandler);
 
-		}
-		private function stopPlaybackHandler(e:Event = null):void {
-			_ns.pause();
-			_ns.close();
-			_model.stop();
 		}
 
 		private function newSourceHandler(e:Event):void {
@@ -366,11 +359,6 @@ package controller{
 						_model.playStart();
 					}
 					break;
-				case "NetStream.Play.Stop" :					
-					if (_ns.isProgressive && (_model.streamLength >= (_ns.time - 1))) {
-						stopPlaybackHandler();						
-					}
-					break;
 				case "NetStream.Play.Transition" :
 					_model.debug("Transition to new stream starting ...");
 					break;
@@ -476,7 +464,7 @@ package controller{
 			_streamAuthParameters = _boss.playAuthParams;
 			_isLive = _boss.isLive;
 			_streamName = _boss.streamName;
-			var protocol:String = _boss.protocol != "" ? _boss.protocol:"any";
+			var protocol:String = _boss.protocol != "" && _boss.protocol != null ? _boss.protocol:"any";
 			connect(_boss.hostName,protocol);
 		}
 		// handle multi-bitrate SMIL results
