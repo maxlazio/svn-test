@@ -221,10 +221,6 @@ package org.openvideoplayer.net
 		
 		// Declare private constants
 		private const TIMEOUT:uint = 15000;
-		/**
-		 * @private
-		 */
-		protected const VERSION:String = "2.1.1";
 		
 		//-------------------------------------------------------------------
 		// 

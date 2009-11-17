@@ -36,6 +36,7 @@ package com.akamai.net
 	import org.openvideoplayer.net.*;
 	import org.openvideoplayer.events.*;
 	import org.openvideoplayer.utilities.*;
+	import org.openvideoplayer.version.OvpVersion;
 	
 	/**
 	 * The AkamaiConnection class extends the OvpConnection class to provide functionality specific to the Akamai network,
@@ -271,7 +272,7 @@ package com.akamai.net
 			addr += (_ip && _ip != "") ? _ip : _hostName;
 			addr += ":"+port+"/"+_appNameInstName+"?";
 			addr += (_ip && _ip != "") ? "_fcs_vhost="+_hostName+"&" : "";
-			addr += "ovpfv=" + VERSION + (_authParams == "" ? "":"&" + _authParams);
+			addr += "ovpfv=" + OvpVersion.version + (_authParams == "" ? "":"&" + _authParams);
 			return addr;
 		}
 
