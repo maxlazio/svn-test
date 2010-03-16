@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 	 //
-	 // Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+	 // Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 	 //
 	 // Redistribution and use in source and binary forms, with or without
 	 // modification, are permitted provided that the following conditions are
@@ -770,14 +770,14 @@
 			<mx:RadioButton id="uiCtrl_streamingRB" label="Streaming Video" selected="false" click="onClickRbStreaming(event)" buttonMode="true" groupName="rbVideoType" useHandCursor="true"/>
 		</mx:HBox>
 		<mx:HBox id="uiCtrl_pdlContainer">
-			<mx:Label styleName="label" text="URL: "/>
+			<mx:Label text="URL: "/>
 			<mx:TextInput id="uiCtrl_pdlUrl" text="{this._pdlFile}" editable="true"/>
 			<mx:Button id="uiCtrl_loadPDLBtn" label="load" click="onClickLoadPDL(event)" buttonMode="true" useHandCursor="true"/>
 		</mx:HBox>
 		<mx:HBox id="uiCtrl_streamingContainer" includeInLayout="false" visible="false">
-			<mx:Label styleName="label" text="Host Name: "/>
+			<mx:Label text="Host Name: "/>
 			<mx:TextInput id="uiCtrl_hostName" text="{_hostname}" editable="true"/>
-			<mx:Label styleName="label" text="Stream Name: "/>
+			<mx:Label text="Stream Name: "/>
 			<mx:TextInput id="uiCtrl_streamName" text="{_streamname}" editable="true"/>
 			<mx:Button id="uiCtrl_loadStreamBtn" label="load" click="onClickLoadStream(event)" buttonMode="true" useHandCursor="true"/>
 		</mx:HBox>

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -362,7 +362,6 @@ package org.openvideoplayer.net
 				
 				case "NetStream.Play.Complete":
 					dispatchEvent(new OvpEvent(OvpEvent.COMPLETE));
-					_bufferFailureTimer.reset();
 					break;
 			}
 			
@@ -447,19 +446,26 @@ package org.openvideoplayer.net
 		}
 		
 		/**
-		 * @private
-		 */
-		private function switchToIndex(targetIndex:uint,firstPlay:Boolean = false):void {
+		* This function is provided so that any class extending this class can modify the 
+		* NetStreamPlayOptions that are being requested. 
+		*/
+		protected function prepareNetStreamPlayOptions(targetIndex:uint,firstPlay:Boolean):NetStreamPlayOptions{
 			var nso:NetStreamPlayOptions = new NetStreamPlayOptions();
-			
 			nso.start = _dsi.start;
-			
 			nso.len = _dsi.len;
 			nso.streamName = _dsi.getNameAt(targetIndex);
 			nso.oldStreamName = _oldStreamName;
 			nso.transition = firstPlay ? NetStreamPlayTransitions.RESET:NetStreamPlayTransitions.SWITCH;
+			_oldStreamName = _dsi.getNameAt(targetIndex);
 			debug("Switching to index " + targetIndex + " at " + Math.round(_dsi.getRateAt(targetIndex)) + " kbps");
-			
+			return nso;
+		}
+		
+		/**
+		 * @private
+		 */
+		private function switchToIndex(targetIndex:uint,firstPlay:Boolean = false):void {
+			var nso:NetStreamPlayOptions = prepareNetStreamPlayOptions(targetIndex,firstPlay);
 			// dispatch the switch requested event
 			var data:Object = new Object();
   		 	data.targetIndex = targetIndex;	
@@ -469,8 +475,16 @@ package org.openvideoplayer.net
 			
 			dispatchEvent(new OvpEvent(OvpEvent.SWITCH_REQUESTED, data));
 			
-			super.play2(nso);
-			_oldStreamName = _dsi.getNameAt(targetIndex);
+			if (firstPlay)
+			{
+				super.play(nso.streamName);
+			}
+			else
+			{
+				super.play2(nso);
+			}
+			
+			
 			
 			if (!firstPlay && targetIndex < _streamIndex && !_useManualSwitchMode) {
 				// this is a failure for the current stream so lets tag it as such

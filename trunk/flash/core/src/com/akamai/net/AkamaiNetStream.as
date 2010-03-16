@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -31,27 +31,26 @@
 package com.akamai.net {
 	import flash.events.NetStatusEvent;
 	import flash.events.TimerEvent;
-	import flash.net.NetConnection;
 	import flash.utils.Timer;
 	
 	import org.openvideoplayer.events.OvpError;
 	import org.openvideoplayer.events.OvpEvent;
 	import org.openvideoplayer.net.*;
+	import org.openvideoplayer.utilities.StringUtil;
 
 	/**
 	 * Dispatched when the class has successfully subscribed to a live stream.
 	 *
-	 * @see AkamaiConnection#subscribeRequiredForLiveStreams
 	 * @see #play
 	 *
 	 * @eventType OvpEvent.SUBSCRIBED
 	 */
 	[Event(name="subscribed", type="org.openvideoplayer.events.OvpEvent")]
 	/**
-	 * Dispatched when the class has unsubscribed from a live stream, or when the live stream it was previously subscribed
-	 * to has ceased publication.
+	 * Dispatched when the class has unsubscribed from a live stream, or 
+	 * when the live stream it was previously subscribed to has ceased 
+	 * publication.
 	 *
-	 * @see AkamaiConnection#subscribeRequiredForLiveStreams
 	 * @see #play
 	 * @see #unsubscribe
 	 *
@@ -61,7 +60,6 @@ package com.akamai.net {
 	/**
 	 * Dispatched when the class is making a new attempt to subscribe to a live stream.
 	 *
-	 * @see AkamaiConnection#subscribeRequiredForLiveStreams
 	 * @see #play
 	 *
 	 * @eventType OvpEvent.SUBSCRIBE_ATTEMPT
@@ -70,22 +68,26 @@ package com.akamai.net {
 
 
 	/**
-	 * The AkamaiNetStream class extends the OvpNetStream class to provide functionality specific to the Akamai network,
+	 * The AkamaiNetStream class extends the OvpNetStream class to provide 
+	 * functionality specific to the Akamai network,
 	 * such as live stream authentication.
 	 */
 	public class AkamaiNetStream extends OvpNetStream {
-		private var _liveStreamAuthParams:String;
-		private var _useFCSubscribe:Boolean;
-		private var _liveStreamTimer:Timer;
-		private var _liveStreamRetryTimer:Timer;
-		private var _liveFCSubscribeTimer:Timer;
-		private var _liveStreamMasterTimeout:uint;
-		private var _pendingLiveStreamName:String;
-		private var _playingLiveStream:Boolean;
-		private var _successfullySubscribed:Boolean;
+		protected var _liveStreamAuthParams:String;
+		protected var _liveStreamRetryTimer:Timer;
+		protected var _liveStreamTimeoutTimer:Timer;
+		protected var _successfullySubscribed:Boolean;
+		protected var _liveRetryInterval:Number;
+		protected var _liveStreamMasterTimeout:Number;
+		protected var _playingLiveStream:Boolean;
+		protected var _pendingLiveStreamName:String;
+		protected var _akamaiConnection:AkamaiConnection;
+		protected var _retryLiveStreamsIfUnavailable:Boolean;
+		protected var _playReissueRequired:Boolean;
 
-		private const LIVE_RETRY_INTERVAL:Number = 30000;
-		private const LIVE_ONFCSUBSCRIBE_TIMEOUT:Number = 60000;
+		protected const LIVE_RETRY_INTERVAL:Number = 15000;
+		protected const LIVE_RETRY_TIMEOUT:Number = 1200000;
+
 
 		//-------------------------------------------------------------------
 		// 
@@ -96,39 +98,33 @@ package com.akamai.net {
 		/**
 		 * Constructor
 		 *
-		 * @param connection This object can be either an OvpConnection object or a NetConnection object. If an OvpConnection
-		 * object is provided, the constructor will use the NetConnection object within it.
+		 * @param connection This object can be either an OvpConnection 
+		 * object or a NetConnection object. If an OvpConnection
+		 * object is provided, the base class constructor will use 
+		 * the NetConnection object within it.
 		 * <p />
-		 * If you are connecting to a live stream on the Akamai network, we recommend passing in an AkamaiConnection object.
+		 * If you are connecting to a live stream on the Akamai network, 
+		 * we recommend passing in an AkamaiConnection object.
 		 */
 		public function AkamaiNetStream(connection:Object) {
-
-
-			var _connection:NetConnection = null;
-
-			if (connection is NetConnection)
-				_connection = NetConnection(connection);
-			else if (connection is OvpConnection)
-				_connection = NetConnection(connection.netConnection);
-
-			_liveStreamAuthParams = "";
+			super(connection);
 
 			if (connection is AkamaiConnection && (AkamaiConnection(connection).isLive)) {
-				_useFCSubscribe = AkamaiConnection(connection).subscribeRequiredForLiveStreams;
-				if (_useFCSubscribe)
-				{
-					// Listen for internal events - these get dispatched from the OvpConnection class after we call
-					// FCSubscribe on our NetConnection instance.
-					connection.addEventListener(OvpEvent.FCSUBSCRIBE, onFCSubscribe);
-					connection.addEventListener(OvpEvent.FCUNSUBSCRIBE, onFCUnsubscribe);
-				}
-				isLive = true;
-				addEventListener(NetStatusEvent.NET_STATUS, listenForUnpublish);
+				_akamaiConnection = AkamaiConnection(connection);
+				_akamaiConnection.addEventListener(OvpEvent.FCSUBSCRIBE,onFCSubscribe);
+				_akamaiConnection.addEventListener(OvpEvent.FCUNSUBSCRIBE,onFCUnsubscribe);
+				this.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
+				_isLive = true;
+				_liveStreamAuthParams = "";
+				_liveRetryInterval = LIVE_RETRY_INTERVAL;
+				_liveStreamMasterTimeout = LIVE_RETRY_TIMEOUT;
+				_liveStreamRetryTimer = new Timer(_liveRetryInterval);
+				_liveStreamRetryTimer.addEventListener(TimerEvent.TIMER,onRetryLiveStream);
+				_liveStreamTimeoutTimer = new Timer(_liveStreamMasterTimeout,1);
+				_liveStreamTimeoutTimer.addEventListener(TimerEvent.TIMER_COMPLETE,onLiveStreamTimeout);
+				_retryLiveStreamsIfUnavailable = true;
+				_playReissueRequired = false;
 			}
-			_liveStreamMasterTimeout = 3600000;
-
-			super(_connection);
-
 		}
 
 		//-------------------------------------------------------------------
@@ -151,7 +147,8 @@ package com.akamai.net {
 		 * since per stream authorization is invoked when the file is first played (as opposed
 		 * to connection auth params which are invoked when the connection is made).
 		 * If the stream-level authorization parameters are rejected by the server, then
-		 * <code>NetStatusEvent</code> event with <code>info.code</code> set to "NetStream Failed" will be dispatched.
+		 * <code>NetStatusEvent</code> event with <code>info.code</code> set to "NetStream Failed" 
+		 * will be dispatched.
 		 *
 		 * @see AkamaiConnection#connectionAuth
 		 * @see #play
@@ -162,8 +159,41 @@ package com.akamai.net {
 
 		public function set liveStreamAuthParams(ap:String):void {
 			_liveStreamAuthParams = ap;
-			isLive = true;
 		}
+		
+		/**
+		 * If this property is true, then if a live stream is playing and becomes unpublished due 
+		 * to both the primary and backup encoders ceasing to publish, the class will automatically 
+		 * enter into a retry cycle, where it will attempt to play the streams again. Similarly, if 
+		 * a play request is made and the live stream is not found, the class will reattempt the 
+		 * streams at a predefined interval. This interval is set by the liveRetryInterval. The retries
+		 * will cease and timeout once the liveRetryTimeout value has elapsed without a successfull play. 
+		 *
+		 * @default true
+		 * @see AkamaiConnection#connectionAuth
+		 * @see #play
+		 */
+		public function get retryLiveStreamsIfUnavailable():Boolean {
+			return _retryLiveStreamsIfUnavailable;
+		}
+		public function set retryLiveStreamsIfUnavailable(value:Boolean):void {
+			_retryLiveStreamsIfUnavailable = value;
+		}
+		
+		/**
+		 * Defines the live stream retry interval in seconds 
+		 *
+		 * @default 15
+		 * @see #retryLiveStreamsIfUnavailable
+		 * @see #liveRetryTimeout
+		 */
+		public function get liveRetryInterval():Number {
+			return _liveRetryInterval/1000;
+		}
+		public function set liveRetryInterval(value:Number):void {
+			_liveRetryInterval = value*1000;
+		}
+		
 
 		/**
 		 * The maximum number of seconds the class should wait before timing out while trying to locate a live stream
@@ -172,16 +202,14 @@ package com.akamai.net {
 		 * attempts to automatically reconnect. After this master time out has been triggered, the class will issue
 		 * an <code>OvpError.STREAM_NOT_FOUND</code> event .
 		 *
-		 * @default 3600
+		 * @default 1200
 		 */
 		public function get liveStreamMasterTimeout():Number {
 			return _liveStreamMasterTimeout / 1000;
 		}
-
 		public function set liveStreamMasterTimeout(numOfSeconds:Number):void {
 			_liveStreamMasterTimeout = numOfSeconds * 1000;
-			_liveStreamTimer.delay = _liveStreamMasterTimeout;
-			isLive = true;
+			_liveStreamTimeoutTimer.delay = _liveStreamMasterTimeout;
 		}
 
 		//-------------------------------------------------------------------
@@ -255,35 +283,19 @@ package com.akamai.net {
 			if (!_isProgressive && arguments && arguments.length) {
 				// Add prefix if necessary
 				arguments[0] = addPrefix(arguments[0]);
+			}
+			if (isLive)
+			{
 				// Add auth params
 				if (_liveStreamAuthParams != "") {
 					var name:String = arguments[0];
 					arguments[0] = name.indexOf("?") != -1 ? name + "&" + _liveStreamAuthParams : name + "?" + _liveStreamAuthParams;
-					isLive = true;
 				}
-
-				if (_useFCSubscribe) {
-					_pendingLiveStreamName = arguments[0];
-					_playingLiveStream = false;
-					_successfullySubscribed = false;
-					isLive = true;
-
-					// Master live stream timeout
-					_liveStreamTimer = new Timer(_liveStreamMasterTimeout, 1);
-					_liveStreamTimer.addEventListener(TimerEvent.TIMER_COMPLETE, liveStreamTimeout);
-					// Timeout when waiting for a response from FCSubscribe
-					_liveFCSubscribeTimer = new Timer(LIVE_ONFCSUBSCRIBE_TIMEOUT, 1);
-					_liveFCSubscribeTimer.addEventListener(TimerEvent.TIMER_COMPLETE, liveFCSubscribeTimeout);
-					// Retry interval when calling fcsubscribe
-					_liveStreamRetryTimer = new Timer(LIVE_RETRY_INTERVAL, 1);
-					_liveStreamRetryTimer.addEventListener(TimerEvent.TIMER_COMPLETE, retrySubscription);
-					
-
-					startLiveStream();
-
-				}
+				_pendingLiveStreamName = arguments[0] as String;
+				arguments[1] = -1;
+				_liveStreamTimeoutTimer.reset();
+				_liveStreamTimeoutTimer.start();
 			}
-
 			super.play.apply(this, arguments);
 		}
 
@@ -294,7 +306,10 @@ package com.akamai.net {
 		 */
 		public override function close():void {
 			super.close();
-			resetAllLiveTimers()
+			
+			if (isLive) {
+				resetAllLiveTimers()
+			}
 		}
 
 		/**
@@ -326,97 +341,74 @@ package com.akamai.net {
 		 * @private
 		 */
 		protected function addPrefix(filename:String):String {
-			var prefix:String;
-			var ext:String;
-			var loc:int = filename.lastIndexOf(".");
-			var requiredPrefix:String;
-			var map:Array = new Array();
-			map = [{ext: "mp3", prefix: "mp3"},
-				{ext: "mp4", prefix: "mp4"},
-				{ext: "m4v", prefix: "mp4"},
-				{ext: "f4v", prefix: "mp4"},
-				{ext: "3gpp", prefix: "mp4"},
-				{ext: "mov", prefix: "mp4"}];
-
-			if (loc == -1) {
-				// There is no extension, must be an flv
-				return filename;
-			}
-
-			ext = filename.slice(loc + 1);
-			ext = ext.toLocaleLowerCase();
-
-			loc = filename.indexOf(":");
-			if (loc == 3) {
-				// Prefix is already there
-				return filename;
-			}
-
-			var returnVal:String = filename;
-
-			if (loc == -1) {
-				// No prefix, add it
-				for (var i:uint = 0; i < map.length; i++) {
-					if (ext == map[i].ext) {
-						returnVal = map[i].prefix + ":" + filename;
-						break;
-					}
+			return StringUtil.addPrefix(filename);
+		}
+		
+		/** makes a new subscription request for a live stream
+		 * @private
+		 */
+		private function onRetryLiveStream(event:TimerEvent):void {
+			if (_retryLiveStreamsIfUnavailable)
+			{
+				// Note - when subscribing to live streams, you must strip any query params that
+				// are attached. 
+				_akamaiConnection.callFCSubscribe(_pendingLiveStreamName.split("?")[0].toString());
+				
+				/*
+				Calling play here fixes the jittery video after stopping/restarting 
+				the encoder. If the primary and secondary encoders crash, the stream
+				is cleaned up and no longer subscribed to through the live chain, so
+				we need to issue an FCSubscribe again and re-issue a play request
+				or the stream doesn't get subscribed to all the way from the 
+				entry point. However, calling play again causes a NetStream.Play.Stop
+				so we only want to do this once after the encoder stops.
+				*/
+				if (_playReissueRequired) {
+					_playReissueRequired = false;
+					var args:Array = new Array();
+					args.push(_pendingLiveStreamName);
+					super.play.apply(this, args);
 				}
+				
+				dispatchEvent(new OvpEvent(OvpEvent.SUBSCRIBE_ATTEMPT));
 			}
-
-			return returnVal;
+			else
+			{
+				onLiveStreamTimeout(null);
+			}
 		}
-
-		private function startLiveStream():void {
-			resetAllLiveTimers();
-			_liveStreamTimer.start();
-			fcsubscribe();
-		}
-
-		private function fcsubscribe():void {
-			dispatchEvent(new OvpEvent(OvpEvent.SUBSCRIBE_ATTEMPT));
-			_nc.call("FCSubscribe", null, _pendingLiveStreamName);
-			_liveFCSubscribeTimer.reset();
-			_liveFCSubscribeTimer.start();
-		}
-
-		private function retrySubscription(e:TimerEvent):void {
-			fcsubscribe();
-		}
-
-		private function liveFCSubscribeTimeout(e:TimerEvent):void {
-			resetAllLiveTimers();
-			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.NETWORK_FAILED)));
-		}
-
-		private function liveStreamTimeout(e:TimerEvent):void {
+		
+		/** Catches the final attempt timeout for a live stream
+		 * @private
+		 */
+		private function onLiveStreamTimeout(e:TimerEvent):void {
 			resetAllLiveTimers();
 			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.STREAM_NOT_FOUND)));
 		}
 
+		/** Cleans up all timers
+		 * @private
+		 */
 		private function resetAllLiveTimers():void {
-			if (_liveStreamTimer) {
-				_liveStreamTimer.reset();
-				_liveStreamRetryTimer.reset();
-				_liveFCSubscribeTimer.reset();
-				_bufferFailureTimer.reset();
-			}
+			_liveStreamRetryTimer.reset();
+			_liveStreamTimeoutTimer.reset();
 		}
 
 		/** Handles the subscribe event dispatched from OvpConnection
 		 * @private
 		 */
 		public function onFCSubscribe(info:Object):void {
+			//trace("onFCSubscribe() - info.data.code="+info.data.code);
+			
 			switch (info.data.code) {
-				case "NetStream.Play.Start":
-					resetAllLiveTimers();
-					_successfullySubscribed = true;
-					dispatchEvent(new OvpEvent(OvpEvent.SUBSCRIBED));
-					super.play(_pendingLiveStreamName, -1);
-					break;
 				case "NetStream.Play.StreamNotFound":
-					_liveStreamRetryTimer.reset();
-					_liveStreamRetryTimer.start();
+					if (!_liveStreamRetryTimer.running)
+					{
+						// If our first play has failed, let's try to resubscribe right away
+						onRetryLiveStream(null);
+						_liveStreamRetryTimer.reset();
+						_liveStreamRetryTimer.start();
+					}
 					break;
 			}
 		}
@@ -425,28 +417,31 @@ package com.akamai.net {
 		 * @private
 		 */
 		private function onFCUnsubscribe(info:Object):void {
-			switch (info.data.code) {
-				case "NetStream.Play.Stop":
-					_successfullySubscribed = false;
-					dispatchEvent(new OvpEvent(OvpEvent.UNSUBSCRIBED))
-					if (_playingLiveStream) {
-						startLiveStream();
-					}
-					break;
-			}
+			//trace("onFCUnsubscribe() - info.data.code = "+info.data.code);
 		}
 
-		/**
-		 * @private
-		 */
-		private function listenForUnpublish(e:NetStatusEvent):void {
-			switch (e.info.code) {
-				case "NetStream.Play.UnpublishNotify":
-					startLiveStream();
+		private function onNetStatus(event:NetStatusEvent):void {
+			switch (event.info.code) {
+				case "NetStream.Play.PublishNotify":
+					_successfullySubscribed = true;
+					dispatchEvent(new OvpEvent(OvpEvent.SUBSCRIBED));
+					resetAllLiveTimers();
 					break;
+				case "NetStream.Play.UnpublishNotify":
+					_successfullySubscribed = false;
+					_playReissueRequired = true;
+					dispatchEvent(new OvpEvent(OvpEvent.UNSUBSCRIBED))
+					if (!_liveStreamRetryTimer.running)
+					{
+						onRetryLiveStream(null);
+						_liveStreamRetryTimer.reset();
+						_liveStreamRetryTimer.start();
+						_liveStreamTimeoutTimer.reset();
+						_liveStreamTimeoutTimer.start();
+					}
+					break;
+				
 			}
-		}
-		
-		
+		}		
 	}
 }

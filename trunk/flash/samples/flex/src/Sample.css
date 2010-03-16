@@ -28,12 +28,22 @@ global {
 	color: #999999;
 }
 
-.label {
+Label {
 	fontSize: 10px;
 	color: #aaaaaa;
 }
 
 ComboBox {
+	color: #333333;
+	themeColor: "haloSilver";
+}
+
+TextInput {
+	color: #333333;
+	themeColor: "haloSilver";
+}
+
+TextArea {
 	color: #333333;
 	themeColor: "haloSilver";
 }

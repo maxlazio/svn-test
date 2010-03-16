@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -313,7 +313,7 @@ package org.openvideoplayer.parsers
 		 * Creates a Style from a style node.
 		 */
 		private function createStyleObject(styleNode:XML):Style {
-			var id:String = styleNode.@id;
+			var id:String = styleNode.@*::id;
 			
 			var styleObj:Style = new Style(id);
 			

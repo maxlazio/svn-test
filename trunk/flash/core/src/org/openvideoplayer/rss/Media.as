@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -33,7 +33,6 @@ package org.openvideoplayer.rss {
 
 	import flash.events.EventDispatcher;
 	
-	[Bindable]
 	/**
 	 * The Media class holds the data referenced by the media namespace in a RSS file. 
 	 * This class is used by the XxxMediaRSS class and is not invoked directly by

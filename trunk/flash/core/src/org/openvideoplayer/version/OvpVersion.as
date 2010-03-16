@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -35,7 +35,7 @@ package org.openvideoplayer.version
 	 */
 	public class OvpVersion
 	{
-		private static const VERSION:String = "2.1.2";
+		private static const VERSION:String = "2.1.3";
 		
 		/**
 		 * Returns the current version of the code

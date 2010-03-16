@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 //
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -374,7 +374,7 @@
 						<mx:VBox paddingTop="2">
 							<mx:VBox id="ccBox" paddingLeft="1" horizontalAlign="center" verticalAlign="middle" borderStyle="outset" borderColor="#00cc00" borderThickness=".5" toolTip="Toggle Captioning" 
 								buttonMode="true" click="onClickCC(event)" verticalGap="0" horizontalGap="0" width="22" height="16">
-								<mx:Label text="CC" styleName="label" buttonMode="true"/>
+								<mx:Label text="CC" buttonMode="true"/>
 							</mx:VBox>							
 						</mx:VBox>
 						<mx:Text id="timeDisplay" text="00:00|00:00" />
