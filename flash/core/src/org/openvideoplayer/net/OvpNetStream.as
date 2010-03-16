@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -168,14 +168,6 @@ package org.openvideoplayer.net {
 		/**
 		 * @private
 		 */
-		protected var _bufferFailureTimer:Timer;
-		/**
-		 * @private
-		 */
-		protected var _watchForBufferFailure:Boolean;
-		/**
-		 * @private
-		 */
 		protected var _nc:NetConnection;
 		/**
 		 * @private
@@ -209,6 +201,11 @@ package org.openvideoplayer.net {
 		
 		/**
 		 * @private
+		 */
+		protected var _fastStartMinBufferLength:Number;
+		
+		/**
+		 * @private
 		 *
 		 * The Flash player does not dispatch pause and resume events for progressive download files.
 		 * If this flag is set to true, this class will dispatch those events when the pause and resume
@@ -218,7 +215,6 @@ package org.openvideoplayer.net {
 
 		// Declare private constants
 		private const DEFAULT_PROGRESS_INTERVAL:Number = 100;
-		private const BUFFER_FAILURE_INTERVAL:Number = 20000;
 		private const DEFAULT_STREAM_TIMEOUT:Number = 5000;
 
 
@@ -252,9 +248,9 @@ package org.openvideoplayer.net {
 			_maxBufferLength = 3;
 			this.bufferTime = _maxBufferLength;
 			_useFastStartBuffer = false;
+			_fastStartMinBufferLength = 0.5;
 			_aboutToStop = 0;
 			_isBuffering = false;
-			_watchForBufferFailure = false;
 			_volume = 1;
 			_panning = 0;
 			_streamLength = 0;
@@ -269,8 +265,6 @@ package org.openvideoplayer.net {
 
 			_progressTimer = new Timer(DEFAULT_PROGRESS_INTERVAL);
 			_progressTimer.addEventListener(TimerEvent.TIMER, updateProgress);
-			_bufferFailureTimer = new Timer(BUFFER_FAILURE_INTERVAL, 1);
-			_bufferFailureTimer.addEventListener(TimerEvent.TIMER_COMPLETE, handleBufferFailure);
 			_streamTimer = new Timer(DEFAULT_STREAM_TIMEOUT);
 			_streamTimer.addEventListener(TimerEvent.TIMER_COMPLETE, streamTimeoutHandler);
 			
@@ -296,6 +290,16 @@ package org.openvideoplayer.net {
 		 */
 		public function get isProgressive():Boolean {
 			return _isProgressive;
+		}
+		
+		/**
+		 * Added by Will for suppport player
+		 */
+		public function get fastStartMinBufferLength():Number {
+			return _fastStartMinBufferLength;
+		}
+		public function set fastStartMinBufferLength(length:Number):void {
+			_fastStartMinBufferLength = length;
 		}
 
 		/**
@@ -374,22 +378,22 @@ package org.openvideoplayer.net {
 		}
 
 		/**
-		 * The buffer timeout value in millseconds. If, during playback, the buffer empties
+		 * DEPRECATED DEC 2009-2010. The buffer timeout value in millseconds. If, during playback, the buffer empties
 		 * and does not fill again before the buffer timeout interval passes, then <code>OvpError.STREAM_BUFFER_EMPTY</code>
 		 * is dispatched. This value and error are designed to trap very rare network abnormalities in which the server never
 		 * fills the buffer, nor sends a close event, thereby leaving the client in a hung state. As a developer,
 		 * if you receive this error, you should reestablish the connection.<p/>
 		 * Note - this event is only fired for on-demand streaming content, not for live streaming
 		 * or progressively delivered content.
-		 *
+		 * <p/>
+		 * 
 		 * @default 20,000
 		 */
 		public function get bufferTimeout():Number {
-			return _bufferFailureTimer.delay;
+			return NaN
 		}
 
 		public function set bufferTimeout(value:Number):void {
-			_bufferFailureTimer.delay = value;
 		}
 
 		/**
@@ -650,10 +654,10 @@ package org.openvideoplayer.net {
 		protected function streamStatus(event:NetStatusEvent):void {
 
 			if (_useFastStartBuffer) {
-				if (event.info.code == "NetStream.Play.Start" || event.info.code == "NetStream.Buffer.Empty")
-					this.bufferTime = 0.5;
-
-				if (event.info.code == "NetStream.Buffer.Full")
+				if (event.info.code == "NetStream.Play.Start" || event.info.code == "NetStream.Buffer.Empty") 
+					this.bufferTime = _fastStartMinBufferLength;
+				
+				if (event.info.code == "NetStream.Buffer.Full") 
 					this.bufferTime = _maxBufferLength;
 			}
 
@@ -661,7 +665,6 @@ package org.openvideoplayer.net {
 				case "NetStream.Play.Start":
 					_aboutToStop = 0;
 					_isBuffering = true;
-					_watchForBufferFailure = true;
 					_streamTimer.stop();
 					break;
 
@@ -671,25 +674,20 @@ package org.openvideoplayer.net {
 						handleEnd();
 					} else
 						_aboutToStop = 1
-
-					_watchForBufferFailure = false;
-					_bufferFailureTimer.reset();
 					break;
 
 				case "NetStream.Buffer.Empty":
+					_isBuffering = true;
 					if (_aboutToStop == 1) {
 						_aboutToStop = 0;
 						handleEnd();
 					} else
 						_aboutToStop = 2
 
-					if (_watchForBufferFailure)
-						_bufferFailureTimer.start();
 					break;
 
 				case "NetStream.Buffer.Full":
 					_isBuffering = false;
-					_bufferFailureTimer.reset();
 					break;
 
 				case "NetStream.Buffer.Flush":
@@ -751,7 +749,6 @@ package org.openvideoplayer.net {
 			dispatchEvent(new OvpEvent(OvpEvent.NETSTREAM_PLAYSTATUS, info));
 			if (info.code == "NetStream.Play.Complete") {
 				dispatchEvent(new OvpEvent(OvpEvent.COMPLETE));
-				_bufferFailureTimer.reset();
 			}
 		}
 

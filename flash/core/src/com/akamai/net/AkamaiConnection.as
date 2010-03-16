@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -55,6 +55,11 @@ package com.akamai.net
 		 * @private
 		 */
 		protected var _isLive:Boolean;
+		
+		/**
+		 * @private
+		 */
+		private var _overrideIP:String = "";
 		
 		//-------------------------------------------------------------------
 		// 
@@ -152,16 +157,12 @@ package com.akamai.net
 		/**
 		 * Returns true if the server requires clients to subscribe to live streams. This 
 		 * property can only be used after a succesful connection has been established.
+		 * 
+		 * This need for this property has essentially been deprecated with the installation of FMS 3.5+
+		 * across the Akamai network. Explicit subscribe requests are no longer required to play live
+		 * streams on Akamai. 
 		 */
 		public function get subscribeRequiredForLiveStreams():Boolean {
-			// Get the server version
-			var serverVersionInfo:Object = new Object();
-			var temp:String = super.serverVersion(serverVersionInfo);
-					
-			// If the server version is less than 3.5 the FCSubscribe call is required
-			if ((serverVersionInfo.major < 3) || (serverVersionInfo.major == 3 && serverVersionInfo.minor < 5)) {
-				return true;
-			}
 			return false;
 		}
 		
@@ -175,6 +176,20 @@ package com.akamai.net
 			return _isLive;
 		} 
 		
+		
+		/** 
+		 * Allows you to force the class to connect to this IP address. The IDENT request will not be made.
+		 * To resume using IDENT, set overrideIP to empty string.
+		 * 
+		 */
+		public function set overrideIP(value:String):void 
+		{
+			_overrideIP = value;
+		}
+		public function get overrideIP():String
+		{
+			return _overrideIP;
+		}
 		//-------------------------------------------------------------------
 		//
 		// Public methods
@@ -228,21 +243,29 @@ package com.akamai.net
 			_isProgressive = false;
 			_hostName = command.indexOf("/") != -1 ? command.slice(0,command.indexOf("/")):command;
 			_appNameInstName = ((command.indexOf("/") != -1) && (command.indexOf("/") != command.length-1)) ? command.slice(command.indexOf("/")+1) : "";
-			_isLive = (_appNameInstName == "live") ? true : false;
+			_isLive = _appNameInstName.indexOf("live") != -1 ? true : false;
 			_connectionEstablished = false;
 			var versionInfo:Object = new Object();			
 			FlashPlayer.version(versionInfo);
-			
-			// Old ident request required for Flash Player version < 9.0.60
-			if ((versionInfo.major < 9) || (versionInfo.major == 9 && versionInfo.build < 60)) {
-				// request IP address of optimum server
-				_urlLoader= new URLLoader();	
-				_urlLoader.addEventListener("complete", onXMLLoaded);
-				_urlLoader.addEventListener(IOErrorEvent.IO_ERROR, catchIOError);
-				_urlLoader.load(new URLRequest("http://" + _hostName + "/fcs/ident"));
-			}
-			else {
+			// If the caller wants to override the IP address, then skip IDENT
+			if (_overrideIP != "")
+			{
+				_ip = _overrideIP;
 				buildConnectionSequence();
+			} 
+			else 
+			{
+				// Old ident request required for Flash Player version < 9.0.60
+				if ((versionInfo.major < 9) || (versionInfo.major == 9 && versionInfo.build < 60)) {
+					// request IP address of optimum server
+					_urlLoader= new URLLoader();	
+					_urlLoader.addEventListener("complete", onXMLLoaded);
+					_urlLoader.addEventListener(IOErrorEvent.IO_ERROR, catchIOError);
+					_urlLoader.load(new URLRequest("http://" + _hostName + "/fcs/ident"));
+				}
+				else {
+					buildConnectionSequence();
+				}
 			}
 		}
 		
@@ -286,7 +309,7 @@ package com.akamai.net
 		/** Catches IO errors when requesting IDENT xml
 		 * @private
 		 */
-		private function catchIOError(event:IOErrorEvent):void {
+		protected function catchIOError(event:IOErrorEvent):void {
 			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.IDENT_REQUEST_FAILED))); 
 			_ip = _hostName;
 			buildConnectionSequence();
@@ -296,7 +319,7 @@ package com.akamai.net
 	    /** Handles the XML return from the IDENT request
 	    * @private
 	    */
-	    private function onXMLLoaded(event:Event):void { 
+	    protected function onXMLLoaded(event:Event):void { 
 				_ip = XML(_urlLoader.data).ip;
 				buildConnectionSequence();
 				

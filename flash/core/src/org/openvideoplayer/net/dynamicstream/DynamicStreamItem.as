@@ -1,6 +1,6 @@
 ﻿
 //
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -70,6 +70,7 @@ package org.openvideoplayer.net.dynamicstream
 			start = -2;
 			len = -1;
 			reset = true;
+			streamAuth = "";
 			startingIndex = -1;
 			_lastLockTime = 0;
 			_lockLevel = int.MAX_VALUE;
@@ -88,6 +89,12 @@ package org.openvideoplayer.net.dynamicstream
 		 * Default is -2 to coincide with defaults for NetStream.play()
 		 */		
 		public var start:Number;
+		
+		/**
+		 * Specifies stream auth params to use with this DSI. 
+		 * Default is ""
+		 */		
+		public var streamAuth:String;
 		
 		/**
 		 * len:Number

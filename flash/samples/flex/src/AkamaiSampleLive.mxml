@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 	 //
-	 // Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+	 // Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 	 //
 	 // Redistribution and use in source and binary forms, with or without
 	 // modification, are permitted provided that the following conditions are
@@ -30,8 +30,9 @@
 	 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 //
 -->
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()" viewSourceURL="srcview/index.html">
-
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	backgroundColor="#000000" applicationComplete="init()">
+	<mx:Style source="Sample.css"/>
 	<mx:Script>
 		<![CDATA[
 			import mx.core.UIComponent;
@@ -45,6 +46,14 @@
 
 			private const HOSTNAME:String = "cp34973.live.edgefcs.net/live";
 			private const STREAMNAME:String = "Flash_live_bm_500K@9319";
+			private const AUTH_TOKENS:String = "auth=yyyy&amp;aifp=zzzz";
+				
+			private const VIDEO_DEFAULT_WIDTH:int = 320;
+			private const VIDEO_DEFAULT_HEIGHT:int = 240;
+			private const VIDEO_CONTAINER_DEFAULT_WIDTH_DIFF:int = 11;
+			private const VIDEO_CONTAINER_DEFAULT_HEIGHT_DIFF:int = 11;
+			private const VIDEO_CONTAINER_DEFAULT_WIDTH:int = VIDEO_DEFAULT_WIDTH + VIDEO_CONTAINER_DEFAULT_WIDTH_DIFF;
+			private const VIDEO_CONTAINER_DEFAULT_HEIGHT:int = VIDEO_DEFAULT_HEIGHT + VIDEO_CONTAINER_DEFAULT_HEIGHT_DIFF;
 
 			// Define variables
 			private var _nc:AkamaiConnection;
@@ -52,27 +61,38 @@
 			private var _filename:String;
 			private var _video:Video;
 			private var _videoHolder:UIComponent;
-			[Bindable]
-			private var _showUnsubscribeBtn:Boolean;
 
 			// Init, called when application creation is complete
 			private function init():void {
-				_showUnsubscribeBtn = false;
 				_nc = new AkamaiConnection();
 
 				_nc.addEventListener(OvpEvent.ERROR, errorHandler);
 				_nc.addEventListener(OvpEvent.BANDWIDTH, bandwidthHandler);
 				_nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 
-				addVideoToStage();
+				uic.setActualSize(VIDEO_DEFAULT_WIDTH, VIDEO_DEFAULT_HEIGHT);
+				_video = new Video(VIDEO_DEFAULT_WIDTH, VIDEO_DEFAULT_HEIGHT);
+				_video.x = 0;
+				_video.y = 0;
+				uic.addChild(_video);			
 			}
 
 			// Commences connection to the live stream
 			private function startPlayback(hostname:String, streamname:String):void {
 				_filename = streamname;
 				_nc.connect(hostname);
+				bStop.enabled = true;
 				bStart.enabled = false;
 				write("Connecting to server ...");
+			}
+			
+			// Stops playback by closing the stream
+			private function stopPlayback():void {
+				_ns.close();
+				bStop.enabled = false;
+				bPlayPause.enabled = false;
+				bMute.enabled = false;
+				bStart.enabled = true;
 			}
 
 			// Handles a successfull connection to the server
@@ -83,24 +103,17 @@
 				write("IP address: " + _nc.serverIPaddress);
 
 				_nc.detectBandwidth();
+				
 				if (streamAuth.text.length || !(_ns is AkamaiNetStream))
 				{
 					_ns = new AkamaiNetStream(_nc);
 					_ns.liveStreamAuthParams = streamAuth.text;
-	
-					// If the server requires us to subscribe to live streams, we need a few more event handlers
-					if (_nc.subscribeRequiredForLiveStreams) {
-						_showUnsubscribeBtn = true;
-						_ns.addEventListener(OvpEvent.SUBSCRIBED, subscribedHandler);
-						_ns.addEventListener(OvpEvent.UNSUBSCRIBED, unsubscribedHandler);
-						_ns.addEventListener(OvpEvent.SUBSCRIBE_ATTEMPT, subscribeAttemptHandler);
-					}
-	
 					_ns.addEventListener(OvpEvent.PROGRESS, update);
 					_ns.addEventListener(NetStatusEvent.NET_STATUS, streamStatusHandler);
 					_ns.addEventListener(OvpEvent.NETSTREAM_PLAYSTATUS, streamPlayStatusHandler);
 					_ns.addEventListener(OvpEvent.NETSTREAM_METADATA, metadataHandler);
 					_ns.addEventListener(OvpEvent.DATA_MESSAGE, dataMessageHandler);
+					_ns.addEventListener(OvpEvent.ERROR, errorHandler);
 	
 					_ns.maxBufferLength = 1;
 					_ns.streamTimeout = 10;
@@ -116,6 +129,7 @@
 					Alert.show("Connected to the server at " + _nc.serverIPaddress + " but timed-out trying to locate the live stream " + _filename, "UNABLE TO FIND STREAM ", Alert.OK);
 				}
 				bStart.enabled = true;
+				bStop.enabled = false;
 			}
 
 			// Displays the result of the bandwidth measurement
@@ -145,13 +159,16 @@
 			// Receives all status events dispatched by the active NetStream
 			private function streamStatusHandler(e:NetStatusEvent):void {
 				write(e.info.code);
-				if (_nc.subscribeRequiredForLiveStreams)
-					return;
+
 				switch (e.info.code) {
-					case "NetStream.Play.Start":
+					case "NetStream.Buffer.Full":
+						bPlayPause.enabled = true;
+						bMute.enabled = true;
+						break;
+					case "NetStream.Play.PublishNotify":
 						subscribedHandler(null);
 						break;
-					case "NetStream.Play.Stop":
+					case "NetStream.Play.UnpublishNotify":
 						unsubscribedHandler(null);
 						break;
 				}
@@ -166,19 +183,22 @@
 			private function metadataHandler(e:OvpEvent):void {
 				for (var propName:String in e.data) {
 					write("metadata: " + propName + " = " + e.data[propName]);
-					if (propName == "width" && Number(e.data[propName]) != videoWindow.width) {
-						_videoHolder.width = _video.width = Number(e.data[propName]);
-					}
-					if (propName == "height" && Number(e.data[propName]) != videoWindow.height) {
-						_videoHolder.height = _video.height = Number(e.data[propName]);
-					}
 				}
-			}
 
+				_video.x = 0;
+				_video.y = 0;
+				_video.width = e.data.width;
+				uic.width = e.data.width + 6;
+				_video.height = e.data.height;
+				uic.height = e.data.height + 6;	
+				
+				videoContainer.width = e.data.width + 11;
+				videoContainer.height = e.data.height + 11;	
+			}
+			
 			// Handles a successfull subscription to a live stream
 			private function subscribedHandler(e:OvpEvent):void {
 				write("Successfully subscribed to the live stream");
-				bUnsubscribe.enabled = true;
 				bPlayPause.enabled = true;
 				bMute.enabled = true;
 			}
@@ -186,31 +206,18 @@
 			// Handles unsubscription from a live stream
 			private function unsubscribedHandler(e:OvpEvent):void {
 				write("Unubscribed from the live stream");
-				bUnsubscribe.enabled = false;
 				bPlayPause.enabled = false;
 				bMute.enabled = false;
-				bStart.enabled = true;
-				_ns.close();
-			}
-
-			// Notifies the user that the class is making another attempt to subscribe to a live stream
-			private function subscribeAttemptHandler(e:OvpEvent):void {
-				write("Attempting to subscribe to the live stream ...");
-			}
-
+				
+				// Note we don't want to call _ns.close() here
+				// because we may have gotten into this function
+				// due to an encoder crash. If we call _ns.close(),
+				// the stream will not automatically re-start when
+				// the encoder re-starts.
+			}			
+			
 			private function unsubscribe():void {
 				_ns.unsubscribe();
-			}
-
-			// Adds the video to the stage
-			private function addVideoToStage():void {
-				_videoHolder = new UIComponent();
-				_videoHolder.setActualSize(320, 240);
-				_video = new Video(320, 240);
-				_video.x = -160;
-				_video.y = -120;
-				_videoHolder.addChild(_video);
-				videoWindow.addChild(_videoHolder);
 			}
 
 			// Updates the time display
@@ -231,7 +238,7 @@
 						break;
 				}
 			}
-
+			
 			// Handles mute and unmute
 			private function doMute():void {
 				switch (bMute.label) {
@@ -254,9 +261,8 @@
 		]]>
 	</mx:Script>
 
-	<mx:Canvas x="10" y="4" width="740" height="358" backgroundAlpha="0.09" backgroundColor="#000000">
-
-		<mx:VBox x="10" y="3" height="336" width="370">
+	<mx:HBox id="container" paddingLeft="20" paddingTop="20">
+		<mx:VBox>
 			<mx:Form width="100%">
 				<mx:FormHeading label="Live Stream Details" textAlign="left"/>
 				<mx:FormItem label="Host name">
@@ -266,26 +272,31 @@
 					<mx:TextInput id="streamName" width="100%" text="{STREAMNAME}"/>
 				</mx:FormItem>
 				<mx:FormItem label="Stream Auth Params*">
-					<mx:TextInput id="streamAuth" width="100%" text="auth=yyyy&amp;aifp=zzzz"/>
+					<mx:TextInput id="streamAuth" width="100%" text="{AUTH_TOKENS}"/>
 				</mx:FormItem>
 				<mx:FormItem label="*Only for secure streams">
-					<mx:Button id="bStart" label="Start" click="startPlayback(hostName.text,streamName.text)"/>
+					<mx:HBox>
+						<mx:Button id="bStart" label="Start" click="startPlayback(hostName.text,streamName.text)"/>
+						<mx:Button id="bStop" label="Stop" click="stopPlayback()"/>				
+					</mx:HBox>
 				</mx:FormItem>
 			</mx:Form>
 
 			<mx:Label text="Status:"/>
-			<mx:TextArea width="100%" height="100%" id="output"/>
+			<mx:TextArea width="100%" height="100" id="output"/>
 		</mx:VBox>
 
-		<mx:VBox id="player" x="379" y="45" height="294" width="351" borderStyle="none" horizontalAlign="center" verticalAlign="top">
-			<mx:HBox width="320" height="240" id="videoWindow" borderStyle="none" verticalAlign="middle" horizontalAlign="center" backgroundColor="#000000"/>
-			<mx:ApplicationControlBar width="320" id="applicationcontrolbar1">
+		<mx:VBox id="player">
+			<mx:VBox id="videoContainer" paddingLeft="5" paddingTop="5" backgroundColor="#242424" 
+				width="{VIDEO_CONTAINER_DEFAULT_WIDTH}" height="{VIDEO_CONTAINER_DEFAULT_HEIGHT}" verticalScrollPolicy="off" 
+				horizontalScrollPolicy="off" horizontalAlign="center">
+				<mx:UIComponent id="uic" />
+			</mx:VBox>
+			<mx:ApplicationControlBar width="{VIDEO_DEFAULT_WIDTH}">
 				<mx:Button id="bPlayPause" enabled="false" label="PAUSE" click="doPlayPause()"/>
-				<mx:Button id="bUnsubscribe" enabled="false" label="UNSUBSCRIBE" click="unsubscribe()" visible="{_showUnsubscribeBtn}" includeInLayout="{_showUnsubscribeBtn}"/>
-				<mx:Button label="MUTE" width="58" enabled="false" id="bMute" click="doMute()"/>
-				<mx:Spacer width="100%"/>
+				<mx:Button label="MUTE" enabled="false" id="bMute" click="doMute()"/>
 				<mx:Text id="timeDisplay" text="00:00" fontWeight="bold"/>
 			</mx:ApplicationControlBar>
 		</mx:VBox>
-	</mx:Canvas>
+	</mx:HBox>
 </mx:Application>

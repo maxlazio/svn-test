@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 //
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -424,14 +424,14 @@
 				click="onClickRbStreaming(event)" useHandCursor="true" buttonMode="true" />			
 		</mx:HBox>
 		<mx:HBox id="pdlContainer">
-			<mx:Label text="URL: " styleName="label"/>
+			<mx:Label text="URL: "/>
 			<mx:ComboBox id="cbPdlUrl" dataProvider="{pdlUrlList}" editable="true"/>
 			<mx:Button id="loadPdlBtn" label="load" click="onClickLoadPDL(event)" useHandCursor="true" buttonMode="true" />
 		</mx:HBox>
 		<mx:HBox id="streamingContainer" visible="false" includeInLayout="false">
-			<mx:Label text="Host Name: " styleName="label" />
+			<mx:Label text="Host Name: " />
 			<mx:ComboBox id="cbHostName" dataProvider="{hostNameList}" editable="true" />
-			<mx:Label text="Stream Name: " styleName="label" />
+			<mx:Label text="Stream Name: "/>
 			<mx:ComboBox id="cbStreamName" dataProvider="{streamNameList}" editable="true" />
 			<mx:Button id="loadStreamBtn" label="load" click="onClickLoadStream(event)" useHandCursor="true" buttonMode="true" />
 		</mx:HBox>
@@ -459,7 +459,7 @@
 			</mx:VBox>
 			<mx:Spacer width="10" />
 			<mx:VBox backgroundColor="#333333" verticalGap="0">
-				<mx:Label text="The Current Cue Points (Time in seconds)" styleName="label" />
+				<mx:Label text="The Current Cue Points (Time in seconds)"  />
 				<mx:DataGrid id="gridCuePoints" dataProvider="{_cuePointsReadOnlyArray}" height="265" width="250">
 					<mx:columns>
 						<mx:DataGridColumn headerText="Time" dataField="time" textAlign="right" width="40" sortable="false" />

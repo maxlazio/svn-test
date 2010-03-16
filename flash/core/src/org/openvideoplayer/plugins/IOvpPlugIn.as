@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2009, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -54,9 +54,16 @@ package org.openvideoplayer.plugins
 		function get ovpPlugInDescription():String;
 
 		/**
-		 * Should return the version of the plug-in.
+		 * Should return the version of the plug-in. Note this is independent from the 
+		 * property below and allows a plug-in to version itself independent of the
+		 * OVP core version it is built against.
 		 */
 		function get ovpPlugInVersion():String;
+		
+		/**
+		 * Should return the OVP version the plug-in was built against.
+		 */
+		function get ovpPlugInCoreVersion():String;
 
 		/**
 		 * Tells the plug-in to turn on/off tracing.
