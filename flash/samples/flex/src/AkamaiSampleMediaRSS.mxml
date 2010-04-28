@@ -357,8 +357,15 @@ Akamai recommends breaking at the various UI and functional items into reusable 
    			private function playSelectedItem():void {
    				_playlistIndex = tileList.selectedIndex;
    				var item:ItemTO = ItemTO(tileList.selectedItem);
+   				
+   				// It's possible that a filter could clear the item list
+   				if (item == null)
+   				{
+   					return;
+   				}
+   				
    				var url:String;
-   				if (item && item.media.contentArray.length > 1) {
+   				if (item.media.contentArray.length > 1) {
    					// Item has group tag, so we need to figure out the correct file to play based
    					// on the bandwidth measurement. We assume the content items are specified
    					// in an unknown order and therefore we must sort them first.

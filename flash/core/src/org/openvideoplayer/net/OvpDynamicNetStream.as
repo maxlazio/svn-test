@@ -97,14 +97,15 @@ package org.openvideoplayer.net
 		protected var _useManualSwitchMode:Boolean;
 		protected var _switchUnderway:Boolean;
 		protected var _renderingIndex:int;
-		protected var _pendingTransitionsArray: Array;
+		protected var _pendingIndex:Number;
 		protected var _isMultibitrate: Boolean;
 		protected var _reason:String;
 		protected var _startingBuffer:Number;
-		
+		protected var _autoRateLimits:Boolean;
+		protected var _rateLimits:Number;
 		
 		private const RULE_CHECK_INTERVAL_IN_MS:Number = 500;
-		private const BUFFER_STABLE:Number = 5;
+		private const BUFFER_STABLE:Number = 8;
 		private const BUFFER_START:Number = 1;
 		
 		/**
@@ -122,7 +123,7 @@ package org.openvideoplayer.net
 			_metricsProvider.addEventListener(OvpEvent.DEBUG,handleDebugEvents);
 			_checkRulesTimer = new Timer(RULE_CHECK_INTERVAL_IN_MS);
 			_checkRulesTimer.addEventListener(TimerEvent.TIMER, checkRules);
-	
+			_autoRateLimits = true;
 			
 			// Start with automatic switching by default
 			_useManualSwitchMode = false;
@@ -131,6 +132,54 @@ package org.openvideoplayer.net
 			addRule(new BandwidthRule(_metricsProvider));
 			addRule(new FrameDropRule(_metricsProvider));
 			addRule(new BufferRule(_metricsProvider));
+		}
+		
+		/**
+		 * Closes the stream and halts the metrics provider.
+		 *
+		 * @see flash.net.NetStream#close()
+		 */
+		public override function close():void {
+			_progressTimer.stop();
+			_streamTimer.stop();
+			_metricsProvider.disable();
+			super.close();
+		}
+		
+		/**
+		 * AutoRateLimits enables automatic limiting of server-client connection
+		 * this can help improve speed of stream switches
+		 */
+		public function set autoRateLimits(b:Boolean):void{
+			_autoRateLimits = b;
+		}
+		
+		/**
+		 * AutoRateLimits enables automatic limiting of server-client connection
+		 * this can help improve speed of stream switches
+		 */
+		public function get autoRateLimits():Boolean{
+			return _autoRateLimits;
+		}
+		
+		/**
+		 * Manually set the server-client connection limit in kbps
+		 */
+		public function set rateLimits(limit:Number):void{
+			if (!_autoRateLimits){
+				_rateLimits = limit
+				setRateLimitsManual(_rateLimits);
+			}else{
+				debug("autoRateLimits must be disabled before manual setting");
+			}
+		}
+		
+		/** 
+		 * Returns the current server-cleint connection limit in kbps
+		 * This is not available bandwidth, but an imposed limit
+		 */
+		public function get rateLimits():Number{
+			return _rateLimits;
 		}
 		
 		/**
@@ -349,10 +398,8 @@ package org.openvideoplayer.net
         	
 			switch(info.code) {
 				case "NetStream.Play.TransitionComplete":
-					_renderingIndex  = _pendingTransitionsArray[0];
+					_renderingIndex  = _pendingIndex;
 					debug("Transition complete to index " + _renderingIndex + " at " + Math.round(_dsi.getRateAt(_renderingIndex )) +  " kbps");
-					_pendingTransitionsArray.shift();
-					
 					// dispatch the switching complete message
 					var data:Object = new Object();
 					data.renderingIndex = _renderingIndex;
@@ -387,7 +434,7 @@ package org.openvideoplayer.net
 			
 			this.bufferTime = isLive? _maxBufferLength: _startingBuffer;
 			_streamIndex = 0;
-			_pendingTransitionsArray = new Array();
+			_pendingIndex = NaN;
 					
 			if ((_dsi.startingIndex >= 0) && (_dsi.startingIndex < _dsi.streamCount)) {
 				_streamIndex = _dsi.startingIndex;
@@ -429,7 +476,9 @@ package org.openvideoplayer.net
 				_checkRulesTimer.start();
 			}
 			// Set the starting max data rate from the server to be 120% of the highest bitrate in the DSI
-			setRateLimits(_dsi.streamCount - 1);
+			if (_autoRateLimits) {
+				setRateLimits(_dsi.streamCount - 1);
+			}
 			debug("Starting with stream index " + _streamIndex + " at " + Math.round(_dsi.getRateAt(_streamIndex)) + " kbps");
 			switchToIndex(_streamIndex, true);
 			_metricsProvider.currentIndex = _streamIndex;
@@ -440,10 +489,21 @@ package org.openvideoplayer.net
 		 */
 		private function setRateLimits(index:int):void {
 			// We set the bandwidth in both directions to 140% of the bitrate level. 
-			debug("Set rate limit to " + Math.round(_dsi.getRateAt(index)*1.4) + " kbps");
-			var rate:Number = _dsi.getRateAt(index) * 1024/8;
-			_nc.call("setBandwidthLimit",null, rate * 1.40, rate * 1.40);
+			_rateLimits = _dsi.getRateAt(index) * 1.40;
+			debug("Set rate limit to " + Math.round(_rateLimits) + " kbps");
+			_nc.call("setBandwidthLimit", null, _rateLimits * 1024/8, _rateLimits * 1024/8);
 		}
+
+		/**
+		 * @private
+		 */
+		private function setRateLimitsManual(limit:Number):void {
+			// remember to use kpbs 
+			_rateLimits = limit
+			debug("Manually setting rate limit to " + _rateLimits + " kbps");
+			_nc.call("setBandwidthLimit",null, _rateLimits * 1024/8, _rateLimits * 1024/8);
+		}
+		
 		
 		/**
 		* This function is provided so that any class extending this class can modify the 
@@ -464,8 +524,9 @@ package org.openvideoplayer.net
 		/**
 		 * @private
 		 */
-		private function switchToIndex(targetIndex:uint,firstPlay:Boolean = false):void {
+		private function switchToIndex(targetIndex:uint, firstPlay:Boolean = false):void {
 			var nso:NetStreamPlayOptions = prepareNetStreamPlayOptions(targetIndex,firstPlay);
+			
 			// dispatch the switch requested event
 			var data:Object = new Object();
   		 	data.targetIndex = targetIndex;	
@@ -494,7 +555,7 @@ package org.openvideoplayer.net
 				_switchUnderway  = false;
 				_renderingIndex = targetIndex;
 				_streamIndex = targetIndex;
-				_pendingTransitionsArray.push(targetIndex);
+				_pendingIndex = targetIndex;
 				this.client.onPlayStatus({code:"NetStream.Play.TransitionComplete"})
 			} else {
 				_switchUnderway  = true;
@@ -544,9 +605,11 @@ package org.openvideoplayer.net
 					case "NetStream.Play.Transition":
 						_switchUnderway  = false;
 						_streamIndex = _dsi.indexFromName(e.info.details);
-						setRateLimits(_streamIndex);
+						if (autoRateLimits) {
+							setRateLimits(_streamIndex);
+						}
 						_metricsProvider.currentIndex = _streamIndex;
-						_pendingTransitionsArray.push(_streamIndex);
+						_pendingIndex = _streamIndex;
 						
 						// dispatch the switch acknowledged event
 		 				var data:Object = new Object;
@@ -559,9 +622,9 @@ package org.openvideoplayer.net
 					case "NetStream.Seek.Notify":
 						this.bufferTime = isLive? _maxBufferLength:_startingBuffer;
 						_switchUnderway  = false;
-						if (_pendingTransitionsArray.length > 0) {
-							_renderingIndex  = _pendingTransitionsArray[0];
-							_pendingTransitionsArray.shift();
+						if (!isNaN(_pendingIndex)) {
+							_renderingIndex  = _pendingIndex;
+							_pendingIndex = NaN;
 						}
 						
 					break;

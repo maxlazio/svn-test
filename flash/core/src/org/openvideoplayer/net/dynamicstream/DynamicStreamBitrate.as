@@ -71,7 +71,12 @@ package org.openvideoplayer.net.dynamicstream
 		 *Stores the number of allowed fails before lockout triggers
 		 */
 		private var _allowedFails:Number = 3; //default to 3
-        	
+		
+		/**
+		 * Enables a bitrate for switching, see the get enabled property below
+		 * for details.
+		 */
+		private var _enabled:Boolean = true;
         
         /**
          * Stores the number of seconds required to pass before the bitrate can
@@ -178,6 +183,27 @@ package org.openvideoplayer.net.dynamicstream
 		 */
 		public function incrementFailCount():void {
 			_failedCount++;
+		}
+		
+		/**
+		* Stores the enabled state of this bitrate. Enabled == true implies that the
+		* bitrate can be considered a valid destination for ISwitchingRules. Setting it to false
+		* will essentially filter it out of any later switching decisions. This property therefore
+		* allows for the dynamic filtering of bitrates within a dynamic streaming item.
+		*<p/>
+		* A note about the seemingly similar isAvailable() property. That property is only concerned
+		* with whether the lock limit has been reached for this bitrate. The name is being maintained for
+		* backwards compatibility. A bitrate can therefore have isAvilable = true and enabled  = false. This
+		* means is has not been locked out, but a switching rules has decided that it should not be considered
+		* as a viable target for a switch.
+		*/
+		public function get enabled():Boolean
+		{
+			return _enabled
+		}
+		public function set enabled(value:Boolean):void
+		{
+			_enabled = value;
 		}
     }
 }

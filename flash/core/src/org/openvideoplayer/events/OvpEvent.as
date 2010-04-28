@@ -336,7 +336,49 @@ package org.openvideoplayer.events
   		 * </ul>
   		 */
   		public static const DATA_MESSAGE:String = "datamessage";
-	 		
+
+
+		/**
+		 * Mapped over from HDEVENT
+		 **/
+		public static const NET_STATUS:String = "netstatus";
+		public static const STREAM_NOT_FOUND:String = "streamnotfound";
+		public static const IS_LIVE_STREAM:String = "islivestream";
+	 	public static const IS_PLAYING_LIVE:String = "isplayinglive";
+		public static const FAILURE:String = "failure";
+		public static const IS_BUFFERING:String = "isbuffering";
+		public static const SWITCH_START:String = "switchstart";
+	 	public static const RESUME:String = "resume";
+	 	public static const PAUSE:String = "pause";
+		public static const SEEK:String = "seek";
+		public static const METADATA:String = "metadata";
+		public static const SUCCESS:String = "success";
+	 	public static const REJECTED:String = "rejected";
+		public static const RENDITION_CHANGE:String = "renditionchange";
+		public static const RTT:String = "rtt";
+		public static const STREAM_NAME_CHANGE:String = "streamnamechange";
+		public static const STREAM_TYPE_CHANGE:String = "streamtypechange";
+		public static const FAIL_OVER_TO_RTMP:String = "failovertortmp";
+		public static const LOOP:String = "loop";
+		public static const PLAY:String = "play";
+		public static const CPU:String = "cpu";
+		public static const REBUFFER:String = "rebuffer";
+		public static const TAT:String = "tat";
+		public static const SESSION_ID:String = "sessionid";
+		public static const NETSESSION_CLIENT:String = "netsessionclient";
+		public static const NETSESSION_EULA:String = "netsessioneula";
+		public static const STREAM_START_TIME:String = "streamstarttime";
+		// Duplicated Events
+		//public static const DATA_MESSAGE:String = "datamessage";
+		//public static const PARSED:String = "parsed";
+		//public static const ERROR:String = "error";
+		//public static const TIMEOUT:String = "timeout";
+		//public static const DEBUG:String = "debug";
+		//public static const PROGRESS:String = "progress";
+		//public static const BANDWIDTH:String = "bandwidth";
+		//public static const COMPLETE:String = "complete";
+		//public static const SWITCH_COMPLETE:String = "switchcomplete";
+		// End Mapping
 	
 		private var _data:Object;
 		

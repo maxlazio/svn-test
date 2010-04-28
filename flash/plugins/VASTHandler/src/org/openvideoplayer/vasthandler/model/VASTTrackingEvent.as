@@ -31,6 +31,17 @@
 package org.openvideoplayer.vasthandler.model {
 
 	public class VASTTrackingEvent {
+		
+		public static const START:String = "start";
+		public static const FIRST_QUARTILE:String = "firstQuartile";
+		public static const MIDPOINT:String = "midpoint";
+		public static const THIRD_QUARTILE:String = "thirdQuartile";
+		public static const COMPLETE:String = "complete";
+		public static const MUTE:String = "mute";
+		public static const PAUSE:String = "pause";
+		public static const REPLAY:String = "replay";
+		public static const FULLSCREEN:String = "fullscreen";
+		public static const STOP:String = "stop";
 
 		/**
 		 * i.e., "start", "midpoint", "complete", etc.

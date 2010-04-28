@@ -40,8 +40,11 @@ package {
 	import org.openvideoplayer.plugins.OvpPlayerEvent;
 	import org.openvideoplayer.vasthandler.model.VASTAd;
 	import org.openvideoplayer.vasthandler.model.VASTMediaFile;
+	import org.openvideoplayer.vasthandler.model.VASTTrackingEvent;
+	import org.openvideoplayer.vasthandler.model.VASTUrl;
 	import org.openvideoplayer.vasthandler.model.VASTVideo;
 	import org.openvideoplayer.vasthandler.parser.VASTParser;
+	import org.openvideoplayer.vasthandler.utils.Beacon;
 	import org.openvideoplayer.version.OvpVersion;
 
 	public class VASTHandler extends Sprite implements IOvpPlugIn, IMASTPayloadHandler {
@@ -57,7 +60,7 @@ package {
 		private var _currentAdVolume:Number;
 
 		private const _PLUGIN_NAME_:String = "OVP VAST Handler";
-		private const _PLUGIN_VERSION_:String = "v.1.0.2";
+		private const _PLUGIN_VERSION_:String = "v.1.0.3";
 		private const _PLUGIN_DESC_:String = "The OVP VAST Handler knows how to load and play ads using the VAST IAB standard.";
 
 		/**
@@ -191,6 +194,15 @@ package {
 					_adPlayer.addEventListener(VPAIDEvent.AdVideoComplete, vpaidAdStoppedHandler);
 					_adPlayer.addEventListener(VPAIDEvent.AdError, vpaidAdStoppedHandler);
 					_adPlayer.addEventListener(VPAIDEvent.AdUserClose, vpaidAdStoppedHandler);
+					_adPlayer.addEventListener(VPAIDEvent.AdStarted, adTrackingHandler);
+					_adPlayer.addEventListener(VPAIDEvent.AdVideoFirstQuartile, adTrackingHandler);
+					_adPlayer.addEventListener(VPAIDEvent.AdVideoMidpoint, adTrackingHandler);
+					_adPlayer.addEventListener(VPAIDEvent.AdVideoThirdQuartile, adTrackingHandler);
+					_adPlayer.addEventListener(VPAIDEvent.AdVideoComplete, adTrackingHandler);
+					_adPlayer.addEventListener(VPAIDEvent.AdPaused, adTrackingHandler);
+					_adPlayer.addEventListener(VPAIDEvent.AdStopped, adTrackingHandler);
+					
+					
 
 					_adPlayer.initAd(_mastAdapter.contentWidth, _mastAdapter.contentHeight, "normal", 0, mediaFile.url, "");
 				}
@@ -321,6 +333,49 @@ package {
 			_hostPlayer.advertisingMode = false;
 		}
 
+		private function adTrackingHandler(e:VPAIDEvent):void {
+			switch (e.type)
+			{
+				case VPAIDEvent.AdStarted:
+					processTrackingEvent(VASTTrackingEvent.START);
+					break;
+				case VPAIDEvent.AdVideoFirstQuartile:
+					processTrackingEvent(VASTTrackingEvent.FIRST_QUARTILE);
+					break;
+				case VPAIDEvent.AdVideoMidpoint:
+					processTrackingEvent(VASTTrackingEvent.MIDPOINT);
+					break;
+				case VPAIDEvent.AdVideoThirdQuartile:
+					processTrackingEvent(VASTTrackingEvent.THIRD_QUARTILE);
+					break;
+				case VPAIDEvent.AdVideoComplete:
+					processTrackingEvent(VASTTrackingEvent.COMPLETE);
+					break;
+				case VPAIDEvent.AdPaused:
+					processTrackingEvent(VASTTrackingEvent.PAUSE);
+					break;
+				case VPAIDEvent.AdStopped:
+					processTrackingEvent(VASTTrackingEvent.STOP);
+					break;
+			}
+		}
+		
+		private function processTrackingEvent(eventName:String):void {
+			var vastAd:VASTAd = _vastParser.ads[0];
+
+			if (vastAd && vastAd.inlineAd && vastAd.inlineAd.trackingEvents) {
+				for each (var trackingEvent:VASTTrackingEvent in vastAd.inlineAd.trackingEvents) {
+					if (trackingEvent.event == eventName)
+					{
+						for each (var vastURL:VASTUrl in trackingEvent.urls) {
+							var beacon:Beacon = new Beacon(vastURL.url);
+							beacon.ping();
+						}
+					}
+				}
+			}			
+		}
+		
 		//-------------------------------------------------------------------
 		//
 		// MASTAdapterEvent Event Handlers

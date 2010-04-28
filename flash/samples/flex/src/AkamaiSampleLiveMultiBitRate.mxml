@@ -207,7 +207,7 @@
 				_ns.addEventListener(OvpEvent.NETSTREAM_CUEPOINT,cuepointHandler);	
 				_ns.addEventListener(OvpEvent.SUBSCRIBE_ATTEMPT, handleSubscribeAttempt);		
 				_ns.isLive = true;
-				_ns.maxBufferLength = 10;
+				_ns.maxBufferLength = 5;
 				_video.visible = false;
 				_video.attachNetStream(_ns);
 				write("Successfully connected to: " + _nc.netConnection.uri);

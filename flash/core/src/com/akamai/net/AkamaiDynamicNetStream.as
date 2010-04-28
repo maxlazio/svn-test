@@ -158,6 +158,7 @@ package com.akamai.net
 		 * @see org.openvideoplayer.net.dynamicstream.DynamicStreamItem
 		 */
 		public override function play(... arguments):void {
+			trace("at play " + arguments[0] + " nc=" + _akamaiConnection);
 			if (arguments[0] is String && !_isProgressive && arguments && arguments.length) {
 				// Add prefix if necessary
 				arguments[0] = addPrefix(arguments[0]);

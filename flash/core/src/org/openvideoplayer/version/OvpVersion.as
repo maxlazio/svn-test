@@ -35,7 +35,7 @@ package org.openvideoplayer.version
 	 */
 	public class OvpVersion
 	{
-		private static const VERSION:String = "2.1.3";
+		private static const VERSION:String = "2.1.4";
 		
 		/**
 		 * Returns the current version of the code
