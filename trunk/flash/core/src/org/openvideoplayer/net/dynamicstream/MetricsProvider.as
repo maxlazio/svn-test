@@ -72,13 +72,21 @@ package org.openvideoplayer.net.dynamicstream
 		private var _targetBufferTime:Number;
 		private var _enabled:Boolean;
 		private var _optimizeForLivebandwidthEstimate:Boolean;
-		
+		private var _framerateChecked:int;
+		private var _smoothStartup:Boolean;
+		private var _smoothStartupCap:Number;
+		private var _smoothStartupValue:Number;
+		private var _startupCount:int;
+		private var _smoothStartupSampleSize:int;
+		private var _avgBandwidthSampleSize:int;
+		private var _avgFramerateSampleSize:int;
+		private var _autoFramerateUpdate:Boolean;
 		private var _qualityRating:Number;
 		
 		private const DEFAULT_UPDATE_INTERVAL:Number = 100;
-		private const DEFAULT_AVG_BANDWIDTH_SAMPLE_SIZE:Number = 50;
+		private const DEFAULT_AVG_BANDWIDTH_SAMPLE_SIZE:int = 50;
 		private const DEFAULT_AVG_FRAMERATE_SAMPLE_SIZE:Number = 50;
-		
+		private const DEFAULT_SMOOTH_STARTUP_SAMPLE_SIZE:int = 10;
 		
 		/**
 		 * Constructor
@@ -86,28 +94,13 @@ package org.openvideoplayer.net.dynamicstream
 		 * Note that for correct operation of this class, the caller must set the dynamicStreamItem which
 		 * the monitored stream is playing each time a new item is played.
 		 * 
-		 * @param	netstream instance that it will monitor.
+		 * @param netstream instance that it will monitor.
 		 * @see #dynamicStreamItem()
 		 */
-		public function MetricsProvider(ns:NetStream)
-		{
+		public function MetricsProvider(ns:NetStream) {
 			super(null);
 			_ns = ns;
 			_ns.addEventListener(NetStatusEvent.NET_STATUS,netStatus);
-			initValues();
-			_so = SharedObject.getLocal("OVPMetricsProvider", "/", false);
-			if (_so.data.avgMaxBitrate != undefined) {
-				_avgMaxBitrate = _so.data.avgMaxBitrate;
-			}
-			_timer = new Timer(DEFAULT_UPDATE_INTERVAL);
-			_timer.addEventListener(TimerEvent.TIMER, update);
-		}
-		
-		
-		/**
-		 *@private
-		 */
-		private function initValues():void {
 			_frameDropRate = 0;
 			_reachedTargetBufferFull = false;
 			_lastFrameDropCounter = 0;
@@ -118,6 +111,23 @@ package org.openvideoplayer.net.dynamicstream
 			_avgDroppedFrameRateArray = new Array();
 			_enabled = true;
 			_targetBufferTime = 0;
+			_smoothStartup = true;
+			_smoothStartupValue = 0;
+			
+			_so = SharedObject.getLocal("OVPMetricsProvider", "/", false);
+
+			if (_so.data.avgMaxBitrate != undefined) {
+				_avgMaxBitrate = _so.data.avgMaxBitrate;
+			}
+
+			_timer = new Timer(DEFAULT_UPDATE_INTERVAL);
+			_timer.addEventListener(TimerEvent.TIMER, update);
+
+			_startupCount = 0;
+			_smoothStartupSampleSize = DEFAULT_SMOOTH_STARTUP_SAMPLE_SIZE;
+			_avgBandwidthSampleSize = DEFAULT_AVG_BANDWIDTH_SAMPLE_SIZE;
+			_avgFramerateSampleSize = DEFAULT_AVG_FRAMERATE_SAMPLE_SIZE;
+			_autoFramerateUpdate = true;
 		}
 		
 		/**
@@ -245,7 +255,6 @@ package org.openvideoplayer.net.dynamicstream
 			return _avgDroppedFrameRate
 		}
 		
-		
 		/**
 		 * Returns the last maximum bandwidth measurement, in kbps
 		 */
@@ -268,6 +277,85 @@ package org.openvideoplayer.net.dynamicstream
 		public function get info():NetStreamInfo {
 			return _ns.info;
 		}
+		
+		/**
+		 * The state of automatic framerate updates
+		 */
+		public function get autoFramerateUpdate():Boolean {
+			return _autoFramerateUpdate;
+		}
+
+		public function set autoFramerateUpdate(b:Boolean):void {
+			_autoFramerateUpdate = b;
+		}
+ 		
+ 		/**
+		 * The number of framerate samples that are used to calculate the average framerate
+		 */
+		public function get avgFramerateSampleSize():int {
+			return _avgFramerateSampleSize;
+		}
+
+		public function set avgFramerateSampleSize(i:int):void {
+			_avgFramerateSampleSize = i;
+		}
+
+		/**
+		 * The number of bandwidth samples that are used to calculate the average max bandwidth
+		 */
+		public function get avgBandwidthSampleSize():int {
+			return _avgBandwidthSampleSize;
+		}
+		
+		public function set avgBandwidthSampleSize(i:int):void {
+			_avgBandwidthSampleSize = i;
+		}
+
+		/**
+		 * smoothStartupCap is used to help control spikes in the startup bandwidth measurement
+		 * generally set it to ~ 1.5 times the highest available rendition.
+		 */
+		public function get smoothStartupCap():Number {
+			return _smoothStartupCap;
+		}
+
+		public function set smoothStartupCap(cap:Number):void {
+			_smoothStartupCap = cap;
+		}
+		
+		/**
+		 * The state of smoothStartup
+		 */
+		public function get smoothStartup():Boolean	{
+			return _smoothStartup;
+		}
+
+		public function set smoothStartup(b:Boolean):void {
+			_smoothStartup = b;
+		}
+		
+		/**
+		 * The current value of smoothStartup, this is the total bandwidth used in averaging
+		 */
+		public function get smoothStartupValue():Number {
+			return _smoothStartupValue;
+		}
+		
+		public function set smoothStartupValue(n:Number):void {
+			_smoothStartupValue = n;
+		}
+		
+		/**
+		 * The minimum number of samples to collect before starting the smoothStartup average
+		 */
+		public function get smoothStartupSampleSize():int {
+			return _smoothStartupSampleSize;
+		}
+		
+		public function set smoothStartupSampleSize(i:int):void	{
+			_smoothStartupSampleSize = i;
+		}
+		
 		/**
 		 * Enables this metrics engine.  The background processes will only resume on the next
 		 * netStream.Play.Start event.
@@ -312,54 +400,114 @@ package org.openvideoplayer.net.dynamicstream
 		}
 		
 		/**
-		 * @private
+		 * Updates the bandwidth (and possibly framerate) data used by the switching rules.
 		 */
-		private function update(e:TimerEvent):void {
+		protected function update(e:TimerEvent):void 
+		{
 			try {
 				// Average max bandwdith
-				 _lastMaxBitrate = _ns.info.maxBytesPerSecond * 8 / 1024;
-				_avgMaxBitrateArray.unshift(_lastMaxBitrate);
-				if (_avgMaxBitrateArray.length > DEFAULT_AVG_BANDWIDTH_SAMPLE_SIZE) {
-					_avgMaxBitrateArray.pop();
-				}
-				var totalMaxBitrate:Number = 0;
-				var peakMaxBitrate:Number = 0;
-				for (var b:uint=0;b<_avgMaxBitrateArray.length;b++) {
-					totalMaxBitrate += _avgMaxBitrateArray[b];
-					peakMaxBitrate = _avgMaxBitrateArray[b] > peakMaxBitrate ? _avgMaxBitrateArray[b]: peakMaxBitrate;
-				}
-				_avgMaxBitrate = _avgMaxBitrateArray.length < DEFAULT_AVG_BANDWIDTH_SAMPLE_SIZE ? 0:_optimizeForLivebandwidthEstimate ? peakMaxBitrate:totalMaxBitrate/_avgMaxBitrateArray.length;
-				_so.data.avgMaxBitrate = _avgMaxBitrate;
-				// Estimate max (true) framerate
-				_maxFrameRate = _ns.currentFPS > _maxFrameRate ? _ns.currentFPS:_maxFrameRate;
-				// Frame drop rate, per second, calculated over last second.
-				if (_timer.currentCount - _lastFrameDropCounter > 1000/_timer.delay) {
-					_frameDropRate = (_ns.info.droppedFrames - _lastFrameDropValue)/((_timer.currentCount - _lastFrameDropCounter)*_timer.delay/1000);
-					_lastFrameDropCounter = _timer.currentCount;
-					_lastFrameDropValue = _ns.info.droppedFrames;
-				}
-				_avgDroppedFrameRateArray.unshift(_frameDropRate);
-				if (_avgDroppedFrameRateArray.length > DEFAULT_AVG_FRAMERATE_SAMPLE_SIZE) {
-					_avgDroppedFrameRateArray.pop();
-				}
-				var totalDroppedFrameRate:Number = 0;
-				for (var f:uint=0;f<_avgDroppedFrameRateArray.length;f++) {
-					totalDroppedFrameRate +=_avgDroppedFrameRateArray[f];
-				}
-				
-				_avgDroppedFrameRate = _avgDroppedFrameRateArray.length < DEFAULT_AVG_FRAMERATE_SAMPLE_SIZE? 0:totalDroppedFrameRate/_avgDroppedFrameRateArray.length;
-				
-				}
+				var currentMaxBitrate:Number = info.maxBytesPerSecond * 8 / 1024;
+				// if the maxBytesPerSecond hasn't changed it usually indicates we are re-using stale data.
+				// if  the current measured bandwidth is 0 it is ignored.
+				//if (currentMaxBitrate != _lastMaxBitrate && currentMaxBitrate != 0){
+				if (currentMaxBitrate != 0){
+					
+					// smoothStartup allows a very quick and resonably safe bandwidth measurement to take place before the averaging array is full
+					// this measurement is restricted by the smoothStartupCap if set, but will be overridden by the standard bandwidth measurements
+					// once they have enough data.
+					if (_smoothStartup)
+					{
+						// startup bandwidth measuring, this is where bandwidth measurement fluctuations are most damaging.
+						_startupCount ++;
+						// if the smoothStartupCap hasn't been set we effectivly ignore it
+						if (!_smoothStartupCap){_smoothStartupCap = Number.MAX_VALUE;}
+						// if the current measurement is above the Cap we limit it's effect on the reported bandwidth to help control
+						// for spikes in the measured bandwidth.
+						if (currentMaxBitrate > _smoothStartupCap){currentMaxBitrate = _smoothStartupCap;}
+						// calculate the capped available bandwidth							
+						_smoothStartupValue += currentMaxBitrate;
+						_avgMaxBitrate = _startupCount >= _smoothStartupSampleSize ? _smoothStartupValue/_startupCount : 0;
+						// once the standard bandwidth measurement technique has sufficient data we can turn off smoothstart
+						if (_startupCount >= _avgBandwidthSampleSize){
+							_smoothStartup = false;
+						}
+					}
+					
+					// Standard bandwidth measurement technique 
+					_avgMaxBitrateArray.unshift(currentMaxBitrate);
+					
+					if (_avgMaxBitrateArray.length > _avgBandwidthSampleSize) {
+						_avgMaxBitrateArray.pop();
+					}
+					var totalMaxBitrate:Number = 0;
+					var peakMaxBitrate:Number = 0;
+					for (var b:uint=0;b<_avgMaxBitrateArray.length;b++) {
+						totalMaxBitrate += _avgMaxBitrateArray[b];
+						peakMaxBitrate = _avgMaxBitrateArray[b] > peakMaxBitrate ? _avgMaxBitrateArray[b]: peakMaxBitrate;
+					}
+					if (!_smoothStartup)
+					{
+						_avgMaxBitrate = _avgMaxBitrateArray.length < _avgBandwidthSampleSize ? 0:_optimizeForLivebandwidthEstimate ? peakMaxBitrate:totalMaxBitrate/_avgMaxBitrateArray.length;
+					
+					}
+					_so.data.avgMaxBitrate = _avgMaxBitrate;
+					
+					// if automatic framerate updates are not disabled update the framerate data now
+					if (_autoFramerateUpdate) { 
+						updateFramerate(); 
+					}
+ 				}
+ 				
+ 				_lastMaxBitrate = currentMaxBitrate;
+ 				
+ 			}
 			catch (e:Error) {
-				
+				debug("org.openvideoplayer.net.dynamicstream.MetricsProvider.update() eating this exception: id="+e.errorID+" "+e.message);
 			}
-			
 		}
 		
 		/**
-		 * @private
+		 * Because framerate is most important when the CPU is under a heavy load and this is also the time
+		 * that a timer can see dramaticly increased lag updateFramerate is made public so that rules can  
+		 * ensure that they have updated values on which to base their decisions.
 		 */
-		private function debug(msg:String):void {
+		public function updateFramerate():void
+		{
+			try {
+ 				// Estimate max (true) framerate
+ 				_maxFrameRate = _ns.currentFPS > _maxFrameRate ? _ns.currentFPS:_maxFrameRate;
+				
+				// because Timer delay can't be relied upon to be accurate under CPU load this is 
+				// probably a more accurate means of getting the delay
+				var currentTime:int = new Date().time;
+				var framerateDelay:int = currentTime - _framerateChecked;
+				_framerateChecked = currentTime;
+				
+ 				// Frame drop rate, per second, calculated over _avgFramerateSampleSize x 
+				if (framerateDelay > 0) {
+					_frameDropRate = (_ns.info.droppedFrames - _lastFrameDropValue)/framerateDelay;
+ 					_lastFrameDropValue = _ns.info.droppedFrames;
+ 					
+					_avgDroppedFrameRateArray.unshift(_frameDropRate);
+					if (_avgDroppedFrameRateArray.length > _avgFramerateSampleSize) {
+						_avgDroppedFrameRateArray.pop();
+					}
+					var totalDroppedFrameRate:Number = 0;
+					for (var f:uint=0;f<_avgDroppedFrameRateArray.length;f++) {
+						totalDroppedFrameRate +=_avgDroppedFrameRateArray[f];
+					}
+ 				}
+				_avgDroppedFrameRate = _avgDroppedFrameRateArray.length < _avgFramerateSampleSize? 0:totalDroppedFrameRate/_avgDroppedFrameRateArray.length;
+			} 
+			catch (e:Error) {
+				debug("org.openvideoplayer.net.dynamicstream.MetricsProvider.updateFramerate() eating this exception: id="+e.errorID+" "+e.message);
+ 			}
+ 		}
+
+		/**
+		 * Dispatches an OvpEvent.DEBUG event containing the message provided.
+		 */
+		protected function debug(msg:String):void {
 			dispatchEvent(new OvpEvent(OvpEvent.DEBUG,msg));
 		}
 	}

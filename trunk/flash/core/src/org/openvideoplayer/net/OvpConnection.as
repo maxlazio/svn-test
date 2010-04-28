@@ -853,19 +853,19 @@ package org.openvideoplayer.net
 			dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, info)); 
 		}
     	
-		/** Handles the case when the server rejects the connection
+		/** Handles the case when the server rejects the connection. Note that by default this function does nothing except
+		 * bubble up the NetStatusEvent. The reason is that many firewalls that block rtmp traffic will cause the class
+		 * to synthesize a REJECTED event. If the class abandoned all its attempts after receiving one REJECTED event, then it would 
+		 * never succeed in finding a port/protocl combination that the firewall may accept. The timeout function will eventually 
+		 * catch all the rejections if they are indeed valid. 
+		 * <p/>
+		 * If you are expecting custom data messages passed back in the REJECTED event (say your CDN is implementing geo-blocking
+		 * for example) then sub-class OvpConneciton and insert your own custom logic into this function. 
+		 * 
 		 * @private
 		 */
 		protected function handleRejectedOrInvalid(event:NetStatusEvent):void {
-			_timeOutTimer.stop();
-			_connectionTimer.stop();
-			for (var i:uint = 0; i<_aNC.length; i++) {
-				_aNC[i].close();
-				_aNC[i] = null;
-			}
-
 			dispatchEvent(event);
-			dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.CONNECTION_TIMEOUT))); 
     	}
 
 		/** Establish the progressive connection
@@ -912,6 +912,7 @@ package org.openvideoplayer.net
 			switch (event.info.code) {
 				case "NetConnection.Connect.InvalidApp":
 				case "NetConnection.Connect.Rejected":
+					handleRejectedOrInvalid(event) 
     				break;
 				case "NetConnection.Call.Failed":
 					if (event.info.description.indexOf("_checkbw") != -1) {

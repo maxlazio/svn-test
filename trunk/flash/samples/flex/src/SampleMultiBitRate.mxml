@@ -165,7 +165,6 @@
 				write("  Stream name: " + _smilMetafile.streamName);
 
 				// Establish the connection
-				trace("requested protocol set to " + _nc.requestedProtocol);
 				_nc.connect(_smilMetafile.hostName+"?p0=543&p1=666", "test param1", 99, "test param3"); 
 			}
 			

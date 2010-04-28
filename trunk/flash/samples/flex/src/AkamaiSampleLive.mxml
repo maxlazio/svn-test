@@ -88,7 +88,9 @@
 			
 			// Stops playback by closing the stream
 			private function stopPlayback():void {
-				_ns.close();
+				if (_ns != null) {
+					_ns.close();
+				}
 				bStop.enabled = false;
 				bPlayPause.enabled = false;
 				bMute.enabled = false;
