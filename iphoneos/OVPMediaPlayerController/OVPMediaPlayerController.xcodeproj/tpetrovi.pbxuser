@@ -1,0 +1,534 @@
+// !$*UTF8*$!
+{
+	0867D690FE84028FC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeSDKPreference = iphonesimulator3.1;
+		activeTarget = D2AAC07D0554694100DB518D /* OVPMediaPlayerController */;
+		addToTargets = (
+			D2AAC07D0554694100DB518D /* OVPMediaPlayerController */,
+		);
+		breakpoints = (
+			6311F851113DB397005504C9 /* OVPMediaPlayerController.m:193 */,
+		);
+		codeSenseManager = 6371E0FB10D6B67E002B6889 /* Code sense */;
+		perUserDictionary = {
+			"PBXConfiguration.PBXBreakpointsDataSource.v1:1CA1AED706398EBD00589147" = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXBreakpointsDataSource_BreakpointID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					259,
+					20,
+					159,
+					159,
+					89,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXBreakpointsDataSource_ActionID,
+					PBXBreakpointsDataSource_TypeID,
+					PBXBreakpointsDataSource_BreakpointID,
+					PBXBreakpointsDataSource_UseID,
+					PBXBreakpointsDataSource_LocationID,
+					PBXBreakpointsDataSource_ConditionID,
+					PBXBreakpointsDataSource_IgnoreCountID,
+					PBXBreakpointsDataSource_ContinueID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXBookmarksDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXBookmarksDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					200,
+					200,
+					513,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXBookmarksDataSource_LocationID,
+					PBXBookmarksDataSource_NameID,
+					PBXBookmarksDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					22,
+					300,
+					423,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXExecutablesDataSource_ActiveFlagID,
+					PBXExecutablesDataSource_NameID,
+					PBXExecutablesDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					703,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					663,
+					60,
+					20,
+					48,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 289355393;
+			PBXWorkspaceStateSaveDate = 289355393;
+		};
+		perUserProjectItems = {
+			6311F52711342F62005504C9 /* PBXTextBookmark */ = 6311F52711342F62005504C9 /* PBXTextBookmark */;
+			6311F6DA113BB14F005504C9 /* PBXTextBookmark */ = 6311F6DA113BB14F005504C9 /* PBXTextBookmark */;
+			6311F77F113C4634005504C9 /* PBXTextBookmark */ = 6311F77F113C4634005504C9 /* PBXTextBookmark */;
+			6311F787113C4634005504C9 /* PBXTextBookmark */ = 6311F787113C4634005504C9 /* PBXTextBookmark */;
+			6311F7B4113CA282005504C9 /* PBXTextBookmark */ = 6311F7B4113CA282005504C9 /* PBXTextBookmark */;
+			6311F853113DB412005504C9 /* PBXTextBookmark */ = 6311F853113DB412005504C9 /* PBXTextBookmark */;
+			6330C07C114787C3002F1948 /* PBXTextBookmark */ = 6330C07C114787C3002F1948 /* PBXTextBookmark */;
+			6330C07D114787C3002F1948 /* PBXTextBookmark */ = 6330C07D114787C3002F1948 /* PBXTextBookmark */;
+			6330C07E114787C3002F1948 /* PBXTextBookmark */ = 6330C07E114787C3002F1948 /* PBXTextBookmark */;
+			6330C07F114787C3002F1948 /* PBXTextBookmark */ = 6330C07F114787C3002F1948 /* PBXTextBookmark */;
+			634C1FA8113DF21E00A9A4B9 /* PBXTextBookmark */ = 634C1FA8113DF21E00A9A4B9 /* PBXTextBookmark */;
+			634C1FAA113DF21E00A9A4B9 /* PBXTextBookmark */ = 634C1FAA113DF21E00A9A4B9 /* PBXTextBookmark */;
+			634C1FB0113DF21E00A9A4B9 /* PBXTextBookmark */ = 634C1FB0113DF21E00A9A4B9 /* PBXTextBookmark */;
+			634C1FB2113DF21E00A9A4B9 /* PBXTextBookmark */ = 634C1FB2113DF21E00A9A4B9 /* PBXTextBookmark */;
+			63579A4A10F3EAFC0053AB9B /* PBXTextBookmark */ = 63579A4A10F3EAFC0053AB9B /* PBXTextBookmark */;
+			63579A5710F3EAFC0053AB9B /* PBXTextBookmark */ = 63579A5710F3EAFC0053AB9B /* PBXTextBookmark */;
+			63579D6610FBA5B30053AB9B /* PBXTextBookmark */ = 63579D6610FBA5B30053AB9B /* PBXTextBookmark */;
+			63579D6910FBA5B30053AB9B /* PBXTextBookmark */ = 63579D6910FBA5B30053AB9B /* PBXTextBookmark */;
+			6357AD3210FF21E70053AB9B /* PBXTextBookmark */ = 6357AD3210FF21E70053AB9B /* PBXTextBookmark */;
+			6371E18F10D6F69F002B6889 /* PBXTextBookmark */ = 6371E18F10D6F69F002B6889 /* PBXTextBookmark */;
+			6371E19510D6F6FF002B6889 /* PBXTextBookmark */ = 6371E19510D6F6FF002B6889 /* PBXTextBookmark */;
+			6371E35F10D75BDC002B6889 /* PBXTextBookmark */ = 6371E35F10D75BDC002B6889 /* PBXTextBookmark */;
+			6371E36510D75BDC002B6889 /* PBXTextBookmark */ = 6371E36510D75BDC002B6889 /* PBXTextBookmark */;
+		};
+		sourceControlManager = 6371E0FA10D6B67E002B6889 /* Source Control */;
+		userBuildSettings = {
+			OBJROOT = "$(SYMROOT)";
+			SYMROOT = /Users/tpetrovi/Library/SDKs/OVPMediaPlayerController/;
+		};
+	};
+	6311F52711342F62005504C9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 63579BE310F5659B0053AB9B /* OVPMediaPlayerController.h */;
+		name = "OVPMediaPlayerController.h: 18";
+		rLen = 0;
+		rLoc = 886;
+		rType = 0;
+		vrLen = 698;
+		vrLoc = 0;
+	};
+	6311F6DA113BB14F005504C9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 21";
+		rLen = 11;
+		rLoc = 1013;
+		rType = 0;
+		vrLen = 1654;
+		vrLoc = 74;
+	};
+	6311F77F113C4634005504C9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6311F780113C4634005504C9 /* MPMediaPlaylist.h */;
+		name = "MPMediaPlaylist.h: 45";
+		rLen = 0;
+		rLoc = 1719;
+		rType = 0;
+		vrLen = 2170;
+		vrLoc = 177;
+	};
+	6311F780113C4634005504C9 /* MPMediaPlaylist.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MPMediaPlaylist.h;
+		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MPMediaPlaylist.h;
+		sourceTree = "<absolute>";
+	};
+	6311F787113C4634005504C9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6311F788113C4634005504C9 /* MPMediaPlaylist.h */;
+		name = "MPMediaPlaylist.h: 45";
+		rLen = 0;
+		rLoc = 1719;
+		rType = 0;
+		vrLen = 2170;
+		vrLoc = 177;
+	};
+	6311F788113C4634005504C9 /* MPMediaPlaylist.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MPMediaPlaylist.h;
+		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MPMediaPlaylist.h;
+		sourceTree = "<absolute>";
+	};
+	6311F78A113C4634005504C9 /* MPMoviePlayerController.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MPMoviePlayerController.h;
+		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MPMoviePlayerController.h;
+		sourceTree = "<absolute>";
+	};
+	6311F7B4113CA282005504C9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6311F78A113C4634005504C9 /* MPMoviePlayerController.h */;
+		name = "MPMoviePlayerController.h: 25";
+		rLen = 0;
+		rLoc = 1052;
+		rType = 0;
+		vrLen = 1806;
+		vrLoc = 770;
+	};
+	6311F851113DB397005504C9 /* OVPMediaPlayerController.m:193 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		functionName = "+enqueueItem:isFirst:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 193;
+		modificationTime = 289272202.1142989;
+		state = 0;
+	};
+	6311F853113DB412005504C9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6311F78A113C4634005504C9 /* MPMoviePlayerController.h */;
+		name = "MPMoviePlayerController.h: 43";
+		rLen = 0;
+		rLoc = 1618;
+		rType = 0;
+		vrLen = 1822;
+		vrLoc = 969;
+	};
+	6330C07C114787C3002F1948 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 63579BE310F5659B0053AB9B /* OVPMediaPlayerController.h */;
+		name = "OVPMediaPlayerController.h: 22";
+		rLen = 0;
+		rLoc = 921;
+		rType = 0;
+		vrLen = 1579;
+		vrLoc = 1495;
+	};
+	6330C07D114787C3002F1948 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 182";
+		rLen = 0;
+		rLoc = 5904;
+		rType = 0;
+		vrLen = 1237;
+		vrLoc = 2049;
+	};
+	6330C07E114787C3002F1948 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 63579BE310F5659B0053AB9B /* OVPMediaPlayerController.h */;
+		name = "OVPMediaPlayerController.h: 22";
+		rLen = 0;
+		rLoc = 921;
+		rType = 0;
+		vrLen = 1579;
+		vrLoc = 1495;
+	};
+	6330C07F114787C3002F1948 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 21";
+		rLen = 0;
+		rLoc = 840;
+		rType = 0;
+		vrLen = 1708;
+		vrLoc = 388;
+	};
+	6339C16F10E28A4A0081D8CC /* OVPMediaPlayerController-AdHocDist */ = {
+		activeExec = 0;
+	};
+	634C1FA8113DF21E00A9A4B9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 634C1FA9113DF21E00A9A4B9 /* MediaTableViewController.m */;
+		name = "MediaTableViewController.m: 153";
+		rLen = 61;
+		rLoc = 5633;
+		rType = 0;
+		vrLen = 1867;
+		vrLoc = 5245;
+	};
+	634C1FA9113DF21E00A9A4B9 /* MediaTableViewController.m */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.objc;
+		name = MediaTableViewController.m;
+		path = /Users/tpetrovi/Documents/OVPDev/iPhone/preview/OVPPreview/Classes/MediaTableViewController.m;
+		sourceTree = "<absolute>";
+	};
+	634C1FAA113DF21E00A9A4B9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 634C1FAB113DF21E00A9A4B9 /* MediaOverlayView.m */;
+		name = "MediaOverlayView.m: 132";
+		rLen = 54;
+		rLoc = 3794;
+		rType = 0;
+		vrLen = 1136;
+		vrLoc = 2796;
+	};
+	634C1FAB113DF21E00A9A4B9 /* MediaOverlayView.m */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.objc;
+		name = MediaOverlayView.m;
+		path = /Users/tpetrovi/Documents/OVPDev/iPhone/preview/OVPPreview/Classes/MediaOverlayView.m;
+		sourceTree = "<absolute>";
+	};
+	634C1FB0113DF21E00A9A4B9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 634C1FB1113DF21E00A9A4B9 /* MediaTableViewController.m */;
+		name = "MediaTableViewController.m: 153";
+		rLen = 61;
+		rLoc = 5633;
+		rType = 0;
+		vrLen = 1867;
+		vrLoc = 5245;
+	};
+	634C1FB1113DF21E00A9A4B9 /* MediaTableViewController.m */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.objc;
+		name = MediaTableViewController.m;
+		path = /Users/tpetrovi/Documents/OVPDev/iPhone/preview/OVPPreview/Classes/MediaTableViewController.m;
+		sourceTree = "<absolute>";
+	};
+	634C1FB2113DF21E00A9A4B9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 634C1FB3113DF21E00A9A4B9 /* MediaOverlayView.m */;
+		name = "MediaOverlayView.m: 93";
+		rLen = 31;
+		rLoc = 2643;
+		rType = 0;
+		vrLen = 939;
+		vrLoc = 2068;
+	};
+	634C1FB3113DF21E00A9A4B9 /* MediaOverlayView.m */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.objc;
+		name = MediaOverlayView.m;
+		path = /Users/tpetrovi/Documents/OVPDev/iPhone/preview/OVPPreview/Classes/MediaOverlayView.m;
+		sourceTree = "<absolute>";
+	};
+	63579A4A10F3EAFC0053AB9B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 63579A4B10F3EAFC0053AB9B /* MPMusicPlayerController.h */;
+		name = "MPMusicPlayerController.h: 74";
+		rLen = 11;
+		rLoc = 2391;
+		rType = 0;
+		vrLen = 1367;
+		vrLoc = 1619;
+	};
+	63579A4B10F3EAFC0053AB9B /* MPMusicPlayerController.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MPMusicPlayerController.h;
+		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MPMusicPlayerController.h;
+		sourceTree = "<absolute>";
+	};
+	63579A5710F3EAFC0053AB9B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 63579A5810F3EAFC0053AB9B /* MPMusicPlayerController.h */;
+		name = "MPMusicPlayerController.h: 74";
+		rLen = 11;
+		rLoc = 2391;
+		rType = 0;
+		vrLen = 1367;
+		vrLoc = 1619;
+	};
+	63579A5810F3EAFC0053AB9B /* MPMusicPlayerController.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MPMusicPlayerController.h;
+		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MPMusicPlayerController.h;
+		sourceTree = "<absolute>";
+	};
+	63579A5A10F3EAFC0053AB9B /* MPMediaItem.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MPMediaItem.h;
+		path = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MPMediaItem.h;
+		sourceTree = "<absolute>";
+	};
+	63579BE310F5659B0053AB9B /* OVPMediaPlayerController.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = OVPMediaPlayerController.h;
+		path = /Users/tpetrovi/Documents/OVPDev/iPhone/preview/libraries/OVPMediaPlayerController/OVPMediaPlayerController.h;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {881, 1204}}";
+			sepNavSelRange = "{921, 0}";
+			sepNavVisRange = "{1495, 1579}";
+		};
+	};
+	63579D6610FBA5B30053AB9B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 63579A5A10F3EAFC0053AB9B /* MPMediaItem.h */;
+		name = "MPMediaItem.h: 30";
+		rLen = 0;
+		rLoc = 788;
+		rType = 0;
+		vrLen = 1132;
+		vrLoc = 0;
+	};
+	63579D6910FBA5B30053AB9B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 63579A5A10F3EAFC0053AB9B /* MPMediaItem.h */;
+		name = "MPMediaItem.h: 30";
+		rLen = 0;
+		rLoc = 788;
+		rType = 0;
+		vrLen = 1132;
+		vrLoc = 0;
+	};
+	63579FC610FC4D210053AB9B /* MPMediaItem.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MPMediaItem.h;
+		path = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MPMediaItem.h;
+		sourceTree = "<absolute>";
+	};
+	6357AD3210FF21E70053AB9B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 63579FC610FC4D210053AB9B /* MPMediaItem.h */;
+		name = "MPMediaItem.h: 42";
+		rLen = 0;
+		rLoc = 1131;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {881, 1246}}";
+			sepNavSelRange = "{921, 0}";
+			sepNavVisRange = "{0, 1468}";
+		};
+	};
+	6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {912, 5222}}";
+			sepNavSelRange = "{840, 0}";
+			sepNavVisRange = "{388, 1708}";
+			sepNavWindowFrame = "{{15, 119}, {1066, 754}}";
+		};
+	};
+	6371E0FA10D6B67E002B6889 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	6371E0FB10D6B67E002B6889 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	6371E18F10D6F69F002B6889 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = AA747D9E0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch */;
+		name = "OVPMediaPlayerController_Prefix.pch: 7";
+		rLen = 0;
+		rLoc = 187;
+		rType = 0;
+		vrLen = 188;
+		vrLoc = 0;
+	};
+	6371E19510D6F6FF002B6889 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = AA747D9E0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch */;
+		name = "OVPMediaPlayerController_Prefix.pch: 7";
+		rLen = 0;
+		rLoc = 187;
+		rType = 0;
+		vrLen = 188;
+		vrLoc = 0;
+	};
+	6371E35F10D75BDC002B6889 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E36010D75BDC002B6889 /* UIView.h */;
+		name = "UIView.h: 148";
+		rLen = 35;
+		rLoc = 6506;
+		rType = 0;
+		vrLen = 803;
+		vrLoc = 6219;
+	};
+	6371E36010D75BDC002B6889 /* UIView.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = UIView.h;
+		path = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIView.h;
+		sourceTree = "<absolute>";
+	};
+	6371E36510D75BDC002B6889 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E36610D75BDC002B6889 /* UIView.h */;
+		name = "UIView.h: 148";
+		rLen = 35;
+		rLoc = 6506;
+		rType = 0;
+		vrLen = 803;
+		vrLoc = 6219;
+	};
+	6371E36610D75BDC002B6889 /* UIView.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = UIView.h;
+		path = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIView.h;
+		sourceTree = "<absolute>";
+	};
+	AA747D9E0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {785, 287}}";
+			sepNavSelRange = "{187, 0}";
+			sepNavVisRange = "{0, 188}";
+			sepNavWindowFrame = "{{38, 98}, {1066, 754}}";
+		};
+	};
+	D2AAC07D0554694100DB518D /* OVPMediaPlayerController */ = {
+		activeExec = 0;
+	};
+}

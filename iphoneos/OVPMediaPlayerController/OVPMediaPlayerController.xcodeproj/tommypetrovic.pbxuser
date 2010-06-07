@@ -1,0 +1,442 @@
+// !$*UTF8*$!
+{
+	0867D690FE84028FC02AAC07 /* Project object */ = {
+		activeArchitecturePreference = armv6;
+		activeBuildConfigurationName = Debug;
+		activeSDKPreference = iphoneos3.2;
+		activeTarget = 4272B7641164DF9100AEF115 /* OVPMediaPlayerController-iPad */;
+		breakpoints = (
+			4272E80611BA47A3006D8C2E /* OVPMediaPlayerController.m:523 */,
+		);
+		codeSenseManager = 4271DFCB116326D000ABEB34 /* Code sense */;
+		perUserDictionary = {
+			"PBXConfiguration.PBXBreakpointsDataSource.v1:1CA1AED706398EBD00589147" = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXBreakpointsDataSource_BreakpointID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					242,
+					20,
+					233,
+					72,
+					53,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXBreakpointsDataSource_ActionID,
+					PBXBreakpointsDataSource_TypeID,
+					PBXBreakpointsDataSource_BreakpointID,
+					PBXBreakpointsDataSource_UseID,
+					PBXBreakpointsDataSource_LocationID,
+					PBXBreakpointsDataSource_ConditionID,
+					PBXBreakpointsDataSource_IgnoreCountID,
+					PBXBreakpointsDataSource_ContinueID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					22,
+					300,
+					521,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXExecutablesDataSource_ActiveFlagID,
+					PBXExecutablesDataSource_NameID,
+					PBXExecutablesDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Target_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					611,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFindDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFindDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					200,
+					625,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFindDataSource_MessageID,
+					PBXFindDataSource_LocationID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					727,
+					60,
+					20,
+					48,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 297537131;
+			PBXWorkspaceStateSaveDate = 297537131;
+		};
+		perUserProjectItems = {
+			4272E8F211BBEFF3006D8C2E = 4272E8F211BBEFF3006D8C2E /* PBXTextBookmark */;
+			4272E8F411BBEFF3006D8C2E = 4272E8F411BBEFF3006D8C2E /* PBXTextBookmark */;
+			4272E8F611BBEFF3006D8C2E = 4272E8F611BBEFF3006D8C2E /* PBXTextBookmark */;
+			4272E8F711BBEFF3006D8C2E = 4272E8F711BBEFF3006D8C2E /* PBXTextBookmark */;
+			4272E8F811BBEFF3006D8C2E = 4272E8F811BBEFF3006D8C2E /* PBXTextBookmark */;
+			4272E8FD11BBF2A6006D8C2E = 4272E8FD11BBF2A6006D8C2E /* PBXTextBookmark */;
+			4272E95811BC0DAF006D8C2E = 4272E95811BC0DAF006D8C2E /* PBXTextBookmark */;
+			4272E95911BC0DAF006D8C2E = 4272E95911BC0DAF006D8C2E /* PBXTextBookmark */;
+			4272E95A11BC0DAF006D8C2E = 4272E95A11BC0DAF006D8C2E /* PBXTextBookmark */;
+			4276C29811BC35B300A4F67E /* PBXTextBookmark */ = 4276C29811BC35B300A4F67E /* PBXTextBookmark */;
+			4276C29911BC35B300A4F67E /* PBXTextBookmark */ = 4276C29911BC35B300A4F67E /* PBXTextBookmark */;
+			4276C29A11BC35B300A4F67E /* PBXTextBookmark */ = 4276C29A11BC35B300A4F67E /* PBXTextBookmark */;
+			4276C29F11BC363100A4F67E /* PBXTextBookmark */ = 4276C29F11BC363100A4F67E /* PBXTextBookmark */;
+			4276C2A011BC363100A4F67E /* PBXTextBookmark */ = 4276C2A011BC363100A4F67E /* PBXTextBookmark */;
+			4276C2A111BC363100A4F67E /* PBXTextBookmark */ = 4276C2A111BC363100A4F67E /* PBXTextBookmark */;
+			4276C2AC11BC36E600A4F67E /* XCBuildMessageTextBookmark */ = 4276C2AC11BC36E600A4F67E /* XCBuildMessageTextBookmark */;
+			4276C2AD11BC36E600A4F67E /* PBXTextBookmark */ = 4276C2AD11BC36E600A4F67E /* PBXTextBookmark */;
+			4276C2AE11BC36E600A4F67E /* PBXTextBookmark */ = 4276C2AE11BC36E600A4F67E /* PBXTextBookmark */;
+			4276C2AF11BC36E600A4F67E /* PBXTextBookmark */ = 4276C2AF11BC36E600A4F67E /* PBXTextBookmark */;
+			4276C2B011BC36E800A4F67E /* PBXTextBookmark */ = 4276C2B011BC36E800A4F67E /* PBXTextBookmark */;
+			4276C2B111BC36E800A4F67E /* PBXTextBookmark */ = 4276C2B111BC36E800A4F67E /* PBXTextBookmark */;
+			42785D2611B9B7A300D3D2C7 = 42785D2611B9B7A300D3D2C7 /* PBXTextBookmark */;
+		};
+		sourceControlManager = 4271DFCA116326D000ABEB34 /* Source Control */;
+		userBuildSettings = {
+			SYMROOT = "~/Library/SDKs/OVPMediaPlayerController/";
+		};
+	};
+	4271DFCA116326D000ABEB34 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	4271DFCB116326D000ABEB34 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	4272B7641164DF9100AEF115 /* OVPMediaPlayerController-iPad */ = {
+		activeExec = 0;
+	};
+	4272E80611BA47A3006D8C2E /* OVPMediaPlayerController.m:523 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		countType = 0;
+		delayBeforeContinue = 0;
+		fileReference = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		functionName = "-initWithContentURL:";
+		hitCount = 0;
+		ignoreCount = 0;
+		lineNumber = 523;
+		modificationTime = 297420707.907596;
+		originalNumberOfMultipleMatches = 0;
+		state = 1;
+	};
+	4272E8F211BBEFF3006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 4272E8F311BBEFF3006D8C2E /* MediaPlayer.h */;
+		name = "MediaPlayer.h: 4";
+		rLen = 0;
+		rLoc = 39;
+		rType = 0;
+		vrLen = 559;
+		vrLoc = 0;
+	};
+	4272E8F311BBEFF3006D8C2E /* MediaPlayer.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MediaPlayer.h;
+		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MediaPlayer.h;
+		sourceTree = "<absolute>";
+	};
+	4272E8F411BBEFF3006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 4272E8F511BBEFF3006D8C2E /* MPMoviePlayerController.h */;
+		name = "MPMoviePlayerController.h: 43";
+		rLen = 0;
+		rLoc = 1658;
+		rType = 0;
+		vrLen = 2510;
+		vrLoc = 266;
+	};
+	4272E8F511BBEFF3006D8C2E /* MPMoviePlayerController.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = MPMoviePlayerController.h;
+		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.1.sdk/System/Library/Frameworks/MediaPlayer.framework/Headers/MPMoviePlayerController.h;
+		sourceTree = "<absolute>";
+	};
+	4272E8F611BBEFF3006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */;
+		name = "OVPMediaPlayerController.h: 104";
+		rLen = 0;
+		rLoc = 3541;
+		rType = 0;
+		vrLen = 1309;
+		vrLoc = 2378;
+	};
+	4272E8F711BBEFF3006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 71";
+		rLen = 0;
+		rLoc = 3083;
+		rType = 0;
+		vrLen = 1400;
+		vrLoc = 17870;
+	};
+	4272E8F811BBEFF3006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 599";
+		rLen = 20;
+		rLoc = 20841;
+		rType = 0;
+		vrLen = 1724;
+		vrLoc = 20573;
+	};
+	4272E8FD11BBF2A6006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 606";
+		rLen = 0;
+		rLoc = 21180;
+		rType = 0;
+		vrLen = 1393;
+		vrLoc = 20482;
+	};
+	4272E95811BC0DAF006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 602";
+		rLen = 0;
+		rLoc = 20890;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	4272E95911BC0DAF006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 607";
+		rLen = 0;
+		rLoc = 21149;
+		rType = 0;
+		vrLen = 707;
+		vrLoc = 20737;
+	};
+	4272E95A11BC0DAF006D8C2E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 293";
+		rLen = 0;
+		rLoc = 10967;
+		rType = 0;
+		vrLen = 751;
+		vrLoc = 10585;
+	};
+	4276C29811BC35B300A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 603";
+		rLen = 0;
+		rLoc = 20890;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	4276C29911BC35B300A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 593";
+		rLen = 0;
+		rLoc = 20695;
+		rType = 0;
+		vrLen = 571;
+		vrLoc = 20618;
+	};
+	4276C29A11BC35B300A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 513";
+		rLen = 0;
+		rLoc = 18537;
+		rType = 0;
+		vrLen = 688;
+		vrLoc = 18080;
+	};
+	4276C29F11BC363100A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 603";
+		rLen = 0;
+		rLoc = 20890;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	4276C2A011BC363100A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 593";
+		rLen = 0;
+		rLoc = 20695;
+		rType = 0;
+		vrLen = 571;
+		vrLoc = 20618;
+	};
+	4276C2A111BC363100A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 513";
+		rLen = 0;
+		rLoc = 18537;
+		rType = 0;
+		vrLen = 688;
+		vrLoc = 18080;
+	};
+	4276C2AC11BC36E600A4F67E /* XCBuildMessageTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "Expected ')' before 'OVPMediaError'";
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		fallbackIsa = XCBuildMessageTextBookmark;
+		rLen = 1;
+		rLoc = 67;
+		rType = 1;
+	};
+	4276C2AD11BC36E600A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 68";
+		rLen = 0;
+		rLoc = 2974;
+		rType = 0;
+		vrLen = 847;
+		vrLoc = 2753;
+	};
+	4276C2AE11BC36E600A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		rLen = 9;
+		rLoc = 3406;
+		rType = 0;
+	};
+	4276C2AF11BC36E600A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 79";
+		rLen = 0;
+		rLoc = 3315;
+		rType = 0;
+		vrLen = 1691;
+		vrLoc = 2163;
+	};
+	4276C2B011BC36E800A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 68";
+		rLen = 0;
+		rLoc = 2974;
+		rType = 0;
+		vrLen = 847;
+		vrLoc = 2753;
+	};
+	4276C2B111BC36E800A4F67E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */;
+		name = "OVPMediaPlayerController.m: 79";
+		rLen = 0;
+		rLoc = 3315;
+		rType = 0;
+		vrLen = 1691;
+		vrLoc = 2163;
+	};
+	42785D2611B9B7A300D3D2C7 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 42785D2711B9B7A300D3D2C7 /* NSURL.h */;
+		name = "NSURL.h: 17";
+		rLen = 5;
+		rLoc = 457;
+		rType = 0;
+		vrLen = 2202;
+		vrLoc = 0;
+	};
+	42785D2711B9B7A300D3D2C7 /* NSURL.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = NSURL.h;
+		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSURL.h;
+		sourceTree = "<absolute>";
+	};
+	4281BA95116E50260083CDB4 /* OVPMediaPlayerController-iPad-AdHocDist */ = {
+		activeExec = 0;
+	};
+	6339C16F10E28A4A0081D8CC /* OVPMediaPlayerController-AdHocDist */ = {
+		activeExec = 0;
+	};
+	6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1144, 1417}}";
+			sepNavSelRange = "{3687, 0}";
+			sepNavVisRange = "{297, 1617}";
+			sepNavWindowFrame = "{{3, 280}, {1215, 840}}";
+		};
+	};
+	6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1144, 9165}}";
+			sepNavSelRange = "{3315, 0}";
+			sepNavVisRange = "{2163, 1691}";
+			sepNavWindowFrame = "{{15, 333}, {1215, 840}}";
+		};
+	};
+	AA747D9E0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1608, 104}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 0}";
+		};
+	};
+	D2AAC07D0554694100DB518D /* OVPMediaPlayerController */ = {
+		activeExec = 0;
+	};
+}

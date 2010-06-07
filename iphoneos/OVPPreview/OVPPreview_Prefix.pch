@@ -1,0 +1,7 @@
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+#endif
+#ifdef _AKAMAI_MEDIA_ANALYTICS_ENABLED
+#undef _AKAMAI_MEDIA_ANALYTICS_ENABLED
+#endif
