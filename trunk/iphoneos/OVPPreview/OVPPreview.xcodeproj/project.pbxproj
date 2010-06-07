@@ -1,0 +1,1594 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4224E466117D1F33005696AA /* plylist.png in Resources */ = {isa = PBXBuildFile; fileRef = 4224E465117D1F33005696AA /* plylist.png */; };
+		4224E467117D1F33005696AA /* plylist.png in Resources */ = {isa = PBXBuildFile; fileRef = 4224E465117D1F33005696AA /* plylist.png */; };
+		4224E46C117D20F5005696AA /* setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 4224E46B117D20F5005696AA /* setup.png */; };
+		4224E46D117D20F5005696AA /* setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 4224E46B117D20F5005696AA /* setup.png */; };
+		4224E46F117D2296005696AA /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = 4224E46E117D2296005696AA /* info.png */; };
+		4224E470117D2296005696AA /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = 4224E46E117D2296005696AA /* info.png */; };
+		427432831163D6A8002DE8D9 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A97D0DB944F300CD87F1 /* Default.png */; };
+		427432841163D6A8002DE8D9 /* empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A9BF0DB947B200CD87F1 /* empty.png */; };
+		427432851163D6A8002DE8D9 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 848AEAA50DDDFBFF000847AD /* Icon.png */; };
+		427432871163D6A8002DE8D9 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30AE758D0FAB9CA2000B9BFA /* Localizable.strings */; };
+		427432891163D6A8002DE8D9 /* toolicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C05E10E230320081D8CC /* toolicon.png */; };
+		4274328A1163D6A8002DE8D9 /* dependenticon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C06010E230490081D8CC /* dependenticon.png */; };
+		4274328B1163D6A8002DE8D9 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2F110E2C2460081D8CC /* Entitlements.plist */; };
+		4274328C1163D6A8002DE8D9 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357962D10F2632A0053AB9B /* splash.png */; };
+		4274328D1163D6A8002DE8D9 /* rarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A52610FD36710053AB9B /* rarrow.png */; };
+		4274328E1163D6A8002DE8D9 /* done.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A62010FD4F830053AB9B /* done.png */; };
+		4274328F1163D6A8002DE8D9 /* akamlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6811163C23F002F1948 /* akamlogo.png */; };
+		427432901163D6A8002DE8D9 /* blckinfo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6A31163C5B6002F1948 /* blckinfo.png */; };
+		427432921163D6A8002DE8D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		427432931163D6A8002DE8D9 /* OVPPreviewAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* OVPPreviewAppDelegate.m */; };
+		427432941163D6A8002DE8D9 /* MediaTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* MediaTableViewController.m */; };
+		427432951163D6A8002DE8D9 /* MediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EF889D0DB9369300448949 /* MediaItem.m */; };
+		427432961163D6A8002DE8D9 /* MediaOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B85610DF72D00081D8CC /* MediaOverlayView.m */; };
+		427432971163D6A8002DE8D9 /* MoviePlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B86A10DF76190081D8CC /* MoviePlayerController.m */; };
+		427432981163D6A8002DE8D9 /* OVPPreviewSetupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339BFFC10E221250081D8CC /* OVPPreviewSetupController.m */; };
+		427432991163D6A8002DE8D9 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 63579C2310F668AD0053AB9B /* Logger.m */; };
+		427432AE1163D6AA002DE8D9 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427432A91163D6AA002DE8D9 /* MainWindow.xib */; };
+		427432AF1163D6AA002DE8D9 /* RootView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427432AB1163D6AA002DE8D9 /* RootView.xib */; };
+		427432B01163D6AA002DE8D9 /* OVPPreviewSetupController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427432AD1163D6AA002DE8D9 /* OVPPreviewSetupController.xib */; };
+		427532851165648A00BB00BA /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427532841165648A00BB00BA /* MediaPlayer.framework */; };
+		427532871165649800BB00BA /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427532861165649800BB00BA /* SystemConfiguration.framework */; };
+		42753289116564A100BB00BA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42753288116564A100BB00BA /* AVFoundation.framework */; };
+		4275328B116564AF00BB00BA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4275328A116564AF00BB00BA /* UIKit.framework */; };
+		4275328D116564BB00BB00BA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4275328C116564BB00BB00BA /* Foundation.framework */; };
+		4275328F116564C500BB00BA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4275328E116564C500BB00BA /* CoreGraphics.framework */; };
+		42753291116564CF00BB00BA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42753290116564CF00BB00BA /* CFNetwork.framework */; };
+		427BC34811B6FA9F001ED53D /* OVPPreview-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2CF10E2C1340081D8CC /* OVPPreview-Info.plist */; };
+		427BC34911B6FAA0001ED53D /* OVPPreview-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2CF10E2C1340081D8CC /* OVPPreview-Info.plist */; };
+		427BC34A11B6FAA1001ED53D /* OVPPreview-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2CF10E2C1340081D8CC /* OVPPreview-Info.plist */; };
+		427BC34B11B6FAA1001ED53D /* OVPPreview-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2CF10E2C1340081D8CC /* OVPPreview-Info.plist */; };
+		427BC34C11B6FAA2001ED53D /* OVPPreview-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2CF10E2C1340081D8CC /* OVPPreview-Info.plist */; };
+		4281BABD116E52620083CDB4 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A97D0DB944F300CD87F1 /* Default.png */; };
+		4281BABE116E52620083CDB4 /* empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A9BF0DB947B200CD87F1 /* empty.png */; };
+		4281BABF116E52620083CDB4 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 848AEAA50DDDFBFF000847AD /* Icon.png */; };
+		4281BAC0116E52620083CDB4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30AE758D0FAB9CA2000B9BFA /* Localizable.strings */; };
+		4281BAC1116E52620083CDB4 /* toolicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C05E10E230320081D8CC /* toolicon.png */; };
+		4281BAC2116E52620083CDB4 /* dependenticon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C06010E230490081D8CC /* dependenticon.png */; };
+		4281BAC3116E52620083CDB4 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2F110E2C2460081D8CC /* Entitlements.plist */; };
+		4281BAC4116E52620083CDB4 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357962D10F2632A0053AB9B /* splash.png */; };
+		4281BAC5116E52620083CDB4 /* rarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A52610FD36710053AB9B /* rarrow.png */; };
+		4281BAC6116E52620083CDB4 /* done.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A62010FD4F830053AB9B /* done.png */; };
+		4281BAC7116E52620083CDB4 /* akamlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6811163C23F002F1948 /* akamlogo.png */; };
+		4281BAC8116E52620083CDB4 /* blckinfo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6A31163C5B6002F1948 /* blckinfo.png */; };
+		4281BAC9116E52620083CDB4 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427432A91163D6AA002DE8D9 /* MainWindow.xib */; };
+		4281BACA116E52620083CDB4 /* RootView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427432AB1163D6AA002DE8D9 /* RootView.xib */; };
+		4281BACB116E52620083CDB4 /* OVPPreviewSetupController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 427432AD1163D6AA002DE8D9 /* OVPPreviewSetupController.xib */; };
+		4281BAD0116E52620083CDB4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		4281BAD1116E52620083CDB4 /* OVPPreviewAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* OVPPreviewAppDelegate.m */; };
+		4281BAD2116E52620083CDB4 /* MediaTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* MediaTableViewController.m */; };
+		4281BAD3116E52620083CDB4 /* MediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EF889D0DB9369300448949 /* MediaItem.m */; };
+		4281BAD4116E52620083CDB4 /* MediaOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B85610DF72D00081D8CC /* MediaOverlayView.m */; };
+		4281BAD5116E52620083CDB4 /* MoviePlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B86A10DF76190081D8CC /* MoviePlayerController.m */; };
+		4281BAD6116E52620083CDB4 /* OVPPreviewSetupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339BFFC10E221250081D8CC /* OVPPreviewSetupController.m */; };
+		4281BAD7116E52620083CDB4 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 63579C2310F668AD0053AB9B /* Logger.m */; };
+		4281BAD9116E52620083CDB4 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427532841165648A00BB00BA /* MediaPlayer.framework */; };
+		4281BADA116E52620083CDB4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427532861165649800BB00BA /* SystemConfiguration.framework */; };
+		4281BADB116E52620083CDB4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42753288116564A100BB00BA /* AVFoundation.framework */; };
+		4281BADC116E52620083CDB4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4275328A116564AF00BB00BA /* UIKit.framework */; };
+		4281BADD116E52620083CDB4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4275328C116564BB00BB00BA /* Foundation.framework */; };
+		4281BADE116E52620083CDB4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4275328E116564C500BB00BA /* CoreGraphics.framework */; };
+		4281BADF116E52620083CDB4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42753290116564CF00BB00BA /* CFNetwork.framework */; };
+		42C3B36E1190FE060097959C /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
+		42C3B36F1190FE060097959C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A97D0DB944F300CD87F1 /* Default.png */; };
+		42C3B3701190FE060097959C /* empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A9BF0DB947B200CD87F1 /* empty.png */; };
+		42C3B3711190FE060097959C /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 848AEAA50DDDFBFF000847AD /* Icon.png */; };
+		42C3B3721190FE060097959C /* RootView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 302EC8A70F9940BA00C3EF5A /* RootView.xib */; };
+		42C3B3731190FE060097959C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30AE758D0FAB9CA2000B9BFA /* Localizable.strings */; };
+		42C3B3741190FE060097959C /* OVPPreviewSetupController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6339BFFD10E221250081D8CC /* OVPPreviewSetupController.xib */; };
+		42C3B3751190FE060097959C /* toolicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C05E10E230320081D8CC /* toolicon.png */; };
+		42C3B3761190FE060097959C /* dependenticon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C06010E230490081D8CC /* dependenticon.png */; };
+		42C3B3771190FE060097959C /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2F110E2C2460081D8CC /* Entitlements.plist */; };
+		42C3B3781190FE060097959C /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357962D10F2632A0053AB9B /* splash.png */; };
+		42C3B3791190FE060097959C /* rarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A52610FD36710053AB9B /* rarrow.png */; };
+		42C3B37A1190FE060097959C /* done.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A62010FD4F830053AB9B /* done.png */; };
+		42C3B37B1190FE060097959C /* akamlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6811163C23F002F1948 /* akamlogo.png */; };
+		42C3B37C1190FE060097959C /* blckinfo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6A31163C5B6002F1948 /* blckinfo.png */; };
+		42C3B37E1190FE060097959C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		42C3B37F1190FE060097959C /* OVPPreviewAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* OVPPreviewAppDelegate.m */; };
+		42C3B3801190FE060097959C /* MediaTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* MediaTableViewController.m */; };
+		42C3B3811190FE060097959C /* MediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EF889D0DB9369300448949 /* MediaItem.m */; };
+		42C3B3821190FE060097959C /* MediaOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B85610DF72D00081D8CC /* MediaOverlayView.m */; };
+		42C3B3831190FE060097959C /* MoviePlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B86A10DF76190081D8CC /* MoviePlayerController.m */; };
+		42C3B3841190FE060097959C /* OVPPreviewSetupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339BFFC10E221250081D8CC /* OVPPreviewSetupController.m */; };
+		42C3B3851190FE060097959C /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 63579C2310F668AD0053AB9B /* Logger.m */; };
+		42C3B3871190FE060097959C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61410DC51910081D8CC /* CFNetwork.framework */; };
+		42C3B3881190FE060097959C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61610DC51980081D8CC /* CoreGraphics.framework */; };
+		42C3B3891190FE060097959C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61810DC51A50081D8CC /* Foundation.framework */; };
+		42C3B38A1190FE060097959C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61A10DC51B00081D8CC /* UIKit.framework */; };
+		42C3B38B1190FE060097959C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B88F10DF838B0081D8CC /* MediaPlayer.framework */; };
+		42C3B38C1190FE060097959C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B89510DF83A10081D8CC /* AVFoundation.framework */; };
+		42C3B38D1190FE060097959C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B98B10DF8CDA0081D8CC /* SystemConfiguration.framework */; };
+		6330C6821163C23F002F1948 /* akamlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6811163C23F002F1948 /* akamlogo.png */; };
+		6330C6831163C23F002F1948 /* akamlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6811163C23F002F1948 /* akamlogo.png */; };
+		6330C6A41163C5B6002F1948 /* blckinfo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6A31163C5B6002F1948 /* blckinfo.png */; };
+		6330C6A51163C5B6002F1948 /* blckinfo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6330C6A31163C5B6002F1948 /* blckinfo.png */; };
+		6339B61510DC51910081D8CC /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61410DC51910081D8CC /* CFNetwork.framework */; };
+		6339B61710DC51980081D8CC /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61610DC51980081D8CC /* CoreGraphics.framework */; };
+		6339B61910DC51A50081D8CC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61810DC51A50081D8CC /* Foundation.framework */; };
+		6339B61B10DC51B00081D8CC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61A10DC51B00081D8CC /* UIKit.framework */; };
+		6339B61C10DC520A0081D8CC /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
+		6339B61D10DC520A0081D8CC /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A97D0DB944F300CD87F1 /* Default.png */; };
+		6339B62110DC520A0081D8CC /* empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A9BF0DB947B200CD87F1 /* empty.png */; };
+		6339B62210DC520A0081D8CC /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 848AEAA50DDDFBFF000847AD /* Icon.png */; };
+		6339B62310DC520A0081D8CC /* RootView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 302EC8A70F9940BA00C3EF5A /* RootView.xib */; };
+		6339B62410DC520A0081D8CC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30AE758D0FAB9CA2000B9BFA /* Localizable.strings */; };
+		6339B62510DC52150081D8CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		6339B62610DC52150081D8CC /* OVPPreviewAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* OVPPreviewAppDelegate.m */; };
+		6339B62710DC52150081D8CC /* MediaTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* MediaTableViewController.m */; };
+		6339B62810DC52150081D8CC /* MediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EF889D0DB9369300448949 /* MediaItem.m */; };
+		6339B85710DF72D00081D8CC /* MediaOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B85610DF72D00081D8CC /* MediaOverlayView.m */; };
+		6339B86B10DF76190081D8CC /* MoviePlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B86A10DF76190081D8CC /* MoviePlayerController.m */; };
+		6339B89010DF838B0081D8CC /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B88F10DF838B0081D8CC /* MediaPlayer.framework */; };
+		6339B89610DF83A10081D8CC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B89510DF83A10081D8CC /* AVFoundation.framework */; };
+		6339B98C10DF8CDA0081D8CC /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B98B10DF8CDA0081D8CC /* SystemConfiguration.framework */; };
+		6339BFFE10E221250081D8CC /* OVPPreviewSetupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339BFFC10E221250081D8CC /* OVPPreviewSetupController.m */; };
+		6339BFFF10E221250081D8CC /* OVPPreviewSetupController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6339BFFD10E221250081D8CC /* OVPPreviewSetupController.xib */; };
+		6339C05F10E230320081D8CC /* toolicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C05E10E230320081D8CC /* toolicon.png */; };
+		6339C06110E230490081D8CC /* dependenticon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C06010E230490081D8CC /* dependenticon.png */; };
+		6339C2AE10E2C1340081D8CC /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
+		6339C2AF10E2C1340081D8CC /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A97D0DB944F300CD87F1 /* Default.png */; };
+		6339C2B310E2C1340081D8CC /* empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 8480A9BF0DB947B200CD87F1 /* empty.png */; };
+		6339C2B410E2C1340081D8CC /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 848AEAA50DDDFBFF000847AD /* Icon.png */; };
+		6339C2B510E2C1340081D8CC /* RootView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 302EC8A70F9940BA00C3EF5A /* RootView.xib */; };
+		6339C2B610E2C1340081D8CC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30AE758D0FAB9CA2000B9BFA /* Localizable.strings */; };
+		6339C2B710E2C1340081D8CC /* OVPPreviewSetupController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6339BFFD10E221250081D8CC /* OVPPreviewSetupController.xib */; };
+		6339C2B810E2C1340081D8CC /* toolicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C05E10E230320081D8CC /* toolicon.png */; };
+		6339C2B910E2C1340081D8CC /* dependenticon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6339C06010E230490081D8CC /* dependenticon.png */; };
+		6339C2BB10E2C1340081D8CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		6339C2BC10E2C1340081D8CC /* OVPPreviewAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* OVPPreviewAppDelegate.m */; };
+		6339C2BD10E2C1340081D8CC /* MediaTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* MediaTableViewController.m */; };
+		6339C2BE10E2C1340081D8CC /* MediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EF889D0DB9369300448949 /* MediaItem.m */; };
+		6339C2BF10E2C1340081D8CC /* MediaOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B85610DF72D00081D8CC /* MediaOverlayView.m */; };
+		6339C2C010E2C1340081D8CC /* MoviePlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339B86A10DF76190081D8CC /* MoviePlayerController.m */; };
+		6339C2C110E2C1340081D8CC /* OVPPreviewSetupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339BFFC10E221250081D8CC /* OVPPreviewSetupController.m */; };
+		6339C2C310E2C1340081D8CC /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61410DC51910081D8CC /* CFNetwork.framework */; };
+		6339C2C410E2C1340081D8CC /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61610DC51980081D8CC /* CoreGraphics.framework */; };
+		6339C2C510E2C1340081D8CC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61810DC51A50081D8CC /* Foundation.framework */; };
+		6339C2C610E2C1340081D8CC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B61A10DC51B00081D8CC /* UIKit.framework */; };
+		6339C2C710E2C1340081D8CC /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B88F10DF838B0081D8CC /* MediaPlayer.framework */; };
+		6339C2C810E2C1340081D8CC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B89510DF83A10081D8CC /* AVFoundation.framework */; };
+		6339C2C910E2C1340081D8CC /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6339B98B10DF8CDA0081D8CC /* SystemConfiguration.framework */; };
+		6339C2F210E2C2460081D8CC /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2F110E2C2460081D8CC /* Entitlements.plist */; };
+		6339C2F310E2C2460081D8CC /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6339C2F110E2C2460081D8CC /* Entitlements.plist */; };
+		6357962E10F2632A0053AB9B /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357962D10F2632A0053AB9B /* splash.png */; };
+		6357962F10F2632A0053AB9B /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357962D10F2632A0053AB9B /* splash.png */; };
+		63579C2410F668AD0053AB9B /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 63579C2310F668AD0053AB9B /* Logger.m */; };
+		63579C2510F668AD0053AB9B /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = 63579C2310F668AD0053AB9B /* Logger.m */; };
+		6357A52710FD36710053AB9B /* rarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A52610FD36710053AB9B /* rarrow.png */; };
+		6357A52810FD36710053AB9B /* rarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A52610FD36710053AB9B /* rarrow.png */; };
+		6357A62110FD4F830053AB9B /* done.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A62010FD4F830053AB9B /* done.png */; };
+		6357A62210FD4F830053AB9B /* done.png in Resources */ = {isa = PBXBuildFile; fileRef = 6357A62010FD4F830053AB9B /* done.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D3623240D0F684500981E51 /* OVPPreviewAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVPPreviewAppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* OVPPreviewAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OVPPreviewAppDelegate.m; sourceTree = "<group>"; };
+		28A0AAE50D9B0CCF005BE974 /* OVPPreview_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVPPreview_Prefix.pch; sourceTree = "<group>"; };
+		28AD735F0D9D9599002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		28C286DF0D94DF7D0034E888 /* MediaTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaTableViewController.h; sourceTree = "<group>"; };
+		28C286E00D94DF7D0034E888 /* MediaTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaTableViewController.m; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		302EC8A70F9940BA00C3EF5A /* RootView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = RootView.xib; path = en.lproj/RootView.xib; sourceTree = "<group>"; };
+		30AE758E0FAB9CA2000B9BFA /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4224E465117D1F33005696AA /* plylist.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = plylist.png; path = "Resources-iPad/Images/plylist.png"; sourceTree = "<group>"; };
+		4224E46B117D20F5005696AA /* setup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setup.png; path = "Resources-iPad/Images/setup.png"; sourceTree = "<group>"; };
+		4224E46E117D2296005696AA /* info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = info.png; path = "Resources-iPad/Images/info.png"; sourceTree = "<group>"; };
+		427432AA1163D6AA002DE8D9 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = "Resources-iPad/en.lproj/MainWindow.xib"; sourceTree = "<group>"; };
+		427432AC1163D6AA002DE8D9 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = "Resources-iPad/en.lproj/RootView.xib"; sourceTree = "<group>"; };
+		427432AD1163D6AA002DE8D9 /* OVPPreviewSetupController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = OVPPreviewSetupController.xib; path = "Resources-iPad/Classes/OVPPreviewSetupController.xib"; sourceTree = "<group>"; };
+		427532331165626B00BB00BA /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		427532841165648A00BB00BA /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		427532861165649800BB00BA /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		42753288116564A100BB00BA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		4275328A116564AF00BB00BA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		4275328C116564BB00BB00BA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		4275328E116564C500BB00BA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		42753290116564CF00BB00BA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		4276A9411177D92A00F21A21 /* OVPPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OVPPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4276A9431177D92A00F21A21 /* OVPPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OVPPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4276A9451177D92A00F21A21 /* OVPPreview-iPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OVPPreview-iPad.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4276A9471177D92B00F21A21 /* OVPPreview-iPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OVPPreview-iPad.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		42C3B3931190FE060097959C /* OVPPreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OVPPreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6330C6811163C23F002F1948 /* akamlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = akamlogo.png; sourceTree = "<group>"; };
+		6330C6A31163C5B6002F1948 /* blckinfo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blckinfo.png; sourceTree = "<group>"; };
+		6339B61410DC51910081D8CC /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		6339B61610DC51980081D8CC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		6339B61810DC51A50081D8CC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		6339B61A10DC51B00081D8CC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		6339B85510DF72D00081D8CC /* MediaOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaOverlayView.h; sourceTree = "<group>"; };
+		6339B85610DF72D00081D8CC /* MediaOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaOverlayView.m; sourceTree = "<group>"; };
+		6339B86910DF76190081D8CC /* MoviePlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoviePlayerController.h; sourceTree = "<group>"; };
+		6339B86A10DF76190081D8CC /* MoviePlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoviePlayerController.m; sourceTree = "<group>"; };
+		6339B88F10DF838B0081D8CC /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		6339B89510DF83A10081D8CC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		6339B98B10DF8CDA0081D8CC /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		6339BFFB10E221250081D8CC /* OVPPreviewSetupController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVPPreviewSetupController.h; sourceTree = "<group>"; };
+		6339BFFC10E221250081D8CC /* OVPPreviewSetupController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OVPPreviewSetupController.m; sourceTree = "<group>"; };
+		6339BFFD10E221250081D8CC /* OVPPreviewSetupController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = OVPPreviewSetupController.xib; path = Classes/OVPPreviewSetupController.xib; sourceTree = "<group>"; };
+		6339C05E10E230320081D8CC /* toolicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = toolicon.png; sourceTree = "<group>"; };
+		6339C06010E230490081D8CC /* dependenticon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dependenticon.png; sourceTree = "<group>"; };
+		6339C2CF10E2C1340081D8CC /* OVPPreview-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OVPPreview-Info.plist"; sourceTree = "<group>"; };
+		6339C2F110E2C2460081D8CC /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		6339C71210EBDC450081D8CC /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
+		6357962D10F2632A0053AB9B /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash.png; sourceTree = "<group>"; };
+		63579C2210F668AD0053AB9B /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
+		63579C2310F668AD0053AB9B /* Logger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Logger.m; sourceTree = "<group>"; };
+		6357A52610FD36710053AB9B /* rarrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rarrow.png; sourceTree = "<group>"; };
+		6357A62010FD4F830053AB9B /* done.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = done.png; sourceTree = "<group>"; };
+		8480A97D0DB944F300CD87F1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		8480A9BF0DB947B200CD87F1 /* empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = empty.png; sourceTree = "<group>"; };
+		848AEAA50DDDFBFF000847AD /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		84EF889C0DB9369300448949 /* MediaItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaItem.h; sourceTree = "<group>"; };
+		84EF889D0DB9369300448949 /* MediaItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaItem.m; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4274329A1163D6A8002DE8D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				427532851165648A00BB00BA /* MediaPlayer.framework in Frameworks */,
+				427532871165649800BB00BA /* SystemConfiguration.framework in Frameworks */,
+				42753289116564A100BB00BA /* AVFoundation.framework in Frameworks */,
+				4275328B116564AF00BB00BA /* UIKit.framework in Frameworks */,
+				4275328D116564BB00BB00BA /* Foundation.framework in Frameworks */,
+				4275328F116564C500BB00BA /* CoreGraphics.framework in Frameworks */,
+				42753291116564CF00BB00BA /* CFNetwork.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4281BAD8116E52620083CDB4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4281BAD9116E52620083CDB4 /* MediaPlayer.framework in Frameworks */,
+				4281BADA116E52620083CDB4 /* SystemConfiguration.framework in Frameworks */,
+				4281BADB116E52620083CDB4 /* AVFoundation.framework in Frameworks */,
+				4281BADC116E52620083CDB4 /* UIKit.framework in Frameworks */,
+				4281BADD116E52620083CDB4 /* Foundation.framework in Frameworks */,
+				4281BADE116E52620083CDB4 /* CoreGraphics.framework in Frameworks */,
+				4281BADF116E52620083CDB4 /* CFNetwork.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42C3B3861190FE060097959C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42C3B3871190FE060097959C /* CFNetwork.framework in Frameworks */,
+				42C3B3881190FE060097959C /* CoreGraphics.framework in Frameworks */,
+				42C3B3891190FE060097959C /* Foundation.framework in Frameworks */,
+				42C3B38A1190FE060097959C /* UIKit.framework in Frameworks */,
+				42C3B38B1190FE060097959C /* MediaPlayer.framework in Frameworks */,
+				42C3B38C1190FE060097959C /* AVFoundation.framework in Frameworks */,
+				42C3B38D1190FE060097959C /* SystemConfiguration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6339B60D10DC51700081D8CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6339B61510DC51910081D8CC /* CFNetwork.framework in Frameworks */,
+				6339B61710DC51980081D8CC /* CoreGraphics.framework in Frameworks */,
+				6339B61910DC51A50081D8CC /* Foundation.framework in Frameworks */,
+				6339B61B10DC51B00081D8CC /* UIKit.framework in Frameworks */,
+				6339B89010DF838B0081D8CC /* MediaPlayer.framework in Frameworks */,
+				6339B89610DF83A10081D8CC /* AVFoundation.framework in Frameworks */,
+				6339B98C10DF8CDA0081D8CC /* SystemConfiguration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6339C2C210E2C1340081D8CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6339C2C310E2C1340081D8CC /* CFNetwork.framework in Frameworks */,
+				6339C2C410E2C1340081D8CC /* CoreGraphics.framework in Frameworks */,
+				6339C2C510E2C1340081D8CC /* Foundation.framework in Frameworks */,
+				6339C2C610E2C1340081D8CC /* UIKit.framework in Frameworks */,
+				6339C2C710E2C1340081D8CC /* MediaPlayer.framework in Frameworks */,
+				6339C2C810E2C1340081D8CC /* AVFoundation.framework in Frameworks */,
+				6339C2C910E2C1340081D8CC /* SystemConfiguration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				1D3623240D0F684500981E51 /* OVPPreviewAppDelegate.h */,
+				1D3623250D0F684500981E51 /* OVPPreviewAppDelegate.m */,
+				28C286DF0D94DF7D0034E888 /* MediaTableViewController.h */,
+				28C286E00D94DF7D0034E888 /* MediaTableViewController.m */,
+				6339B85510DF72D00081D8CC /* MediaOverlayView.h */,
+				6339B85610DF72D00081D8CC /* MediaOverlayView.m */,
+				84EF889C0DB9369300448949 /* MediaItem.h */,
+				84EF889D0DB9369300448949 /* MediaItem.m */,
+				6339B86910DF76190081D8CC /* MoviePlayerController.h */,
+				6339B86A10DF76190081D8CC /* MoviePlayerController.m */,
+				6339BFFB10E221250081D8CC /* OVPPreviewSetupController.h */,
+				6339BFFC10E221250081D8CC /* OVPPreviewSetupController.m */,
+				6339C71210EBDC450081D8CC /* Settings.h */,
+				63579C2210F668AD0053AB9B /* Logger.h */,
+				63579C2310F668AD0053AB9B /* Logger.m */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4276A9411177D92A00F21A21 /* OVPPreview.app */,
+				4276A9431177D92A00F21A21 /* OVPPreview.app */,
+				4276A9451177D92A00F21A21 /* OVPPreview-iPad.app */,
+				4276A9471177D92B00F21A21 /* OVPPreview-iPad.app */,
+				42C3B3931190FE060097959C /* OVPPreview.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				6357962D10F2632A0053AB9B /* splash.png */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				427432A81163D6A8002DE8D9 /* Resources-iPad */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+				6339B98B10DF8CDA0081D8CC /* SystemConfiguration.framework */,
+				427532331165626B00BB00BA /* MediaPlayer.framework */,
+				427532841165648A00BB00BA /* MediaPlayer.framework */,
+				427532861165649800BB00BA /* SystemConfiguration.framework */,
+				42753288116564A100BB00BA /* AVFoundation.framework */,
+				4275328A116564AF00BB00BA /* UIKit.framework */,
+				4275328C116564BB00BB00BA /* Foundation.framework */,
+				4275328E116564C500BB00BA /* CoreGraphics.framework */,
+				42753290116564CF00BB00BA /* CFNetwork.framework */,
+				6339C2CF10E2C1340081D8CC /* OVPPreview-Info.plist */,
+				6339C2F110E2C2460081D8CC /* Entitlements.plist */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				28A0AAE50D9B0CCF005BE974 /* OVPPreview_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6330C6811163C23F002F1948 /* akamlogo.png */,
+				6330C6A31163C5B6002F1948 /* blckinfo.png */,
+				6357A62010FD4F830053AB9B /* done.png */,
+				6357A52610FD36710053AB9B /* rarrow.png */,
+				6339C06010E230490081D8CC /* dependenticon.png */,
+				6339C05E10E230320081D8CC /* toolicon.png */,
+				848AEAA50DDDFBFF000847AD /* Icon.png */,
+				8480A9BF0DB947B200CD87F1 /* empty.png */,
+				8480A97D0DB944F300CD87F1 /* Default.png */,
+				6339BFFD10E221250081D8CC /* OVPPreviewSetupController.xib */,
+				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
+				302EC8A70F9940BA00C3EF5A /* RootView.xib */,
+				8D1107310486CEB800E47090 /* Info.plist */,
+				30AE758D0FAB9CA2000B9BFA /* Localizable.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6339B89510DF83A10081D8CC /* AVFoundation.framework */,
+				6339B88F10DF838B0081D8CC /* MediaPlayer.framework */,
+				6339B61A10DC51B00081D8CC /* UIKit.framework */,
+				6339B61810DC51A50081D8CC /* Foundation.framework */,
+				6339B61610DC51980081D8CC /* CoreGraphics.framework */,
+				6339B61410DC51910081D8CC /* CFNetwork.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		427432A81163D6A8002DE8D9 /* Resources-iPad */ = {
+			isa = PBXGroup;
+			children = (
+				4224E465117D1F33005696AA /* plylist.png */,
+				4224E46E117D2296005696AA /* info.png */,
+				4224E46B117D20F5005696AA /* setup.png */,
+				427432A91163D6AA002DE8D9 /* MainWindow.xib */,
+				427432AB1163D6AA002DE8D9 /* RootView.xib */,
+				427432AD1163D6AA002DE8D9 /* OVPPreviewSetupController.xib */,
+			);
+			name = "Resources-iPad";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		427432801163D6A8002DE8D9 /* OVPPreview-iPad */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 427432A21163D6A8002DE8D9 /* Build configuration list for PBXNativeTarget "OVPPreview-iPad" */;
+			buildPhases = (
+				427432811163D6A8002DE8D9 /* Resources */,
+				427432911163D6A8002DE8D9 /* Sources */,
+				4274329A1163D6A8002DE8D9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OVPPreview-iPad";
+			productName = OVPPreview;
+			productReference = 4276A9451177D92A00F21A21 /* OVPPreview-iPad.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4281BABB116E52620083CDB4 /* OVPPreview-iPad-AdHocDist */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4281BAE0116E52620083CDB4 /* Build configuration list for PBXNativeTarget "OVPPreview-iPad-AdHocDist" */;
+			buildPhases = (
+				4281BABC116E52620083CDB4 /* Resources */,
+				4281BACF116E52620083CDB4 /* Sources */,
+				4281BAD8116E52620083CDB4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OVPPreview-iPad-AdHocDist";
+			productName = OVPPreview;
+			productReference = 4276A9471177D92B00F21A21 /* OVPPreview-iPad.app */;
+			productType = "com.apple.product-type.application";
+		};
+		42C3B36C1190FE060097959C /* OVPPreview-4.0 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 42C3B38E1190FE060097959C /* Build configuration list for PBXNativeTarget "OVPPreview-4.0" */;
+			buildPhases = (
+				42C3B36D1190FE060097959C /* Resources */,
+				42C3B37D1190FE060097959C /* Sources */,
+				42C3B3861190FE060097959C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OVPPreview-4.0";
+			productName = OVPPreview;
+			productReference = 42C3B3931190FE060097959C /* OVPPreview.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6339B60E10DC51700081D8CC /* OVPPreview */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6339B61310DC518F0081D8CC /* Build configuration list for PBXNativeTarget "OVPPreview" */;
+			buildPhases = (
+				6339B60B10DC51700081D8CC /* Resources */,
+				6339B60C10DC51700081D8CC /* Sources */,
+				6339B60D10DC51700081D8CC /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OVPPreview;
+			productName = OVPPreview;
+			productReference = 4276A9411177D92A00F21A21 /* OVPPreview.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6339C2AC10E2C1340081D8CC /* OVPPreview-AdHocDist */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6339C2CA10E2C1340081D8CC /* Build configuration list for PBXNativeTarget "OVPPreview-AdHocDist" */;
+			buildPhases = (
+				6339C2AD10E2C1340081D8CC /* Resources */,
+				6339C2BA10E2C1340081D8CC /* Sources */,
+				6339C2C210E2C1340081D8CC /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OVPPreview-AdHocDist";
+			productName = OVPPreview;
+			productReference = 4276A9431177D92A00F21A21 /* OVPPreview.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OVPPreview" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				en,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6339B60E10DC51700081D8CC /* OVPPreview */,
+				6339C2AC10E2C1340081D8CC /* OVPPreview-AdHocDist */,
+				427432801163D6A8002DE8D9 /* OVPPreview-iPad */,
+				4281BABB116E52620083CDB4 /* OVPPreview-iPad-AdHocDist */,
+				42C3B36C1190FE060097959C /* OVPPreview-4.0 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		427432811163D6A8002DE8D9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				427432831163D6A8002DE8D9 /* Default.png in Resources */,
+				427432841163D6A8002DE8D9 /* empty.png in Resources */,
+				427432851163D6A8002DE8D9 /* Icon.png in Resources */,
+				427432871163D6A8002DE8D9 /* Localizable.strings in Resources */,
+				427432891163D6A8002DE8D9 /* toolicon.png in Resources */,
+				4274328A1163D6A8002DE8D9 /* dependenticon.png in Resources */,
+				4274328B1163D6A8002DE8D9 /* Entitlements.plist in Resources */,
+				4274328C1163D6A8002DE8D9 /* splash.png in Resources */,
+				4274328D1163D6A8002DE8D9 /* rarrow.png in Resources */,
+				4274328E1163D6A8002DE8D9 /* done.png in Resources */,
+				4274328F1163D6A8002DE8D9 /* akamlogo.png in Resources */,
+				427432901163D6A8002DE8D9 /* blckinfo.png in Resources */,
+				427432AE1163D6AA002DE8D9 /* MainWindow.xib in Resources */,
+				427432AF1163D6AA002DE8D9 /* RootView.xib in Resources */,
+				427432B01163D6AA002DE8D9 /* OVPPreviewSetupController.xib in Resources */,
+				4224E466117D1F33005696AA /* plylist.png in Resources */,
+				4224E46C117D20F5005696AA /* setup.png in Resources */,
+				4224E46F117D2296005696AA /* info.png in Resources */,
+				427BC34A11B6FAA1001ED53D /* OVPPreview-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4281BABC116E52620083CDB4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4281BABD116E52620083CDB4 /* Default.png in Resources */,
+				4281BABE116E52620083CDB4 /* empty.png in Resources */,
+				4281BABF116E52620083CDB4 /* Icon.png in Resources */,
+				4281BAC0116E52620083CDB4 /* Localizable.strings in Resources */,
+				4281BAC1116E52620083CDB4 /* toolicon.png in Resources */,
+				4281BAC2116E52620083CDB4 /* dependenticon.png in Resources */,
+				4281BAC3116E52620083CDB4 /* Entitlements.plist in Resources */,
+				4281BAC4116E52620083CDB4 /* splash.png in Resources */,
+				4281BAC5116E52620083CDB4 /* rarrow.png in Resources */,
+				4281BAC6116E52620083CDB4 /* done.png in Resources */,
+				4281BAC7116E52620083CDB4 /* akamlogo.png in Resources */,
+				4281BAC8116E52620083CDB4 /* blckinfo.png in Resources */,
+				4281BAC9116E52620083CDB4 /* MainWindow.xib in Resources */,
+				4281BACA116E52620083CDB4 /* RootView.xib in Resources */,
+				4281BACB116E52620083CDB4 /* OVPPreviewSetupController.xib in Resources */,
+				4224E467117D1F33005696AA /* plylist.png in Resources */,
+				4224E46D117D20F5005696AA /* setup.png in Resources */,
+				4224E470117D2296005696AA /* info.png in Resources */,
+				427BC34B11B6FAA1001ED53D /* OVPPreview-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42C3B36D1190FE060097959C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42C3B36E1190FE060097959C /* MainWindow.xib in Resources */,
+				42C3B36F1190FE060097959C /* Default.png in Resources */,
+				42C3B3701190FE060097959C /* empty.png in Resources */,
+				42C3B3711190FE060097959C /* Icon.png in Resources */,
+				42C3B3721190FE060097959C /* RootView.xib in Resources */,
+				42C3B3731190FE060097959C /* Localizable.strings in Resources */,
+				42C3B3741190FE060097959C /* OVPPreviewSetupController.xib in Resources */,
+				42C3B3751190FE060097959C /* toolicon.png in Resources */,
+				42C3B3761190FE060097959C /* dependenticon.png in Resources */,
+				42C3B3771190FE060097959C /* Entitlements.plist in Resources */,
+				42C3B3781190FE060097959C /* splash.png in Resources */,
+				42C3B3791190FE060097959C /* rarrow.png in Resources */,
+				42C3B37A1190FE060097959C /* done.png in Resources */,
+				42C3B37B1190FE060097959C /* akamlogo.png in Resources */,
+				42C3B37C1190FE060097959C /* blckinfo.png in Resources */,
+				427BC34C11B6FAA2001ED53D /* OVPPreview-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6339B60B10DC51700081D8CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6339B61C10DC520A0081D8CC /* MainWindow.xib in Resources */,
+				6339B61D10DC520A0081D8CC /* Default.png in Resources */,
+				6339B62110DC520A0081D8CC /* empty.png in Resources */,
+				6339B62210DC520A0081D8CC /* Icon.png in Resources */,
+				6339B62310DC520A0081D8CC /* RootView.xib in Resources */,
+				6339B62410DC520A0081D8CC /* Localizable.strings in Resources */,
+				6339BFFF10E221250081D8CC /* OVPPreviewSetupController.xib in Resources */,
+				6339C05F10E230320081D8CC /* toolicon.png in Resources */,
+				6339C06110E230490081D8CC /* dependenticon.png in Resources */,
+				6339C2F210E2C2460081D8CC /* Entitlements.plist in Resources */,
+				6357962F10F2632A0053AB9B /* splash.png in Resources */,
+				6357A52810FD36710053AB9B /* rarrow.png in Resources */,
+				6357A62210FD4F830053AB9B /* done.png in Resources */,
+				6330C6831163C23F002F1948 /* akamlogo.png in Resources */,
+				6330C6A51163C5B6002F1948 /* blckinfo.png in Resources */,
+				427BC34811B6FA9F001ED53D /* OVPPreview-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6339C2AD10E2C1340081D8CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6339C2AE10E2C1340081D8CC /* MainWindow.xib in Resources */,
+				6339C2AF10E2C1340081D8CC /* Default.png in Resources */,
+				6339C2B310E2C1340081D8CC /* empty.png in Resources */,
+				6339C2B410E2C1340081D8CC /* Icon.png in Resources */,
+				6339C2B510E2C1340081D8CC /* RootView.xib in Resources */,
+				6339C2B610E2C1340081D8CC /* Localizable.strings in Resources */,
+				6339C2B710E2C1340081D8CC /* OVPPreviewSetupController.xib in Resources */,
+				6339C2B810E2C1340081D8CC /* toolicon.png in Resources */,
+				6339C2B910E2C1340081D8CC /* dependenticon.png in Resources */,
+				6339C2F310E2C2460081D8CC /* Entitlements.plist in Resources */,
+				6357962E10F2632A0053AB9B /* splash.png in Resources */,
+				6357A52710FD36710053AB9B /* rarrow.png in Resources */,
+				6357A62110FD4F830053AB9B /* done.png in Resources */,
+				6330C6821163C23F002F1948 /* akamlogo.png in Resources */,
+				6330C6A41163C5B6002F1948 /* blckinfo.png in Resources */,
+				427BC34911B6FAA0001ED53D /* OVPPreview-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		427432911163D6A8002DE8D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				427432921163D6A8002DE8D9 /* main.m in Sources */,
+				427432931163D6A8002DE8D9 /* OVPPreviewAppDelegate.m in Sources */,
+				427432941163D6A8002DE8D9 /* MediaTableViewController.m in Sources */,
+				427432951163D6A8002DE8D9 /* MediaItem.m in Sources */,
+				427432961163D6A8002DE8D9 /* MediaOverlayView.m in Sources */,
+				427432971163D6A8002DE8D9 /* MoviePlayerController.m in Sources */,
+				427432981163D6A8002DE8D9 /* OVPPreviewSetupController.m in Sources */,
+				427432991163D6A8002DE8D9 /* Logger.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4281BACF116E52620083CDB4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4281BAD0116E52620083CDB4 /* main.m in Sources */,
+				4281BAD1116E52620083CDB4 /* OVPPreviewAppDelegate.m in Sources */,
+				4281BAD2116E52620083CDB4 /* MediaTableViewController.m in Sources */,
+				4281BAD3116E52620083CDB4 /* MediaItem.m in Sources */,
+				4281BAD4116E52620083CDB4 /* MediaOverlayView.m in Sources */,
+				4281BAD5116E52620083CDB4 /* MoviePlayerController.m in Sources */,
+				4281BAD6116E52620083CDB4 /* OVPPreviewSetupController.m in Sources */,
+				4281BAD7116E52620083CDB4 /* Logger.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42C3B37D1190FE060097959C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42C3B37E1190FE060097959C /* main.m in Sources */,
+				42C3B37F1190FE060097959C /* OVPPreviewAppDelegate.m in Sources */,
+				42C3B3801190FE060097959C /* MediaTableViewController.m in Sources */,
+				42C3B3811190FE060097959C /* MediaItem.m in Sources */,
+				42C3B3821190FE060097959C /* MediaOverlayView.m in Sources */,
+				42C3B3831190FE060097959C /* MoviePlayerController.m in Sources */,
+				42C3B3841190FE060097959C /* OVPPreviewSetupController.m in Sources */,
+				42C3B3851190FE060097959C /* Logger.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6339B60C10DC51700081D8CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6339B62510DC52150081D8CC /* main.m in Sources */,
+				6339B62610DC52150081D8CC /* OVPPreviewAppDelegate.m in Sources */,
+				6339B62710DC52150081D8CC /* MediaTableViewController.m in Sources */,
+				6339B62810DC52150081D8CC /* MediaItem.m in Sources */,
+				6339B85710DF72D00081D8CC /* MediaOverlayView.m in Sources */,
+				6339B86B10DF76190081D8CC /* MoviePlayerController.m in Sources */,
+				6339BFFE10E221250081D8CC /* OVPPreviewSetupController.m in Sources */,
+				63579C2510F668AD0053AB9B /* Logger.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6339C2BA10E2C1340081D8CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6339C2BB10E2C1340081D8CC /* main.m in Sources */,
+				6339C2BC10E2C1340081D8CC /* OVPPreviewAppDelegate.m in Sources */,
+				6339C2BD10E2C1340081D8CC /* MediaTableViewController.m in Sources */,
+				6339C2BE10E2C1340081D8CC /* MediaItem.m in Sources */,
+				6339C2BF10E2C1340081D8CC /* MediaOverlayView.m in Sources */,
+				6339C2C010E2C1340081D8CC /* MoviePlayerController.m in Sources */,
+				6339C2C110E2C1340081D8CC /* OVPPreviewSetupController.m in Sources */,
+				63579C2410F668AD0053AB9B /* Logger.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		30AE758D0FAB9CA2000B9BFA /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				30AE758E0FAB9CA2000B9BFA /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		427432A91163D6AA002DE8D9 /* MainWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				427432AA1163D6AA002DE8D9 /* en */,
+			);
+			name = MainWindow.xib;
+			sourceTree = "<group>";
+		};
+		427432AB1163D6AA002DE8D9 /* RootView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				427432AC1163D6AA002DE8D9 /* en */,
+			);
+			name = RootView.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		427432A31163D6A8002DE8D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=iphoneos*]" = armv7;
+				"ARCHS[sdk=iphonesimulator*]" = i386;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "OVPPreview-iPad";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		427432A41163D6A8002DE8D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=iphoneos*]" = armv7;
+				"ARCHS[sdk=iphonesimulator*]" = i386;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "OVPPreview-iPad";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		427432A51163D6A8002DE8D9 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=iphoneos*]" = armv7;
+				"ARCHS[sdk=iphonesimulator*]" = i386;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "OVPPreview-iPad";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		4281BAE1116E52620083CDB4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=iphoneos*]" = armv7;
+				"ARCHS[sdk=iphonesimulator*]" = i386;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+					"-lAKAMMediaExtensions",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "OVPPreview-iPad";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		4281BAE2116E52620083CDB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=iphoneos*]" = armv7;
+				"ARCHS[sdk=iphonesimulator*]" = i386;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+					"-lAKAMMediaExtensions",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "OVPPreview-iPad";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		4281BAE3116E52620083CDB4 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=iphoneos*]" = armv7;
+				"ARCHS[sdk=iphonesimulator*]" = i386;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos3.2]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+					"-lAKAMMediaExtensions",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "OVPPreview-iPad";
+				PROVISIONING_PROFILE = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				"PROVISIONING_PROFILE[sdk=iphoneos3.2]" = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		4281BAFB116E53A80083CDB4 /* Distribution-iPad */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					$HOME/Library/SDKs/OVPMediaPlayerController/,
+					$HOME/Library/SDKs/AKAMMediaExtensions/,
+					$HOME/Library/SDKs/AKAMPlayerVerification/,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$HOME/Library/SDKs/OVPMediaPlayerController/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+					"$HOME/Library/SDKs/AKAMMEdiaExtensions/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+					"$HOME/Library/SDKs/AKAMPlayerVerification/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+				);
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos3.0;
+			};
+			name = "Distribution-iPad";
+		};
+		4281BAFC116E53A80083CDB4 /* Distribution-iPad */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				PROVISIONING_PROFILE = "C2230DD0-F565-4859-A78A-F2676E634675";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C2230DD0-F565-4859-A78A-F2676E634675";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+				ZERO_LINK = NO;
+			};
+			name = "Distribution-iPad";
+		};
+		4281BAFD116E53A80083CDB4 /* Distribution-iPad */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				PROVISIONING_PROFILE = "C2230DD0-F565-4859-A78A-F2676E634675";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C2230DD0-F565-4859-A78A-F2676E634675";
+				SDKROOT = iphoneos3.0;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = "Distribution-iPad";
+		};
+		4281BAFE116E53A80083CDB4 /* Distribution-iPad */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=iphoneos*]" = armv7;
+				"ARCHS[sdk=iphonesimulator*]" = i386;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "OVPPreview-iPad";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+				ZERO_LINK = NO;
+			};
+			name = "Distribution-iPad";
+		};
+		4281BAFF116E53A80083CDB4 /* Distribution-iPad */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				"ARCHS[sdk=iphoneos*]" = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				"ARCHS[sdk=iphonesimulator*]" = i386;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos3.2]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "OVPPreview-iPad";
+				PROVISIONING_PROFILE = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				"PROVISIONING_PROFILE[sdk=iphoneos3.2]" = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				SDKROOT = iphoneos3.2;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+				ZERO_LINK = NO;
+			};
+			name = "Distribution-iPad";
+		};
+		42C3B38F1190FE060097959C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tommy Petrovic (3S4L4MVHB9)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info copy 2.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F6EA0D4F-57B9-49FD-9578-253FEB05232B";
+				SDKROOT = iphonesimulator4.0;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		42C3B3901190FE060097959C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info copy 2.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				SDKROOT = iphonesimulator4.0;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		42C3B3911190FE060097959C /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info copy 2.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				PROVISIONING_PROFILE = "C2230DD0-F565-4859-A78A-F2676E634675";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C2230DD0-F565-4859-A78A-F2676E634675";
+				SDKROOT = iphonesimulator4.0;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		42C3B3921190FE060097959C /* Distribution-iPad */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				PROVISIONING_PROFILE = "C2230DD0-F565-4859-A78A-F2676E634675";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C2230DD0-F565-4859-A78A-F2676E634675";
+				SDKROOT = iphonesimulator4.0;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+				ZERO_LINK = NO;
+			};
+			name = "Distribution-iPad";
+		};
+		6339B61110DC51710081D8CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tommy Petrovic (3S4L4MVHB9)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F6EA0D4F-57B9-49FD-9578-253FEB05232B";
+				SDKROOT = iphoneos3.0;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		6339B61210DC51710081D8CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				SDKROOT = iphonesimulator3.0;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		6339C2CB10E2C1340081D8CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				PROVISIONING_PROFILE = "C2230DD0-F565-4859-A78A-F2676E634675";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C2230DD0-F565-4859-A78A-F2676E634675";
+				SDKROOT = iphoneos3.0;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		6339C2CC10E2C1340081D8CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "OVPPreview-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				PROVISIONING_PROFILE = "C2230DD0-F565-4859-A78A-F2676E634675";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C2230DD0-F565-4859-A78A-F2676E634675";
+				SDKROOT = iphoneos3.0;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		6339C2D210E2C14D0081D8CC /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					$HOME/Library/SDKs/OVPMediaPlayerController/,
+					$HOME/Library/SDKs/AKAMMediaExtensions/,
+					$HOME/Library/SDKs/AKAMPlayerVerification/,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$HOME/Library/SDKs/OVPMediaPlayerController/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+					"$HOME/Library/SDKs/AKAMMEdiaExtensions/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+					"$HOME/Library/SDKs/AKAMPlayerVerification/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+				);
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos3.0;
+			};
+			name = Distribution;
+		};
+		6339C2D310E2C14D0081D8CC /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				PROVISIONING_PROFILE = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				SDKROOT = iphoneos3.0;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		6339C2D410E2C14D0081D8CC /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Tommy Petrovic";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Tommy Petrovic";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPPreview_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVPPreview;
+				PROVISIONING_PROFILE = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "4E456C97-196A-41F6-BCF7-8B0568FEF32E";
+				SDKROOT = iphoneos3.0;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					$HOME/Library/SDKs/OVPMediaPlayerController/,
+					$HOME/Library/SDKs/AKAMMediaExtensions/,
+					$HOME/Library/SDKs/AKAMPlayerVerification/,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$HOME/Library/SDKs/OVPMediaPlayerController/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+					"$HOME/Library/SDKs/AKAMMEdiaExtensions/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+					"$HOME/Library/SDKs/AKAMPlayerVerification/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+				);
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos3.0;
+				STRIP_INSTALLED_PRODUCT = NO;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					$HOME/Library/SDKs/OVPMediaPlayerController/,
+					$HOME/Library/SDKs/AKAMMediaExtensions/,
+					$HOME/Library/SDKs/AKAMPlayerVerification/,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$HOME/Library/SDKs/OVPMediaPlayerController/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+					"$HOME/Library/SDKs/AKAMMEdiaExtensions/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+					"$HOME/Library/SDKs/AKAMPlayerVerification/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/**",
+				);
+				MediaAnalyticsConfigURL = "http://79423.analytics.edgesuite.net/analyticsplugin/configuration/iPhone_AnalyticsConfiguration.xml";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lOVPMediaPlayerController",
+				);
+				PREBINDING = NO;
+				SDKROOT = iphoneos3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		427432A21163D6A8002DE8D9 /* Build configuration list for PBXNativeTarget "OVPPreview-iPad" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				427432A31163D6A8002DE8D9 /* Debug */,
+				427432A41163D6A8002DE8D9 /* Release */,
+				427432A51163D6A8002DE8D9 /* Distribution */,
+				4281BAFE116E53A80083CDB4 /* Distribution-iPad */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4281BAE0116E52620083CDB4 /* Build configuration list for PBXNativeTarget "OVPPreview-iPad-AdHocDist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4281BAE1116E52620083CDB4 /* Debug */,
+				4281BAE2116E52620083CDB4 /* Release */,
+				4281BAE3116E52620083CDB4 /* Distribution */,
+				4281BAFF116E53A80083CDB4 /* Distribution-iPad */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		42C3B38E1190FE060097959C /* Build configuration list for PBXNativeTarget "OVPPreview-4.0" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				42C3B38F1190FE060097959C /* Debug */,
+				42C3B3901190FE060097959C /* Release */,
+				42C3B3911190FE060097959C /* Distribution */,
+				42C3B3921190FE060097959C /* Distribution-iPad */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6339B61310DC518F0081D8CC /* Build configuration list for PBXNativeTarget "OVPPreview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6339B61110DC51710081D8CC /* Debug */,
+				6339B61210DC51710081D8CC /* Release */,
+				6339C2D310E2C14D0081D8CC /* Distribution */,
+				4281BAFC116E53A80083CDB4 /* Distribution-iPad */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6339C2CA10E2C1340081D8CC /* Build configuration list for PBXNativeTarget "OVPPreview-AdHocDist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6339C2CB10E2C1340081D8CC /* Debug */,
+				6339C2CC10E2C1340081D8CC /* Release */,
+				6339C2D410E2C14D0081D8CC /* Distribution */,
+				4281BAFD116E53A80083CDB4 /* Distribution-iPad */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OVPPreview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+				6339C2D210E2C14D0081D8CC /* Distribution */,
+				4281BAFB116E53A80083CDB4 /* Distribution-iPad */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

@@ -1,0 +1,55 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf290
+{\fonttbl\f0\fmodern\fcharset0 Courier-Bold;\f1\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww15880\viewh13100\viewkind0
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\b\fs26 \cf0 \ul \ulc0 Overview
+\f1\b0 \ulnone \
+This package contains source distributions of OVPMediaPlayerController\
+library and OVPPreview application. OVPPreview demonstrates the use of the \
+OVPMediaPlayerController. OVPPreview was not build as an Universal application for iPad/iPhone, \
+rather it is using the single code base with separate targets, i.e. 3.0/3.1, 3.2 and 4.0.\
+The separation for different targets is accomplished by the use of the conditional\
+compilation directives (see source code for more info).\
+\
+\
+
+\f0\b \ul Use Instructions
+\f1\b0 \ulnone \
+After unzipping ovp-iPhoneOS-1.0.0-src.zip first compile OVPMediaPlayerController. It will place \
+newly compiled library in ~/Library/SDKs folder. The XCode project for OVPPreview will\
+reference the library from the SDKs location automatically. Note if you are using XCode earlier\
+than 3.2.2, you might have to change the location of the library binaries in the build settings to reflect ~/Library/SDKs path.  \
+This common location is to facilitate future libraries and components which might be \
+part of OVP distributions.\
+\
+\
+
+\f0\b \ul Project Locations
+\f1\b0 \ulnone \
+Apart from ~/Library/SDKs, there are no additional requirements for the project to be\
+compiled or run. \
+\
+\
+
+\f0\b \ul Build Versions
+\f1\b0 \ulnone \
+Below is the list of libraries and application components and their versions\
+in this package:\
+\
+OVPMediaPlayerController 1.0.0\
+OVPPreview 1.0.0\
+\
+
+\f0\b \ul Important Links
+\f1\b0 \ulnone \
+The following is a list of useful links for OVP:\
+\
+    
+\f0\b http://openvideoplayer.sourceforge.com:
+\f1\b0  OVP homepage.\
+ \
+\
+}

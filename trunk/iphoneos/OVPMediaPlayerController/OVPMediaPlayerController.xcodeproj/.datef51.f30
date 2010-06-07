@@ -1,0 +1,415 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6339C17110E28A4A0081D8CC /* OVPMediaPlayerController_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch */; };
+		6339C17210E28A4A0081D8CC /* OVPMediaPlayerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */; };
+		6339C17410E28A4A0081D8CC /* OVPMediaPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */; };
+		6339C17610E28A4A0081D8CC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		6339C17710E28A4A0081D8CC /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6371E11E10D6BC9E002B6889 /* MediaPlayer.framework */; };
+		6339C17810E28A4A0081D8CC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6371E2F410D71A9C002B6889 /* UIKit.framework */; };
+		6339C17A10E28A4A0081D8CC /* OVPMediaPlayerController.h in Copy-main-header */ = {isa = PBXBuildFile; fileRef = 6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */; };
+		6371E0F810D6B67D002B6889 /* OVPMediaPlayerController.h in Headers */ = {isa = PBXBuildFile; fileRef = 6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */; };
+		6371E0F910D6B67D002B6889 /* OVPMediaPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */; };
+		6371E11F10D6BC9E002B6889 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6371E11E10D6BC9E002B6889 /* MediaPlayer.framework */; };
+		6371E19A10D6F727002B6889 /* OVPMediaPlayerController.h in Copy-main-header */ = {isa = PBXBuildFile; fileRef = 6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */; };
+		6371E2F510D71A9C002B6889 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6371E2F410D71A9C002B6889 /* UIKit.framework */; };
+		AA747D9F0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch */; };
+		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6339C17910E28A4A0081D8CC /* Copy-main-header */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = $HOME/Library/SDKs/OVPMediaPlayerController/;
+			dstSubfolderSpec = 0;
+			files = (
+				6339C17A10E28A4A0081D8CC /* OVPMediaPlayerController.h in Copy-main-header */,
+			);
+			name = "Copy-main-header";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6371E19810D6F6FF002B6889 /* Copy-main-header */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = $HOME/Library/SDKs/OVPMediaPlayerController/;
+			dstSubfolderSpec = 0;
+			files = (
+				6371E19A10D6F727002B6889 /* OVPMediaPlayerController.h in Copy-main-header */,
+			);
+			name = "Copy-main-header";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		6339C17E10E28A4A0081D8CC /* libOVPMediaPlayerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOVPMediaPlayerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVPMediaPlayerController.h; sourceTree = "<group>"; };
+		6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OVPMediaPlayerController.m; sourceTree = "<group>"; };
+		6371E11E10D6BC9E002B6889 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		6371E2F410D71A9C002B6889 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		AA747D9E0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVPMediaPlayerController_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D2AAC07E0554694100DB518D /* libOVPMediaPlayerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOVPMediaPlayerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6339C17510E28A4A0081D8CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6339C17610E28A4A0081D8CC /* Foundation.framework in Frameworks */,
+				6339C17710E28A4A0081D8CC /* MediaPlayer.framework in Frameworks */,
+				6339C17810E28A4A0081D8CC /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC07C0554694100DB518D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
+				6371E11F10D6BC9E002B6889 /* MediaPlayer.framework in Frameworks */,
+				6371E2F510D71A9C002B6889 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC07E0554694100DB518D /* libOVPMediaPlayerController.a */,
+				6339C17E10E28A4A0081D8CC /* libOVPMediaPlayerController.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* OVPMediaPlayerController */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+				6371E2F410D71A9C002B6889 /* UIKit.framework */,
+			);
+			name = OVPMediaPlayerController;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6371E11E10D6BC9E002B6889 /* MediaPlayer.framework */,
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				6371E0F610D6B67D002B6889 /* OVPMediaPlayerController.h */,
+				6371E0F710D6B67D002B6889 /* OVPMediaPlayerController.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				AA747D9E0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		6339C17010E28A4A0081D8CC /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			comments = "Copy headers to the destination build directory for distribution/reference by other projects";
+			files = (
+				6339C17110E28A4A0081D8CC /* OVPMediaPlayerController_Prefix.pch in Headers */,
+				6339C17210E28A4A0081D8CC /* OVPMediaPlayerController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC07A0554694100DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			comments = "Copy headers to the destination build directory for distribution/reference by other projects";
+			files = (
+				AA747D9F0F9514B9006C5449 /* OVPMediaPlayerController_Prefix.pch in Headers */,
+				6371E0F810D6B67D002B6889 /* OVPMediaPlayerController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		6339C16F10E28A4A0081D8CC /* OVPMediaPlayerController-AdHocDist */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6339C17B10E28A4A0081D8CC /* Build configuration list for PBXNativeTarget "OVPMediaPlayerController-AdHocDist" */;
+			buildPhases = (
+				6339C17010E28A4A0081D8CC /* Headers */,
+				6339C17310E28A4A0081D8CC /* Sources */,
+				6339C17510E28A4A0081D8CC /* Frameworks */,
+				6339C17910E28A4A0081D8CC /* Copy-main-header */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "OVPMediaPlayerController-AdHocDist";
+			productName = OVPMediaPlayerController;
+			productReference = 6339C17E10E28A4A0081D8CC /* libOVPMediaPlayerController.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		D2AAC07D0554694100DB518D /* OVPMediaPlayerController */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "OVPMediaPlayerController" */;
+			buildPhases = (
+				D2AAC07A0554694100DB518D /* Headers */,
+				D2AAC07B0554694100DB518D /* Sources */,
+				D2AAC07C0554694100DB518D /* Frameworks */,
+				6371E19810D6F6FF002B6889 /* Copy-main-header */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OVPMediaPlayerController;
+			productName = OVPMediaPlayerController;
+			productReference = D2AAC07E0554694100DB518D /* libOVPMediaPlayerController.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "OVPMediaPlayerController" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 0867D691FE84028FC02AAC07 /* OVPMediaPlayerController */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D2AAC07D0554694100DB518D /* OVPMediaPlayerController */,
+				6339C16F10E28A4A0081D8CC /* OVPMediaPlayerController-AdHocDist */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6339C17310E28A4A0081D8CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6339C17410E28A4A0081D8CC /* OVPMediaPlayerController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC07B0554694100DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6371E0F910D6B67D002B6889 /* OVPMediaPlayerController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB921F08733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/OVPMediaPlayerController.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPMediaPlayerController_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				PRODUCT_NAME = OVPMediaPlayerController;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Debug;
+		};
+		1DEB922008733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				DSTROOT = /tmp/OVPMediaPlayerController.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPMediaPlayerController_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				PRODUCT_NAME = OVPMediaPlayerController;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Release;
+		};
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				SDKROOT = iphoneos3.1;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				SDKROOT = iphoneos3.1;
+			};
+			name = Release;
+		};
+		6339C17C10E28A4A0081D8CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/OVPMediaPlayerController.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPMediaPlayerController_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				PRODUCT_NAME = OVPMediaPlayerController;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Debug;
+		};
+		6339C17D10E28A4A0081D8CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				DSTROOT = /tmp/OVPMediaPlayerController.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPMediaPlayerController_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				PRODUCT_NAME = OVPMediaPlayerController;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Release;
+		};
+		6339C18110E28A5E0081D8CC /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				SDKROOT = iphoneos3.1;
+			};
+			name = Distribution;
+		};
+		6339C18210E28A5E0081D8CC /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				DSTROOT = /tmp/OVPMediaPlayerController.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPMediaPlayerController_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				PRODUCT_NAME = OVPMediaPlayerController;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Distribution;
+		};
+		6339C18310E28A5E0081D8CC /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				DSTROOT = /tmp/OVPMediaPlayerController.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OVPMediaPlayerController_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				PRODUCT_NAME = OVPMediaPlayerController;
+				PROVISIONING_PROFILE = "";
+			};
+			name = Distribution;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "OVPMediaPlayerController" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB921F08733DC00010E9CD /* Debug */,
+				1DEB922008733DC00010E9CD /* Release */,
+				6339C18210E28A5E0081D8CC /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "OVPMediaPlayerController" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+				6339C18110E28A5E0081D8CC /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6339C17B10E28A4A0081D8CC /* Build configuration list for PBXNativeTarget "OVPMediaPlayerController-AdHocDist" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6339C17C10E28A4A0081D8CC /* Debug */,
+				6339C17D10E28A4A0081D8CC /* Release */,
+				6339C18310E28A5E0081D8CC /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}
