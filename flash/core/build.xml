@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<project name="OVP" default="build" basedir=".">
+	<property file="build.properties" />
+
+	<!-- do not change next 2 lines, it adds flex tasks to ant -->
+	<property name="FLEXTASKS" value="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
+	<taskdef resource="flexTasks.tasks" classpath="${FLEXTASKS}"/>
+
+		
+	<!-- compile -->
+	<target name="build" >
+	    <echo message="building ovp_core.swc..." />
+		<compc
+			output="bin/ovp_core.swc"
+		 	debug="false" 
+		 	incremental="false"
+		 	strict="true"
+		 	accessible="false"
+	        link-report="link_report.xml"
+	        static-link-runtime-shared-libraries="false">
+		
+		<raw-metadata></raw-metadata>
+			
+		<optimize>true</optimize>
+
+        <!-- which classes to include in swc: -->
+        <include-sources dir="src" includes="**/*.as"/>
+			
+		<target-player>10.0</target-player>
+		
+		<source-path path-element ="src" />
+	   			
+		</compc>
+		
+		<echo message="_ _ _ _" />
+		<echo message="done!" />
+	</target>
+	
+</project>
+	

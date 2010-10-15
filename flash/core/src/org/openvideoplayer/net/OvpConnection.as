@@ -36,6 +36,7 @@ package org.openvideoplayer.net
 	
 	import org.openvideoplayer.events.OvpError;
 	import org.openvideoplayer.events.OvpEvent;
+	import org.openvideoplayer.utilities.StringUtil;
 	import org.openvideoplayer.utilities.TimeUtil;
 
 	//-----------------------------------------------------------------
@@ -633,6 +634,9 @@ package org.openvideoplayer.net
 			buildConnectionSequence();
 		}
 		
+		
+		
+		
 		/**
 		 * Attempts to establish a connection based on the arguments passed to the connect method.
 		 */
@@ -673,13 +677,18 @@ package org.openvideoplayer.net
 		 * @return true if the connection has been established, otherwise false.
 		 * @see org.openvideoplayer.events.OvpEvent
 		 */
-		public function requestStreamLength(filename:String):Boolean {
+		public function requestStreamLength(filename:String):Boolean 
+		{
 			if (!_connectionEstablished || filename == "")
 				return false;
 				
 			// if the filename includes parameters, strip them off, since the server can't handle them.
-			if (_nc && (_nc is NetConnection)) {
-				_nc.call("getStreamLength", new Responder(onStreamLengthResult, onStreamLengthFault), filename.indexOf("?") != -1 ? filename.slice(0,filename.indexOf("?")):filename );
+			if (_nc && (_nc is NetConnection)) 
+			{
+				var path:String = filename.indexOf("?") != -1 ? filename.slice(0, filename.indexOf("?")) : filename				
+				_nc.call("getStreamLength", 
+						 new Responder(onStreamLengthResult, onStreamLengthFault), 
+						 StringUtil.addPrefix(path));
 			}
 			return true;
 		}
@@ -772,7 +781,7 @@ package org.openvideoplayer.net
 						aTemp.push({port:aPort[po], protocol:aProtocol[pr]});
 					}
 				}
-			}
+			}			
 			return aTemp;
 		}
 		
@@ -816,8 +825,7 @@ package org.openvideoplayer.net
 			_aNC[_connectionAttempt] = new NetConnection();
 			_aNC[_connectionAttempt].addEventListener(NetStatusEvent.NET_STATUS,netStatus);
     		_aNC[_connectionAttempt].addEventListener(SecurityErrorEvent.SECURITY_ERROR,netSecurityError);
-    		_aNC[_connectionAttempt].addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncError);
-    		
+    		_aNC[_connectionAttempt].addEventListener(AsyncErrorEvent.ASYNC_ERROR,asyncError);    		
 			_aNC[_connectionAttempt].client = new Object;
 			_aNC[_connectionAttempt].client.id = _connectionAttempt;		// The identifier for this connection
 			_aNC[_connectionAttempt].client._onbwcheck = this._onbwcheck;	// Callbacks for bandwidth detection
@@ -825,15 +833,27 @@ package org.openvideoplayer.net
 			_aNC[_connectionAttempt].client.onFCSubscribe = this.onFCSubscribe;	// Callbacks for subscribing to live streams
 			_aNC[_connectionAttempt].client.onFCUnsubscribe = this.onFCUnsubscribe;
 			
-			try {
-				_aNC[_connectionAttempt].connect(_aConnections[_connectionAttempt].address, _connectionArgs);
+			var args:Array = [_aConnections[_connectionAttempt].address];
+			if (_connectionArgs != null)
+			{
+				for each (var arg:Object in _connectionArgs)
+				{
+					args.push(arg);
+				}
 			}
-			catch (error:Error) {
+			try 
+			{
+				NetConnection(_aNC[_connectionAttempt]).connect.apply(_aNC[_connectionAttempt], args);
+			}
+			catch (error:Error) 
+			{
 				// the connectionTimer will time out and report an error.
 			}
-			finally {
+			finally 
+			{
 				_connectionAttempt++;
-				if (_connectionAttempt >= _aConnections.length) {
+				if (_connectionAttempt >= _aConnections.length) 
+				{
 					_connectionTimer.stop();
 				}
 			}

@@ -30,17 +30,20 @@
 
 package model {
 
-	import org.openvideoplayer.events.OvpEvent;
-	import org.openvideoplayer.net.dynamicstream.INetStreamMetrics;
-	import org.openvideoplayer.net.OvpCuePointManager;
-	import ui.AkamaiArial;
-	import ui.ClickSound;
-	
+	import flash.display.Stage;
+	import flash.display.StageDisplayState;
 	import flash.events.*;
 	import flash.media.SoundChannel;
 	import flash.net.*;
 	import flash.text.*;
 	import flash.utils.getTimer;
+	
+	import org.openvideoplayer.events.OvpEvent;
+	import org.openvideoplayer.net.OvpCuePointManager;
+	import org.openvideoplayer.net.dynamicstream.INetStreamMetrics;
+	
+	import ui.AkamaiArial;
+	import ui.ClickSound;
 	
 	[Event (name="cuepoint", type="org.openvideoplayer.events.OvpEvent")]
 	
@@ -51,6 +54,7 @@ package model {
 	public class Model extends EventDispatcher {
 
 		// Declare private vars
+		private var _stage:Stage;
 		private var _src:String;
 		private var _isOverlay:Boolean;
 		private var _frameColor:String
@@ -188,6 +192,9 @@ package model {
 
 
 		
+
+		
+
 		public function Model(flashvars:Object):void {
 			init(flashvars);
 		}
@@ -225,11 +232,22 @@ package model {
 			_autoDynamicSwitching = true;
 			_isMultiBitrate = false;
 		}
+		
+		
+		public function set stage(value:Stage):void
+		{
+			_stage = value;			
+		}
+		
 		public function resize(w:Number,h:Number):void {
 			_width = w;
-			_height = h;
-			sendEvent(EVENT_RESIZE);
+			_height = h;			
+			if (!_stage || _stage.displayState != StageDisplayState.FULL_SCREEN)
+			{
+				sendEvent(EVENT_RESIZE);
+			}
 		}
+		
 		public function start():void {
 			debug("Startup");
 			parseSource();
@@ -307,8 +325,11 @@ package model {
 		}
 		public function set isMultiBitrate(isMultiBitrate:Boolean):void {
 			_isMultiBitrate = isMultiBitrate;
-			// Send resize event so that ui compoenents can draw the HD meter if required
-			sendEvent(EVENT_RESIZE);
+			// Send resize event so that ui compoenents can draw the HD meter if required			
+			if (!_stage || _stage.displayState != StageDisplayState.FULL_SCREEN)
+			{
+				sendEvent(EVENT_RESIZE);
+			}			
 		}
 		public function get isMultiBitrate():Boolean {
 			return _isMultiBitrate;
@@ -505,7 +526,10 @@ package model {
 		}
 		public function togglePlaylist():void {
 			sendEvent(EVENT_TOGGLE_PLAYLIST);
-			sendEvent(EVENT_RESIZE);	
+			if (!_stage || _stage.displayState != StageDisplayState.FULL_SCREEN)
+			{
+				sendEvent(EVENT_RESIZE);
+			}
 		}
 		public function get videoBackgroundColor():Number {
 			return VIDEO_BACKGROUND_COLOR;
@@ -620,7 +644,10 @@ package model {
 		}
 		public function toggleShare(): void {
 			sendEvent(EVENT_TOGGLE_LINK);
-			sendEvent(EVENT_RESIZE);
+			if (!_stage || _stage.displayState != StageDisplayState.FULL_SCREEN)
+			{
+				sendEvent(EVENT_RESIZE);
+			}
 		}
 		public function closeAfterPreview(): void {
 			sendEvent(EVENT_CLOSE_AFTER_PREVIEW);

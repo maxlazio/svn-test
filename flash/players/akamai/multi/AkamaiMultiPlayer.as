@@ -206,9 +206,10 @@ package {
 		 * @paramstarting height of the player
 		 * @paramflashvars - the loaderInfo.parameters object passed in from the HTML wrapper
 		 */
-		public function AkamaiMultiPlayer( width : Number = 774 , height : Number = 473 , flashvars : Object = null ):void {
-			_flashvars = flashvars;
+		public function AkamaiMultiPlayer( width : Number = 774 , height : Number = 473 , flashvars : Object = null ):void 
+		{			
 
+			_flashvars = flashvars;
 			init( _flashvars == null ? new Object() : _flashvars , width , height );
 			createChildren();
 			resize( null );
@@ -220,6 +221,13 @@ package {
 			else {
 				_model.start();
 			}
+			this.addEventListener(Event.ADDED_TO_STAGE, activate);
+		}
+
+		private function activate(event:Event):void
+		{
+			this.removeEventListener(Event.ADDED_TO_STAGE, activate);
+			_model.stage = this.stage;	
 		}		
 
 		public function enableControls():void {
@@ -296,6 +304,7 @@ package {
 
 		private function init( flashvars : Object , width : Number , height : Number ):void {
 			_model = new Model(flashvars);
+			
 			_model.addEventListener( _model.EVENT_LOAD_UI , loadUIhandler );
 			_model.addEventListener( _model.EVENT_TOGGLE_FULLSCREEN , toggleFullscreenHandler );
 			_model.addEventListener( _model.EVENT_RESIZE , resizeHandler );
@@ -763,8 +772,11 @@ package {
 		}
 
 		private function playStartHandler( e : Event = null ):void {
-			updateState( OvpPlayerEvent.START_NEW_ITEM );
-			dispatchEvent( new Event( "playStart" ));
+			if(_model.autoStart)
+			{
+				updateState( OvpPlayerEvent.START_NEW_ITEM );				
+				dispatchEvent( new Event( "playStart" ));				
+			}
 		}
 
 		private function endOfItemHandler( e : Event ):void {
@@ -902,8 +914,8 @@ package {
 			resumePlayback();
 		}
 
-		public function startPlayer():void {
-			startPlayback();
+		public function startPlayer():void {							
+			startPlayback();			
 		}
 
 		public function stopPlayer():void {
