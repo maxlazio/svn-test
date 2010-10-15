@@ -230,6 +230,7 @@ package com.akamai.net
 		 * @see #connectionAuth
 		 */
 		override public function connect(command:String, ...arguments):void {
+			_connectionArgs = arguments;
 			if (command == null || command == "null") {
 				super.connect(command, arguments); // progressive connection, we don't need to do anything special
 				return;

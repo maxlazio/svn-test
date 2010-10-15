@@ -360,10 +360,17 @@ package view{
 			_currentIndex = i;
 			_controller.setNewSource(ItemTO(_items[i]).media.getContentAt(0).url);
 		}
-		private function playNextHandler(e:Event): void {
+		
+		private function playNextHandler(e:Event): void 
+		{			
+			if(stage.displayState == StageDisplayState.FULL_SCREEN)
+			{
+				stage.displayState = StageDisplayState.NORMAL;
+			}			
 			_currentIndex = _currentIndex + 1 >= _items.length ? 0: _currentIndex + 1;
 			playIndex(_currentIndex);
 		}
+		
 		private function scaleThumb(e:Event):void {
 			var w:Number = e.target.width;
 			var h:Number = e.target.height;
