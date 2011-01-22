@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2011, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -109,6 +109,17 @@ package org.openvideoplayer.events
 		 * @see org.openvideoplayer.net.OvpNetStream#close()
 		 */
   		public static const PROGRESS:String = "progress";
+		
+		CONFIG::FLASH_10_1
+		{
+			/**
+			 * The OvpEvent.TRICK_MODE_TIMER_TICK is dispatched on each timer event interval only 
+			 * when trick mode is active. This timer is used internally in OvpNetStream for trick mode 
+			 * stepping.
+			 *  
+			 */		
+			public static const TRICK_MODE_TIMER_TICK:String = "trickModeTimerTick";
+		}
 			
 		/** 
 		 * The OvpEvent.LOADED constant defines the value of the OvpEvent's

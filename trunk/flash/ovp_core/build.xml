@@ -2,13 +2,19 @@
 	<project name="OVP" default="build" basedir=".">
 	<property file="build.properties" />
 
-	<!-- do not change next 2 lines, it adds flex tasks to ant -->
 	<property name="FLEXTASKS" value="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
 	<taskdef resource="flexTasks.tasks" classpath="${FLEXTASKS}"/>
 
+	<target name="clean">
+        <echo message="cleaning ovp_core..." />
+			
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="." includes="**/bin" />
+		</delete>
+				
+	</target>
 		
-	<!-- compile -->
-	<target name="build" >
+	<target name="build" depends="clean">
 	    <echo message="building ovp_core.swc..." />
 		<compc
 			output="bin/ovp_core.swc"
@@ -18,23 +24,32 @@
 		 	accessible="false"
 	        link-report="link_report.xml"
 	        static-link-runtime-shared-libraries="false">
-		
-		<raw-metadata></raw-metadata>
-			
-		<optimize>true</optimize>
-
-        <!-- which classes to include in swc: -->
-        <include-sources dir="src" includes="**/*.as"/>
-			
-		<target-player>10.0</target-player>
-		
-		<source-path path-element ="src" />
-	   			
+	        <raw-metadata></raw-metadata>
+	        <optimize>true</optimize>
+			<load-config filename="${basedir}/flex-config.xml"/>
+			<define name="CONFIG::FLASH_10_1" value="true"/>
+	        <include-sources dir="src" includes="**/*.as"/>
+	        <target-player>10.1.0</target-player>
 		</compc>
-		
-		<echo message="_ _ _ _" />
-		<echo message="done!" />
 	</target>
-	
+  
+	<target name="build-fp-10" depends="clean">
+	    <echo message="building 10.0.0 ovp_core.swc..." />
+		<compc
+			output="bin/ovp_core.swc"
+		 	debug="false" 
+		 	incremental="false"
+		 	strict="true"
+		 	accessible="false"
+	        link-report="link_report.xml"
+	        static-link-runtime-shared-libraries="false">
+           	<raw-metadata></raw-metadata>
+			<optimize>true</optimize>
+			<load-config filename="${basedir}/flex-config.xml"/>
+			<define name="CONFIG::FLASH_10_1" value="false"/>
+            <include-sources dir="src" includes="**/*.as"/>
+            <target-player>10.0</target-player>		   			
+		</compc>
+	</target>
 </project>
 	

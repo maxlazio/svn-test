@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2011, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -28,11 +28,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-package org.openvideoplayer.parsers {
+package org.openvideoplayer.parsers 
+{
 
 	import org.openvideoplayer.events.*;
 	import org.openvideoplayer.net.dynamicstream.DynamicStreamItem;
 	import org.openvideoplayer.utilities.StringUtil;
+	import org.openvideoplayer.utilities.TimeUtil;
 
 	/**
 	 * Dispatched when an error condition has occurred. The event provides an error number and a verbose description
@@ -50,14 +52,16 @@ package org.openvideoplayer.parsers {
 	/**
 	 * This class verifies and parses a SMIL file.
 	 */
-	public class DynamicSmilParser extends ParserBase {
+	public class DynamicSmilParser extends ParserBase 
+	{
 
 		private var _hostName:String;
 		private var _streamName:String;
 		private var _dsi:DynamicStreamItem;
 		private var _protocol:String;
 
-		public function DynamicSmilParser():void {
+		public function DynamicSmilParser():void 
+		{
 				super();
 		}
 	
@@ -65,7 +69,8 @@ package org.openvideoplayer.parsers {
 		 * The stream name
 		 * 
 		 */
-		public function get streamName():String {
+		public function get streamName():String 
+		{
 			return _streamName;
 		}
 
@@ -73,7 +78,8 @@ package org.openvideoplayer.parsers {
 		 * The Akamai Hostname, a concatenation of the server and application names
 		 * 
 		 */
-		public function get hostName():String {
+		public function get hostName():String 
+		{
 			return _hostName;
 		}		
 		
@@ -81,7 +87,8 @@ package org.openvideoplayer.parsers {
 		 * The DynamicStreamItem representation of the content. Only applicable when the metafile type is METAFILE_MULTIBITRATE_SMIL.
 		 * 
 		 */
-		public function get dsi():DynamicStreamItem{
+		public function get dsi():DynamicStreamItem
+		{
 			return _dsi;
 		}
 		
@@ -89,7 +96,8 @@ package org.openvideoplayer.parsers {
 		 * The stream protocol
 		 * 
 		 */
-		public function get protocol():String {
+		public function get protocol():String 
+		{
 			return _protocol;
 		}
 		
@@ -97,10 +105,14 @@ package org.openvideoplayer.parsers {
 		/** Parses the SMIL file into useful properties
 		 * @private
 		 */
-		override protected function parseXML():void {
-			if (!verifySMIL(_xml)) {
+		override protected function parseXML():void 
+		{
+			if (!verifySMIL(_xml)) 
+			{
 				dispatchEvent(new OvpEvent(OvpEvent.ERROR, new OvpError(OvpError.XML_BOSS_MALFORMED)));
-			} else {
+			} 
+			else 
+			{
 				var ns:Namespace = _xml.namespace();
 				_hostName = _xml.ns::head.ns::meta.@base.slice(_xml.ns::head.ns::meta.@base .indexOf("://")+3);
     			_protocol = _xml.ns::head.ns::meta.@base.slice(0,_xml.ns::head.ns::meta.@base .indexOf("://")).toLowerCase();
@@ -116,11 +128,13 @@ package org.openvideoplayer.parsers {
 		 * any DTD.
 		 * @private
 		 */
-		private function verifySMIL(src:XML):Boolean {
+		private function verifySMIL(src:XML):Boolean 
+		{
 			var ns:Namespace = src.namespace();
 			var isVerified:Boolean = false;
 			
-			if (src.ns::body.ns::["switch"] != undefined) {
+			if (src.ns::body.ns::["switch"] != undefined) 
+			{
 				isVerified = !(src.ns::head.ns::meta.@base == undefined || src.ns::body.ns::["switch"].ns::video.length() < 1 );
 			}
 			return isVerified;
@@ -129,18 +143,44 @@ package org.openvideoplayer.parsers {
 		/** Parses the SMIL into a DynamicStreamItem
 		 * @private
 		 */
-		private function parseDsi(x:XML):DynamicStreamItem {
+		private function parseDsi(x:XML):DynamicStreamItem 
+		{
 			var ns: Namespace = x.namespace();
 			var dsi:DynamicStreamItem = new DynamicStreamItem();
-			for (var i:uint = 0; i < x.ns::body.ns::["switch"].ns::video.length(); i++) {
+			for (var i:uint = 0; i < x.ns::body.ns::["switch"].ns::video.length(); i++) 
+			{
 				var streamName:String = x.ns::body.ns::["switch"].ns::video[i].@src;
 				streamName = StringUtil.addPrefix(streamName);
-				dsi.addStream(streamName, Number(x.ns::body.ns::["switch"].ns::video[i].@["system-bitrate"])/1000);
+				
+				var bitrate:Number = Number(x.ns::body.ns::["switch"].ns::video[i].@["system-bitrate"])/1000;
+				
+				var clipBegin:Number = NaN;
+				var clipEnd:Number = NaN;
+				var tempSubClip:String = String(x.ns::body.ns::["switch"].ns::video[i].@["clipBegin"]);
+				
+				if (tempSubClip != null && tempSubClip.length > 0)
+				{
+					clipBegin = TimeUtil.parseTime(tempSubClip); 
+				}
+				
+				tempSubClip = String(x.ns::body.ns::["switch"].ns::video[i].@["clipEnd"]);
+				if (tempSubClip != null && tempSubClip.length > 0)
+				{
+					clipEnd = TimeUtil.parseTime(tempSubClip); 
+				}
+				
+				dsi.addStream(streamName, bitrate);
+				if (!isNaN(clipBegin))
+				{
+					dsi.start = clipBegin;
+				}
+				
+				if (!isNaN(clipEnd))
+				{
+					dsi.len = dsi.start > 0 ? clipEnd - dsi.start : clipEnd;
+				}
 			}
 			return dsi;
 		}
-		
-
-
 	}
 }

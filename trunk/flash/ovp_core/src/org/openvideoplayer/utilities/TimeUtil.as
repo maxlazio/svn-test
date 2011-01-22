@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2011, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -41,12 +41,64 @@ package org.openvideoplayer.utilities
 		/** Utility function for generating time code given a number seconds.
 		 * 
 		 */
-		public static function timeCode(sec:Number):String {
+		public static function timeCode(sec:Number):String 
+		{
 			var h:Number = Math.floor(sec/3600);
 			var m:Number = Math.floor((sec%3600)/60);
 			var s:Number = Math.floor((sec%3600)%60);
 			return (h == 0 ? "":(h<10 ? "0"+h.toString()+":" : h.toString()+":"))+(m<10 ? "0"+m.toString() : m.toString())+":"+(s<10 ? "0"+s.toString() : s.toString());
 		}
 		
+		/**
+		 * Utility function for returning a time in seconds given a time as a string.
+		 * <p>
+		 * Supports:<ul>
+		 * <li>full clock format in "hours:minutes:seconds" (for example 00:03:00).</li>
+		 * <li>offset time (for example 10s or 2m).</li>
+		 * </ul></p>
+		 * Times without units (for example 10) are assumed to be seconds.
+		 */
+		public static function parseTime(value:String):Number 
+		{
+			var time:Number = 0;
+			var a:Array = value.split(":");
+			
+			if (a.length > 1) 
+			{
+				// Clock format, e.g. "hh:mm:ss"
+				time = a[0] * 3600;
+				time += a[1] * 60;
+				time += Number(a[2]);
+			}
+			else 
+			{
+				// Offset time format, e.g. "1h", "8m", "10s"
+				var mul:int = 0;
+				
+				switch (value.charAt(value.length-1)) 
+				{
+					case 'h':
+						mul = 3600;
+						break;
+					case 'm':
+						mul = 60;
+						break;
+					case 's':
+						mul = 1;
+						break;
+				}
+				
+				if (mul) 
+				{
+					time = Number(value.substr(0, value.length-1)) * mul;
+				}
+				else 
+				{
+					time = Number(value);
+				}
+			}
+			
+			return time;
+		}		
 	}
 }

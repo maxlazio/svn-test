@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2009-2010, the Open Video Player authors. All rights reserved.
+// Copyright (c) 2009-2011, the Open Video Player authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions are 
@@ -30,80 +30,90 @@
 
 package org.openvideoplayer.cc
 {
-	/**
-	 * Represents a caption, including text and style formatting information, as well as when to show the caption and when to hide it.
-	 */
-	public class Caption
-	{
-		private var _id:uint;
-		private var _begin:uint;	// Begin display in seconds
-		private var _end:uint;		// End display in seconds
-		private var _caption:String;// Text to display, can contain embedded html tags, such as <br>
-		private var _captionFormats:Array;
-		
-		/**
-		 * Creates a Caption.
-		 */
-		public function Caption(id:uint, start:uint, end:uint, text:String) {
-			_id = id;
-			_begin = start;
-			_end = end;
-			_caption = text;
-			_captionFormats = new Array();
-		}	
-		
-		/**
-		 * The ID supplied to the constructor when the Caption was created.
-		 */
-		public function get id():uint {
-			return _id;
-		}
-		
-		/**
-		 * Start time in seconds.
-		 */
-		public function get startTime():uint {
-			return _begin;
-		}
-		
-		/**
-		 * End time in seconds.
-		 */
-		public function get endTime():uint {
-			return _end;
-		}
-				
-		/**
-		 * Caption text. This could contain html display tags, such as &lt;br/&gt;, so best
-		 * to assign to a control's htmlText property.
-		 */
-		public function get text():String {
-			return _caption;
-		}
-		
-		/**
-		 * A caption can contain several format objects, this method returns the count of format objects
-		 * for this particual caption.
-		 */
-		public function captionFormatCount():uint {
-			return _captionFormats.length;
-		}
-		
-		/**
-		 * Returns the CaptionFormat object at the specified index or null if not found.
-		 */
-		public function getCaptionFormatAt(index:uint) : CaptionFormat {
-			if (index < _captionFormats.length) {
-				return _captionFormats[index];
-			}
-			return null;
-		}
-		
-		/**
-		 * Adds a caption format object for this caption.
-		 */
-		public function addCaptionFormat(cf:CaptionFormat):void {
-			_captionFormats.push(cf);
-		}
-	}
+    
+    /**
+     * Represents a caption, including text and style formatting information, as well as when to show the caption and when to hide it.
+     */
+    public class Caption
+    {
+        private var _id:uint;
+        private var _begin:Number; // Begin display in seconds
+        private var _end:Number; // End display in seconds
+        private var _caption:String; // Text to display, can contain embedded html tags, such as <br>
+        private var _captionFormats:Array;
+        
+        /**
+         * Creates a Caption.
+         */
+        public function Caption(id:uint, start:Number, end:Number, text:String)
+        {
+            _id = id;
+            _begin = start;
+            _end = end;
+            _caption = text;
+            _captionFormats = new Array();
+        }
+        
+        /**
+         * The ID supplied to the constructor when the Caption was created.
+         */
+        public function get id():uint
+        {
+            return _id;
+        }
+        
+        /**
+         * Start time in seconds.
+         */
+        public function get startTime():Number
+        {
+            return _begin;
+        }
+        
+        /**
+         * End time in seconds.
+         */
+        public function get endTime():Number
+        {
+            return _end;
+        }
+        
+        /**
+         * Caption text. This could contain html display tags, such as &lt;br/&gt;, so best
+         * to assign to a control's htmlText property.
+         */
+        public function get text():String
+        {
+            return _caption;
+        }
+        
+        /**
+         * A caption can contain several format objects, this method returns the count of format objects
+         * for this particual caption.
+         */
+        public function captionFormatCount():uint
+        {
+            return _captionFormats.length;
+        }
+        
+        /**
+         * Returns the CaptionFormat object at the specified index or null if not found.
+         */
+        public function getCaptionFormatAt(index:uint):CaptionFormat
+        {
+            if (index < _captionFormats.length)
+            {
+                return _captionFormats[index];
+            }
+            return null;
+        }
+        
+        /**
+         * Adds a caption format object for this caption.
+         */
+        public function addCaptionFormat(cf:CaptionFormat):void
+        {
+            _captionFormats.push(cf);
+        }
+    }
 }
