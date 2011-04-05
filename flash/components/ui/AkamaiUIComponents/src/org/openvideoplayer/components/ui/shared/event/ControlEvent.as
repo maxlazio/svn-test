@@ -86,6 +86,11 @@ package org.openvideoplayer.components.ui.shared.event
 		public static const MUTE_OFF:String = "muteOff";
 		
 		/**
+		 * Fires when the mute button is clicked into mute off mode 
+		 */		
+		public static const MUTE_CHANGE:String = "muteChange";
+		
+		/**
 		 * Fires when the volume bar position has been changed
 		 */		
 		public static const VOLUME_CHANGE:String = "volumeChange";
@@ -145,10 +150,16 @@ package org.openvideoplayer.components.ui.shared.event
 		 * Fires when button is pressed down 
 		 */		
 		public static const REWIND_DOWN:String = "rewindDown";
+		
 		/**
 		 * Fires when button is released 
 		 */		
 		public static const REWIND_UP:String = "rewindUp";
+		
+		/**
+		 * Fires when button is released 
+		 */		
+		public static const GO_LIVE:String = "goLive";
 		
 		/**
 		 * Testing only

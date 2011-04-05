@@ -29,13 +29,13 @@
 //
 package org.openvideoplayer.components.ui.controlbar.view
 {
-	import org.openvideoplayer.components.ui.shared.ControlType;
-	import org.openvideoplayer.components.ui.shared.event.ControlEvent;
+	import flash.events.MouseEvent;
+	
 	import org.openvideoplayer.components.ui.controlbar.event.ControlBarPropertyChangeEvent;
 	import org.openvideoplayer.components.ui.controlbar.view.icons.MuteOffIcon;
 	import org.openvideoplayer.components.ui.controlbar.view.icons.MuteOnIcon;
-	
-	import flash.events.MouseEvent;
+	import org.openvideoplayer.components.ui.shared.ControlType;
+	import org.openvideoplayer.components.ui.shared.event.ControlEvent;
 	import org.openvideoplayer.components.ui.shared.view.base.BaseButton;
 
 	/**
@@ -88,6 +88,7 @@ package org.openvideoplayer.components.ui.controlbar.view
 		{
 			toggleIcon();
 			controlBarPropertyModel.muteState = currentState;
+			dispatchEvent(new ControlEvent(ControlEvent.MUTE_CHANGE, currentState));
 		}
 
 		private function addMuteOffIcon():void
