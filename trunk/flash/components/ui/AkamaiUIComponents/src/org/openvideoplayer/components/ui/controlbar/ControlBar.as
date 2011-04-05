@@ -33,8 +33,8 @@ package org.openvideoplayer.components.ui.controlbar
     import flash.events.Event;
     
     import org.openvideoplayer.components.ui.controlbar.model.ControlBarPropertyModel;
-    import org.openvideoplayer.components.ui.shared.view.base.BaseComponent;
     import org.openvideoplayer.components.ui.controlbar.view.ControlBarBackgroundView;
+    import org.openvideoplayer.components.ui.shared.view.base.BaseComponent;
     
     /**
      * This is the main class for the ControlBar component.  This class holds all the
@@ -414,7 +414,7 @@ package org.openvideoplayer.components.ui.controlbar
         /**
          * @private
          */
-        private function destroy():void
+        private function destroy(event:Event):void
         {
             this.removeEventListener(Event.REMOVED_FROM_STAGE, destroy);
             controlBarPropertyModel.controlList.length = 0;
